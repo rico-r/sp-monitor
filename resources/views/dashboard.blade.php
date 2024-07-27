@@ -57,11 +57,8 @@
                 </button>
             </div>
             <form id="addForm" method="POST" action="{{ route('nasabah.store') }}">
-            @csrf
+                @csrf
                 <div class="modal-body">
-                <div class="modal-body">
-                    <input type="hidden" id="addIdAdminKas" name="id_admin_kas" value="{{ $currentUser->pegawaiAdminKas->id_admin_kas?? '' }}">
-
                     <div class="form-group">
                         <label for="addNo">No</label>
                         <input type="text" class="form-control" id="addNo" name="no" required>
@@ -114,6 +111,8 @@
                             @endforeach
                         </select>
                     </div>
+                    <input type="hidden" id="addIdAdminKas" name="id_admin_kas" value="{{ $currentUser->pegawaiAdminKas->id_admin_kas?? '' }}">
+
                     <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
                         <select class="form-control" id="addAccountOfficer" name="id_account_officer" required>
@@ -205,10 +204,10 @@
                         <label for="editAccountOfficer">Account Officer</label>
                         <select class="form-control" id="editAccountOfficer" name="id_account_officer" required>
                         @foreach($nasabahs as $nasabah)
-                            @if($nasabah->accountofficer)
+        
                                 <option value="{{ $nasabah->accountofficer->id_account_officer }}">{{ $nasabah->accountofficer->nama_account_officer }}</option>
-                            @endif
-                        @endforeach
+                            
+                            @endforeach
                         </select>
                     </div>
                 </div>
@@ -280,10 +279,6 @@
                     <label for="detailAccountOfficer">Account Officer</label>
                     <input type="text" class="form-control" id="detailAccountOfficer" name="account_officer" readonly>
                 </div>
-                <div class="form-group">
-                    <label for="detailAdminKas">Admin Kas</label>
-                    <p id="detailAdminKas"></p>
-                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -320,25 +315,7 @@
 
 <script>
     $(document).ready(function() {
-        function calculateTotal() {
-        var pokok = parseFloat($('#addPokok').val()) || 0;
-        var bunga = parseFloat($('#addBunga').val()) || 0;
-        var denda = parseFloat($('#addDenda').val()) || 0;
-        var total = pokok + bunga + denda;
-        $('#addTotal').val(total);
-    }
-
-    // Calculate total on input change for add form
-    $('#addPokok, #addBunga, #addDenda').on('input', calculateTotal);
-
-    // Calculate total on input change for edit form
-    $('#editPokok, #editBunga, #editDenda').on('input', function() {
-        var pokok = parseFloat($('#editPokok').val()) || 0;
-        var bunga = parseFloat($('#editBunga').val()) || 0;
-        var denda = parseFloat($('#editDenda').val()) || 0;
-        var total = pokok + bunga + denda;
-        $('#editTotal').val(total);
-    });
+        // Edit button click event
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');
             var nasabah = @json($nasabahs->keyBy('no'));
@@ -386,6 +363,29 @@
             $('#deleteNo').val(no);
             $('#deleteForm').attr('action', '/nasabah/delete/' + no);
         });
+
+        // Calculate total for add form
+        function calculateAddTotal() {
+            var pokok = parseFloat($('#addPokok').val()) || 0;
+            var bunga = parseFloat($('#addBunga').val()) || 0;
+            var denda = parseFloat($('#addDenda').val()) || 0;
+            var total = pokok + bunga + denda;
+            $('#addTotal').val(total);
+        }
+
+        // Calculate total for edit form
+        function calculateEditTotal() {
+            var pokok = parseFloat($('#editPokok').val()) || 0;
+            var bunga = parseFloat($('#editBunga').val()) || 0;
+            var denda = parseFloat($('#editDenda').val()) || 0;
+            var total = pokok + bunga + denda;
+            $('#editTotal').val(total);
+        }
+
+        // Attach events for calculating total on input change
+        $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
+        $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
     });
 </script>
+
 @endsection

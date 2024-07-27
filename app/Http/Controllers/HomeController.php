@@ -77,7 +77,7 @@ class HomeController extends Controller
     Log::info('Add Nasabah request received', $request->all());
 
     $request->validate([
-        'no' => 'required',
+        'no' => 'required|numeric',
         'nama' => 'required|max:255',
         'pokok' => 'required|numeric',
         'bunga' => 'required|numeric',
