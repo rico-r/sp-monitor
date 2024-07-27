@@ -43,21 +43,60 @@ class HomeController extends Controller
     }
 
     public function updateNasabah(Request $request, $no)
-    {
-        $request->validate([
-            'nama' => 'required|max:255',
-            'total' => 'required|numeric',
-            'keterangan' => 'required',
-        ]);
+{
+    // Logging permintaan yang diterima
+    Log::info('Menerima permintaan update untuk nasabah', [
+        'no' => $no,
+        'request_data' => $request->all()
+    ]);
 
-        $nasabah = Nasabah::find($no);
-        $nasabah->nama = $request->nama;
-        $nasabah->total = $request->total;
-        $nasabah->keterangan = $request->keterangan;
-        $nasabah->save();
+    // Validasi data
+    $request->validate([
+        'nama' => 'required|max:255',
+        'pokok' => 'required|numeric',
+        'bunga' => 'required|numeric',
+        'denda' => 'required|numeric',
+        'total' => 'required|numeric',
+        'keterangan' => 'required',
+        'ttd' => 'required|date',
+        'kembali' => 'required|date',
+        'id_cabang' => 'required|exists:cabangs,id_cabang',
+        'id_wilayah' => 'required|exists:wilayahs,id_wilayah',
+        'id_account_officer' => 'required',
+    ]);
 
-        return response()->json(['success' => 'Data updated successfully']);
+    // Cari nasabah berdasarkan no
+    $nasabah = Nasabah::find($no);
+    if (!$nasabah) {
+        // Logging jika nasabah tidak ditemukan
+        Log::warning('Nasabah tidak ditemukan', ['no' => $no]);
+        return redirect()->back()->with('error', 'Nasabah tidak ditemukan');
     }
+
+    // Update data nasabah
+    $nasabah->nama = $request->nama;
+    $nasabah->pokok = $request->pokok;
+    $nasabah->bunga = $request->bunga;
+    $nasabah->denda = $request->denda;
+    $nasabah->total = $request->total;
+    $nasabah->keterangan = $request->keterangan;
+    $nasabah->ttd = $request->ttd;
+    $nasabah->kembali = $request->kembali;
+    $nasabah->id_cabang = $request->id_cabang;
+    $nasabah->id_wilayah = $request->id_wilayah;
+    $nasabah->id_account_officer = $request->id_account_officer;
+    $nasabah->save();
+
+    // Logging setelah data nasabah berhasil diperbarui
+    Log::info('Data nasabah berhasil diperbarui', [
+        'no' => $no,
+        'updated_data' => $nasabah
+    ]);
+
+    // Redirect ke dashboard dengan pesan sukses
+    return redirect('dashboard')->with('success', 'Data berhasil diperbarui');
+}
+
 
     public function deleteNasabah($no)
     {

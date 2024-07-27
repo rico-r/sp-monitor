@@ -37,6 +37,7 @@
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
+                        <!-- <a href="{{ route('nasabah.edit', ['no' => $nasabah->no]) }}" class="btn btn-primary">Edit</a> -->
                         <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#detailModal">Detail</button>
                         <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
                     </td>
@@ -146,7 +147,8 @@
             </div>
             <form id="editForm" method="POST" action="">
                 @csrf
-                @method('PUT')
+                @method('POST')
+                 
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="editNo">No</label>
@@ -318,23 +320,34 @@
         // Edit button click event
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');
-            var nasabah = @json($nasabahs->keyBy('no'));
-            var data = nasabah[no];
+            $.ajax({
+                url: '/nasabah/edit/' + no,
+                method: 'GET',
+                success: function(data) {
+                    // Mengisi data ke dalam modal
+                    $('#editNo').val(data.no);
+                    $('#editNama').val(data.nama);
+                    $('#editPokok').val(data.pokok);
+                    $('#editBunga').val(data.bunga);
+                    $('#editDenda').val(data.denda);
+                    $('#editTotal').val(data.total);
+                    $('#editKeterangan').val(data.keterangan);
+                    $('#editTtd').val(data.ttd);
+                    $('#editKembali').val(data.kembali);
+                    $('#editCabang').val(data.id_cabang);
+                    $('#editWilayah').val(data.id_wilayah);
+                    $('#editAccountOfficer').val(data.id_account_officer);
 
-            $('#editNo').val(data.no);
-            $('#editNama').val(data.nama);
-            $('#editPokok').val(data.pokok);
-            $('#editBunga').val(data.bunga);
-            $('#editDenda').val(data.denda);
-            $('#editTotal').val(data.total);
-            $('#editKeterangan').val(data.keterangan);
-            $('#editTtd').val(data.ttd);
-            $('#editKembali').val(data.kembali);
-            $('#editCabang').val(data.id_cabang);
-            $('#editWilayah').val(data.id_wilayah);
-            $('#editAccountOfficer').val(data.account_officer.nama_account_officer);
+                    // Menetapkan action form ke rute update dengan parameter no
+                    $('#editForm').attr('action', '{{ route("nasabah.update", ":no") }}'.replace(':no', no));
 
-            $('#editForm').attr('action', '/nasabah/update/' + no);
+                    // Menampilkan modal
+                    $('#editModal').modal('show');
+                },
+                error: function(xhr) {
+                    alert('Terjadi kesalahan saat memuat data.');
+                }
+            });
         });
 
         // Detail button click event
