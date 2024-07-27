@@ -4,6 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Nip;
+use App\Models\Jabatan;
+use App\Models\Wilayah;
+use App\Models\PegawaiAdminKas;
+use App\Models\PegawaiSupervisor;
+use Laravel\Sanctum\HasApiTokens;
+use App\Models\PegawaiKepalaCabang;
+use App\Events\UserRegisteredMobile;
+use App\Models\PegawaiAccountOffice;
+use Illuminate\Notifications\Notifiable;
 
 class Nasabah extends Model
 {
@@ -46,5 +56,5 @@ class Nasabah extends Model
     }
 
     // Relasi-relasi lain yang mungkin dimiliki oleh Nasabah
-    
+    protected $primaryKey = 'no';
 }

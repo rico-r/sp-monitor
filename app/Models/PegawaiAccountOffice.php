@@ -25,12 +25,15 @@ class PegawaiAccountOffice extends Model
     {
         return $this->belongsTo(PegawaiAdminKas::class, 'id_admin_kas');
     }
+    public function nasabah()
+    {
+        return $this->belongsTo(Nasabah::class, 'no');
+    }
 
     protected $fillable = [
         'id_account_officer',
         'nama_account_officer',
         'id_user',
-
         'id_admin_kas',
         'id_jabatan',
         'id_cabang',

@@ -25,11 +25,11 @@ use App\Http\Controllers\AuthController;
 
 Route::get('home',[HomeController::class,'index'])->name('home');
 Route::get('dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
-Route::get('nasabah/edit/{id}', [HomeController::class, 'editNasabah'])->name('nasabah.edit');
-Route::post('nasabah/update/{id}', [HomeController::class, 'updateNasabah'])->name('nasabah.update');
-Route::post('/nasabah', [HomeController::class, 'addNasabah'])->name('nasabah.store');
-Route::delete('nasabah/delete/{id}', [HomeController::class, 'deleteNasabah'])->name('nasabah.delete');
-Route::get('nasabah/detail/{id}', [HomeController::class, 'detailNasabah'])->name('nasabah.detail');
+Route::get('nasabah/edit/{no}', [HomeController::class, 'editNasabah'])->name('nasabah.edit');
+Route::post('nasabah/update/{no}', [HomeController::class, 'updateNasabah'])->name('nasabah.update');
+Route::post('nasabah', [HomeController::class, 'addNasabah'])->name('nasabah.store');
+Route::delete('nasabah/delete/{no}', [HomeController::class, 'deleteNasabah'])->name('nasabah.delete');
+Route::get('nasabah/detail/{no}', [HomeController::class, 'detailNasabah'])->name('nasabah.detail');
 Route::post('nasabah/add', [HomeController::class, 'addNasabah'])->name('nasabah.add');
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
