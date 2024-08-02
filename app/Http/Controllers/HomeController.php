@@ -64,34 +64,35 @@ class HomeController extends Controller
     }
 
     public function search(Request $request)
-    {
-        $search = $request->input('search');
-        $nasabahs = Nasabah::where('nama', 'like', '%' . $search . '%')
-                          ->orWhere('branch', 'like', '%' . $search . '%')
-                          ->orWhere('region', 'like', '%' . $search . '%')
-                          ->get();
+{
+    $search = $request->input('search');
+    $nasabahs = Nasabah::where('nama', 'like', '%' . $search . '%')
+                      ->orWhere('id_cabang', 'like', '%' . $search . '%')
+                      ->orWhere('id_wilayah', 'like', '%' . $search . '%')
+                      ->get();
 
-        $output = '';
-        foreach ($nasabahs as $nasabah) {
-            $progresSp = SuratPeringatan::where('nasabah_no', $nasabah->no)->first();
-            $output .= '
-                <tr>
-                    <td>' . $nasabah->no . '</td>
-                    <td>' . $nasabah->nama . '</td>
-                    <td>' . $nasabah->total . '</td>
-                    <td>' . $nasabah->keterangan . '</td>
-                    <td>' . ($progresSp ? $progresSp->tingkat : 'N/A') . '</td>
-                    <td>
-                        <button class="btn btn-primary btn-sm edit-btn" data-no="' . $nasabah->no . '" data-toggle="modal" data-target="#editModal">Edit</button>
-                        <button class="btn btn-info btn-sm detail-btn" data-no="' . $nasabah->no . '" data-toggle="modal" data-target="#detailModal">Detail</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-no="' . $nasabah->no . '" data-toggle="modal" data-target="#deleteModal">Delete</button>
-                    </td>
-                </tr>
-            ';
-        }
-
-        return response($output);
+    $output = '';
+    foreach ($nasabahs as $nasabah) {
+        $progresSp = SuratPeringatan::where('no', $nasabah->no)->first();
+        $output .= '
+            <tr>
+                <td>' . $nasabah->no . '</td>
+                <td>' . $nasabah->nama . '</td>
+                <td>' . $nasabah->total . '</td>
+                <td>' . $nasabah->keterangan . '</td>
+                <td>' . ($progresSp ? $progresSp->tingkat : 'N/A') . '</td>
+                <td>
+                    <button class="btn btn-primary btn-sm edit-btn" data-no="' . $nasabah->no . '" data-toggle="modal" data-target="#editModal">Edit</button>
+                    <button class="btn btn-info btn-sm detail-btn" data-no="' . $nasabah->no . '" data-toggle="modal" data-target="#detailModal">Detail</button>
+                    <button class="btn btn-danger btn-sm delete-btn" data-no="' . $nasabah->no . '" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                </td>
+            </tr>
+        ';
     }
+
+    return response($output);
+}
+
 
     public function editNasabah($no)
     {

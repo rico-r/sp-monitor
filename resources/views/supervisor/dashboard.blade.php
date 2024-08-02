@@ -1,7 +1,5 @@
 @extends("layouts.master")
 @section("main-content")
-@extends("layouts.master")
-@section("main-content")
 <div class="container home">
     @if (session("success"))
     <div class="alert alert-success">
@@ -12,7 +10,7 @@
     <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
     <div class="flex justify-between mb-4">
     <div>
-        <form method="GET" action="{{ route('dashboard') }}">
+        <form method="GET" action="{{ route('supervisor.dashboard') }}">
             <select name="date_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                 <option value="">Last 30 days</option>
                 <option value="last_7_days" {{ request('date_filter') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
@@ -28,8 +26,8 @@
         </form>
     </div>
 </div>
-
-    <table class="table table-striped">
+    
+    <table class="table table-striped" id="nasabah-table">
         <thead>
             <tr>
                 <th>No</th>
@@ -334,19 +332,29 @@
 </div>
 
 <script>
-    $(document).ready(function() {
-        $('#search').on('keyup', function() {
-            var query = $(this).val();
-            $.ajax({
-                url: '{{ route('search') }}',
-                type: 'GET',
-                data: { 'search': query },
-                success: function(data) {
-                    $('#nasabahTable').html(data);
-                }
-            });
-        });
-    });
+    document.getElementById('search').addEventListener('keyup', function (event) {
+                            const query = event.target.value;
+                            const table = document.getElementById('nasabah-table');
+                            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                            for (let i = 0; i < rows.length; i++) {
+                                const cells = rows[i].getElementsByTagName('td');
+                                let match = false;
+
+                                for (let j = 0; j < cells.length; j++) {
+                                    if (cells[j].innerText.toLowerCase().includes(query.toLowerCase())) {
+                                        match = true;
+                                        break;
+                                    }
+                                }
+
+                                if (match) {
+                                    rows[i].style.display = '';
+                                } else {
+                                    rows[i].style.display = 'none';
+                                }
+                            }
+                        });
         // Edit button click event
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');
@@ -428,7 +436,6 @@
         // Attach events for calculating total on input change
         $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
         $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
-    });
 </script>
 
 @endsection

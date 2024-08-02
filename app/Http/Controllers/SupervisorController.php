@@ -57,6 +57,6 @@ class SupervisorController extends Controller
         $accountOfficers = PegawaiAccountOffice::all();
         $currentUser = auth()->user();
 
-        return view('dashboard', compact('title', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'accountOfficers', 'currentUser'));
+        return view('supervisor.dashboard', compact('title', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'accountOfficers', 'currentUser'));
     }
 }
