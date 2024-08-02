@@ -15,20 +15,48 @@ use Illuminate\Support\Facades\Log;
 
 class SupervisorController extends Controller
 {
-    public function dashboard()
+    public function dashboard(Request $request)
     {
-        $title = "Dashboard Supervisor";
-        $nasabahs = Nasabah::with('accountofficer')->get();
-        // $users = User::with('pegawaiAdminKas')->get();
+        $title = "Dashboard";
+
+        $query = Nasabah::with('accountofficer');
+
+        // Filter berdasarkan tanggal
+        if ($request->has('date_filter')) {
+            $dateFilter = $request->input('date_filter');
+            switch ($dateFilter) {
+                case 'last_7_days':
+                    $query->where('created_at', '>=', now()->subDays(7));
+                    break;
+                case 'last_30_days':
+                    $query->where('created_at', '>=', now()->subDays(30));
+                    break;
+                case 'last_month':
+                    $query->whereMonth('created_at', '=', now()->subMonth()->month);
+                    break;
+                case 'last_year':
+                    $query->whereYear('created_at', '=', now()->subYear()->year);
+                    break;
+            }
+        }
+
+        // Filter berdasarkan pencarian
+        if ($request->has('search')) {
+            $search = $request->input('search');
+            $query->where(function($q) use ($search) {
+                $q->where('nama', 'like', '%' . $search . '%')
+                  ->orWhere('branch', 'like', '%' . $search . '%')
+                  ->orWhere('region', 'like', '%' . $search . '%');
+            });
+        }
+
+        $nasabahs = $query->get();
         $suratPeringatans = SuratPeringatan::select('no', 'tingkat')->get();
         $cabangs = Cabang::all();
         $wilayahs = Wilayah::all();
         $accountOfficers = PegawaiAccountOffice::all();
-        $currentUser = auth()->user(); 
-        // foreach ($users as $user) {
-        //     $pegawaiAdminKas = $user->pegawaiAdminKas;
-        //     // Lakukan sesuatu dengan $pegawaiAdminKas
-        // }
-        return view('supervisor.dashboard', compact('title', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'accountOfficers', 'currentUser'));
+        $currentUser = auth()->user();
+
+        return view('dashboard', compact('title', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'accountOfficers', 'currentUser'));
     }
 }

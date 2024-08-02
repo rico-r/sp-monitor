@@ -9,7 +9,7 @@
     </div>
     @endif
 
-    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
+    <!-- <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button> -->
 
     <table class="table table-striped">
         <thead>
@@ -36,10 +36,10 @@
                         {{ $progresSp ? $progresSp->tingkat : 'N/A' }}
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
+                        <!-- <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button> -->
                         <!-- <a href="{{ route('nasabah.edit', ['no' => $nasabah->no]) }}" class="btn btn-primary">Edit</a> -->
                         <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#detailModal">Detail</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                        <!-- <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button> -->
                     </td>
                 </tr>
             @endforeach

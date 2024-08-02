@@ -10,6 +10,24 @@
     @endif
 
     <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
+    <div class="flex justify-between mb-4">
+    <div>
+        <form method="GET" action="{{ route('dashboard') }}">
+            <select name="date_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                <option value="">Last 30 days</option>
+                <option value="last_7_days" {{ request('date_filter') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
+                <option value="last_30_days" {{ request('date_filter') == 'last_30_days' ? 'selected' : '' }}>Last 30 days</option>
+                <option value="last_month" {{ request('date_filter') == 'last_month' ? 'selected' : '' }}>Last month</option>
+                <option value="last_year" {{ request('date_filter') == 'last_year' ? 'selected' : '' }}>Last year</option>
+            </select>
+        </form>
+    </div>
+    <div>
+        <form method="GET" action="{{ route('search') }}">
+            <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Search by name, branch, region" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+        </form>
+    </div>
+</div>
 
     <table class="table table-striped">
         <thead>
@@ -317,6 +335,18 @@
 
 <script>
     $(document).ready(function() {
+        $('#search').on('keyup', function() {
+            var query = $(this).val();
+            $.ajax({
+                url: '{{ route('search') }}',
+                type: 'GET',
+                data: { 'search': query },
+                success: function(data) {
+                    $('#nasabahTable').html(data);
+                }
+            });
+        });
+    });
         // Edit button click event
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');

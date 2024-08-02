@@ -36,6 +36,8 @@ Route::post('nasabah', [HomeController::class, 'addNasabah'])->name('nasabah.sto
 Route::delete('nasabah/delete/{no}', [HomeController::class, 'deleteNasabah'])->name('nasabah.delete');
 Route::get('nasabah/detail/{no}', [HomeController::class, 'detailNasabah'])->name('nasabah.detail');
 Route::post('nasabah/add', [HomeController::class, 'addNasabah'])->name('nasabah.add');
+Route::get('/search', [HomeController::class, 'search'])->name('search');
+
 
 Route::get('/', [AuthController::class, 'index'])->name('login');
 
