@@ -1,6 +1,6 @@
 <div class="copyright">
         <p>
-            © Copyright 2023 by xyz.com. All Rights
+            © Copyright 2023 by Adeez. All Rights
             Reserved.
         </p>
 </div>

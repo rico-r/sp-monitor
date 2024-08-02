@@ -5,6 +5,11 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ApplicationController;
 
+use App\Http\Controllers\AccountOfficerController;
+use App\Http\Controllers\SupervisorController;
+use App\Http\Controllers\AdminKasController;
+use App\Http\Controllers\DireksiController;
+use App\Http\Controllers\KepalaCabangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
 
@@ -55,8 +60,39 @@ Route::middleware('auth:web')->group(function(){
         
 });
 
+Route::prefix('direksi')
+    ->name('direksi.')
+    ->middleware('jabatan:1')
+    ->group(function () {
+        Route::get('dashboard', [DireksiController::class, 'dashboard'])->name('dashboard');
+});
 
+Route::prefix('kepala-cabang')
+    ->name('kepala-cabang.')
+    ->middleware('jabatan:2')
+    ->group(function () {
+        Route::get('dashboard', [KepalaCabangController::class, 'dashboard'])->name('dashboard');
+});
 
+Route::prefix('supervisor')
+    ->name('supervisor.')
+    ->middleware('jabatan:3')
+    ->group(function () {
+        Route::get('dashboard', [SupervisorController::class, 'dashboard'])->name('dashboard');
+});
 
+Route::prefix('admin-kas')
+    ->name('admin-kas.')
+    ->middleware('jabatan:4')
+    ->group(function () {
+        Route::get('dashboard', [AdminKasController::class, 'dashboard'])->name('dashboard');
+});
+
+Route::prefix('account-officer')
+    ->name('account-officer.')
+    ->middleware('jabatan:5')
+    ->group(function () {
+        Route::get('dashboard', [AccountOfficerController::class, 'dashboard'])->name('dashboard');
+});
 
 

@@ -1,9 +1,11 @@
 @extends("layouts.master")
 @section("main-content")
+@extends("layouts.master")
+@section("main-content")
 <div class="container home">
     @if (session("success"))
     <div class="alert alert-success">
-        {{ session("success") }}
+        {{session("success") }}
     </div>
     @endif
 
@@ -21,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($nasabahs as $index => $nasabah)
+            @foreach($nasabahs as $nasabah)
                 <tr>
                     <td>{{ $nasabah->no }}</td>
                     <td>{{ $nasabah->nama }}</td>
