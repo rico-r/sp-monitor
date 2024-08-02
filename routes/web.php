@@ -7,6 +7,8 @@ use App\Http\Controllers\ApplicationController;
 
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\DireksiController;
+use App\Http\Controllers\KepalaCabangController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,11 +54,18 @@ Route::middleware('auth:web')->group(function(){
         Route::get('dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
         Route::get('change-password', [AuthController::class, 'changePasswordForm'])->name('password.change.form');
         Route::post('change-password', [AuthController::class, 'changePasswordPost'])->name('password.change.post');
-        
 });
 
+Route::prefix('direksi')
+    ->name('direksi.')
+    ->middleware('jabatan:1')
+    ->group(function () {
+        Route::get('dashboard', [DireksiController::class, 'dashboard'])->name('dashboard');
+});
 
-
-
-
-
+Route::prefix('kepala-cabang')
+    ->name('kepala-cabang.')
+    ->middleware('jabatan:2')
+    ->group(function () {
+        Route::get('dashboard', [KepalaCabangController::class, 'dashboard'])->name('dashboard');
+});

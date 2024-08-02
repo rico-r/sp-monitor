@@ -90,8 +90,20 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
+            $user = Auth::user();
+            Log::debug('Login', ['jabatan' => $user->jabatan_id]);
+            switch ($user->jabatan_id) {
+                case '1':
+                    return redirect()->intended(route('direksi.dashboard'));
+                case '2':
+                    return redirect()->intended(route('kepala-cabang.dashboard'));
 
-            return redirect()->intended('dashboard');
+                // dst ...
+
+                default:
+                    // Error jabatan tidak valid
+                    abort(404);
+            }
         }
 
         return back()->withErrors([
