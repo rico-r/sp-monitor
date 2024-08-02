@@ -23,7 +23,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($nasabahs as $nasabah)
+            @foreach($nasabahs as $index => $nasabah)
                 <tr>
                     <td>{{ $nasabah->no }}</td>
                     <td>{{ $nasabah->nama }}</td>
