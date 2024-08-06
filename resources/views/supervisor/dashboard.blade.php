@@ -73,7 +73,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addForm" method="POST" action="{{ route('nasabah.store') }}">
+            <form id="addForm" method="POST" action="{{ route('supervisor.nasabah.add') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
@@ -415,7 +415,7 @@
         $('.delete-btn').on('click', function() {
             var no = $(this).data('no');
             $('#deleteNo').val(no);
-            $('#deleteForm').attr('action', '/nasabah/delete/' + no);
+            $('#deleteForm').attr('action', '/supervisor/nasabah/delete/' + no);
         });
 
         // Calculate total for add form

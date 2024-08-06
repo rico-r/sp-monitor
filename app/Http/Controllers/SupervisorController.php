@@ -57,29 +57,30 @@ class SupervisorController extends Controller
     // Filter berdasarkan pencarian
     if ($request->has('search')) {
         $search = $request->input('search');
-        Log::info('Filter pencarian diterapkan', ['search' => $search]);
+        $query->where('nama', 'like', "%{$search}%")
+              ->orWhereHas('cabang', function ($q) use ($search) {
+                  $q->where('nama_cabang', 'like', "%{$search}%");
+              })
+              ->orWhereHas('wilayah', function ($q) use ($search) {
+                  $q->where('nama_wilayah', 'like', "%{$search}%");
+              });
 
-        $query->where(function($q) use ($search) {
-            $q->where('nama', 'like', '%' . $search . '%')
-              ->orWhere('branch', 'like', '%' . $search . '%')
-              ->orWhere('region', 'like', '%' . $search . '%');
-        });
     }
 
     // Log query setelah filter pencarian
     Log::info('Query setelah filter pencarian: ', ['query' => $query->toSql()]);
 
     $nasabahs = $query->get();
-    Log::info('Nasabahs retrieved', ['nasabahs' => $nasabahs]);
+    // Log::info('Nasabahs retrieved', ['nasabahs' => $nasabahs]);
 
-    // Log untuk memeriksa setiap nasabah dan user
-    foreach ($nasabahs as $nasabah) {
-        if ($nasabah->user) {
-            Log::info('Nasabah memiliki user', ['nasabah' => $nasabah->no, 'user' => $nasabah->user->id]);
-        } else {
-            Log::warning('Nasabah tidak memiliki user', ['nasabah' => $nasabah->no]);
-        }
-    }
+    // // Log untuk memeriksa setiap nasabah dan user
+    // foreach ($nasabahs as $nasabah) {
+    //     if ($nasabah->user) {
+    //         Log::info('Nasabah memiliki user', ['nasabah' => $nasabah->no, 'user' => $nasabah->user->id]);
+    //     } else {
+    //         Log::warning('Nasabah tidak memiliki user', ['nasabah' => $nasabah->no]);
+    //     }
+    // }
 
     $suratPeringatans = SuratPeringatan::select('no', 'tingkat')->get();
     $cabangs = Cabang::all();
@@ -118,7 +119,7 @@ public function update(Request $request, $no)
 public function deleteNasabah($no)
 {
     Nasabah::find($no)->delete();
-    return redirect('supervisor.dashboard');
+    return redirect()->route('supervisor.dashboard');
 }
 
 public function detailNasabah($no)
@@ -151,7 +152,7 @@ public function addNasabah(Request $request)
         Log::info('Nasabah added successfully', $request->all());
         
 
-        return redirect('supervisor.dashboard')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('supervisor.dashboard')->with('success', 'Data berhasil ditambahkan');
     } catch (\Exception $e) {
         Log::error('Error adding Nasabah: ' . $e->getMessage(), [
             'request' => $request->all(),

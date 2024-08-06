@@ -85,6 +85,8 @@ Route::prefix('supervisor')
     Route::get('/nasabah/edit/{no}', [SupervisorController::class, 'editNasabah'])->name('nasabah.edit');
     Route::put('/nasabah/update/{no}', [SupervisorController::class, 'update'])->name('nasabah.update');
     Route::post('nasabah/add', [SupervisorController::class, 'addNasabah'])->name('nasabah.add');
+    Route::delete('nasabah/delete/{no}', [SupervisorController::class, 'deleteNasabah'])->name('nasabah.delete');
+
 
 });
 
