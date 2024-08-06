@@ -55,8 +55,8 @@ class AdminKasController extends Controller
     Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
 
     // Filter berdasarkan pencarian
-    if ($request->has('search')) {
-        $search = $request->input('search');
+    $search = $request->input('search');
+    if ($search) {
         $query->where('nama', 'like', "%{$search}%")
               ->orWhereHas('cabang', function ($q) use ($search) {
                   $q->where('nama_cabang', 'like', "%{$search}%");
@@ -67,16 +67,16 @@ class AdminKasController extends Controller
     }
 
     // Filter based on cabang
-    if ($request->has('cabang_filter')) {
-        $cabangFilter = $request->input('cabang_filter');
+    $cabangFilter = $request->input('cabang_filter');
+    if ($cabangFilter) {
         $query->whereHas('cabang', function ($q) use ($cabangFilter) {
             $q->where('id_cabang', $cabangFilter);
         });
     }
 
     // Filter based on wilayah
-    if ($request->has('wilayah_filter')) {
-        $wilayahFilter = $request->input('wilayah_filter');
+    $wilayahFilter = $request->input('wilayah_filter');
+    if ($wilayahFilter) {
         $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
             $q->where('id_wilayah', $wilayahFilter);
         });
