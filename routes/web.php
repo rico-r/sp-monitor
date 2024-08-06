@@ -97,6 +97,8 @@ Route::prefix('admin-kas')
         Route::get('/dashboard', [AdminKasController::class, 'dashboard'])->name('dashboard');
         Route::get('/nasabah/edit/{no}', [AdminKasController::class, 'editNasabah'])->name('nasabah.edit');
         Route::put('/nasabah/update/{no}', [AdminKasController::class, 'update'])->name('nasabah.update');
+        Route::post('nasabah/add', [AdminKasController::class, 'addNasabah'])->name('nasabah.add');
+        Route::delete('nasabah/delete/{no}', [AdminKasController::class, 'deleteNasabah'])->name('nasabah.delete');
 });
 
 Route::prefix('account-officer')
@@ -106,6 +108,8 @@ Route::prefix('account-officer')
         Route::get('/dashboard', [AccountOfficerController::class, 'dashboard'])->name('dashboard');
         Route::get('/nasabah/edit/{no}', [AccountOfficerController::class, 'editNasabah'])->name('nasabah.edit');
         Route::put('/nasabah/update/{no}', [AccountOfficerController::class, 'update'])->name('nasabah.update');
+        Route::post('nasabah/add', [AccountOfficerController::class, 'addNasabah'])->name('nasabah.add');
+        Route::delete('nasabah/delete/{no}', [AccountOfficerController::class, 'deleteNasabah'])->name('nasabah.delete');
 });
 
 

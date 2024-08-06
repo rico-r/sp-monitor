@@ -10,7 +10,7 @@
     <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
     <div class="flex justify-between mb-4">
     <div>
-        <form method="GET" action="{{ route('supervisor.dashboard') }}">
+        <form method="GET" action="{{ route('admin-kas.dashboard') }}">
             <select name="date_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                 <option value="">Last 30 days</option>
                 <option value="last_7_days" {{ request('date_filter') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
@@ -21,8 +21,22 @@
         </form>
     </div>
     <div>
-        <form method="GET" action="{{ route('search') }}">
+        <form method="GET" action="{{ route('admin-kas.dashboard') }}">
             <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Search by name, branch, region" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+            
+            <select name="cabang_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                <option value="">Select Cabang</option>
+                @foreach($cabangs as $cabang)
+                    <option value="{{ $cabang->id_cabang }}" {{ request('cabang_filter') == $cabang->id_cabang ? 'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
+                @endforeach
+            </select>
+
+            <select name="wilayah_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                <option value="">Select Wilayah</option>
+                @foreach($wilayahs as $wilayah)
+                    <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter') == $wilayah->id_wilayah ? 'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
+                @endforeach
+            </select>
         </form>
     </div>
 </div>
@@ -53,7 +67,6 @@
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
-                        <!-- <a href="{{ route('nasabah.edit', ['no' => $nasabah->no]) }}" class="btn btn-primary">Edit</a> -->
                         <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#detailModal">Detail</button>
                         <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
                     </td>
@@ -73,7 +86,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addForm" method="POST" action="{{ route('nasabah.store') }}">
+            <form id="addForm" method="POST" action="{{ route('admin-kas.nasabah.add') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
@@ -128,7 +141,6 @@
                             @endforeach
                         </select>
                     </div>
-                    <input type="hidden" id="addIdAdminKas" name="id_admin_kas" value="{{ $currentUser->pegawaiAdminKas->id_admin_kas?? '' }}">
 
                     <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
@@ -136,8 +148,12 @@
                         @foreach($accountOfficers as $accountOfficer)
                                 <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
                             @endforeach
-
                         </select>
+                    </div>
+                    <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
+                    <div class="form-group">
+                        <label for="admin_kas">Admin Kas</label>
+                        <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -149,7 +165,6 @@
     </div>
 </div>
 
-<!-- Modal for Edit -->
 <!-- Modal for Edit -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
@@ -164,7 +179,6 @@
                 @csrf
                 @method('POST')
                 <div class="modal-body">
-                    <!-- Form fields -->
                     <div class="form-group">
                         <label for="editNo">No</label>
                         <input type="text" class="form-control" id="editNo" name="no" readonly>
@@ -225,6 +239,11 @@
                             @endforeach
                         </select>
                     </div>
+                    <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
+                    <div class="form-group">
+                        <label for="admin_kas">Admin Kas</label>
+                        <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -234,7 +253,6 @@
         </div>
     </div>
 </div>
-
 
 <!-- Modal for Detail -->
 <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -285,15 +303,19 @@
                 </div>
                 <div class="form-group">
                     <label for="detailCabang">Cabang</label>
-                    <input type="text" class="form-control" id="detailCabang" name="detailCabang" readonly>
+                    <input type="text" class="form-control" id="detailCabang" name="id_cabang" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailWilayah">Wilayah</label>
-                    <input type="text" class="form-control" id="detailWilayah" name="detailWilayah" readonly>
+                    <input type="text" class="form-control" id="detailWilayah" name="id_wilayah" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailAccountOfficer">Account Officer</label>
-                    <input type="text" class="form-control" id="detailAccountOfficer" name="account_officer" readonly>
+                    <input type="text" class="form-control" id="detailAccountOfficer" name="id_account_officer" readonly>
+                </div>
+                <div class="form-group">
+                    <label for="admin_kas">Admin Kas</label>
+                    <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
                 </div>
             </div>
             <div class="modal-footer">
@@ -308,7 +330,7 @@
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Hapus Data Nasabah</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus Data Nasabah</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -317,8 +339,7 @@
                 @csrf
                 @method('DELETE')
                 <div class="modal-body">
-                    <p>Apakah Anda yakin ingin menghapus data ini?</p>
-                    <input type="hidden" id="deleteNo" name="no">
+                    <p>Apakah Anda yakin ingin menghapus data nasabah ini?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -357,7 +378,7 @@
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');
             $.ajax({
-                url: '/supervisor/nasabah/edit/' + no,
+                url: '/admin-kas/nasabah/edit/' + no,
         method: 'GET',
         success: function(data) {
             // Populate the modal with data
@@ -375,7 +396,7 @@
             $('#editAccountOfficer').val(data.id_account_officer);
 
             // Set the form action to the update route with the correct no
-            $('#editForm').attr('action', '/adminkas/nasabah/update/' + no);
+            $('#editForm').attr('action', '/admin-kas/nasabah/update/' + no);
             $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
 
 
@@ -409,13 +430,14 @@
             // $('#detailAccountOfficer').val(data.user.name);
             $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
 
+
         });
 
         // Delete button click event
         $('.delete-btn').on('click', function() {
             var no = $(this).data('no');
             $('#deleteNo').val(no);
-            $('#deleteForm').attr('action', '/nasabah/delete/' + no);
+            $('#deleteForm').attr('action', '/admin-kas/nasabah/delete/' + no);
         });
 
         // Calculate total for add form
