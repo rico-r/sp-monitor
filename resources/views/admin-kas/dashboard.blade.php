@@ -150,10 +150,10 @@
                             @endforeach
                         </select>
                     </div>
-                    <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
                     <div class="form-group">
                         <label for="admin_kas">Admin Kas</label>
                         <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                        <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -314,8 +314,8 @@
                     <input type="text" class="form-control" id="detailAccountOfficer" name="id_account_officer" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="admin_kas">Admin Kas</label>
-                    <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                    <label for="detailAdminKas">Admin Kas</label>
+                    <input type="text" class="form-control" id="detailAdminKas" readonly>
                 </div>
             </div>
             <div class="modal-footer">
@@ -394,6 +394,7 @@
             $('#editCabang').val(data.nama_cabang);
             $('#editWilayah').val(data.nama_wilayah);
             $('#editAccountOfficer').val(data.id_account_officer);
+            $('#detailAdminKas').val(data.adminKas ? data.adminKas.name : '');
 
             // Set the form action to the update route with the correct no
             $('#editForm').attr('action', '/admin-kas/nasabah/update/' + no);
@@ -429,6 +430,7 @@
             $('#detailWilayah').val(data.wilayah.nama_wilayah);
             // $('#detailAccountOfficer').val(data.user.name);
             $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
+            $('#detailAdminKas').val(data.admin_kas ? data.admin_kas.name : '');
 
 
         });
