@@ -9,7 +9,7 @@
     </div>
     @endif
 
-    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
+    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">ACCOUNT OFFICER</button>
 
     <table class="table table-striped">
         <thead>

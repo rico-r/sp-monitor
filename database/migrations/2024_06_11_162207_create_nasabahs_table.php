@@ -24,13 +24,13 @@ return new class extends Migration
             $table->unsignedBigInteger('id_cabang');
             $table->unsignedBigInteger('id_wilayah');
             $table->unsignedBigInteger('id_account_officer');
-            $table->unsignedBigInteger('id_admin_kas');
+            $table->unsignedBigInteger('id_admin_kas')->nullable();
             $table->timestamps();
 
             $table->foreign('id_cabang')->references('id_cabang')->on('cabangs')->onDelete('cascade');
             $table->foreign('id_wilayah')->references('id_wilayah')->on('wilayahs')->onDelete('cascade');
-            $table->foreign('id_account_officer')->references('id_account_officer')->on('pegawai_account_offices')->onDelete('cascade');
-            $table->foreign('id_admin_kas')->references('id_admin_kas')->on('pegawai_admin_kas')->onDelete('cascade');
+            $table->foreign('id_account_officer')->references('id')->on('users')->onDelete('cascade');
+            $table->foreign('id_admin_kas')->references('id')->on('users')->onDelete('cascade');
         });
     }
 

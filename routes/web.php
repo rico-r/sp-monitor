@@ -76,25 +76,34 @@ Route::prefix('kepala-cabang')
         Route::get('dashboard', [KepalaCabangController::class, 'dashboard'])->name('dashboard');
 });
 
+// Routes for supervisor
 Route::prefix('supervisor')
     ->name('supervisor.')
     ->middleware('jabatan:3')
     ->group(function () {
-        Route::get('dashboard', [SupervisorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/dashboard', [SupervisorController::class, 'dashboard'])->name('dashboard');
+    Route::get('/nasabah/edit/{no}', [SupervisorController::class, 'editNasabah'])->name('nasabah.edit');
+    Route::put('/nasabah/update/{no}', [SupervisorController::class, 'update'])->name('nasabah.update');
+    Route::post('nasabah/add', [SupervisorController::class, 'addNasabah'])->name('nasabah.add');
+
 });
 
 Route::prefix('admin-kas')
     ->name('admin-kas.')
     ->middleware('jabatan:4')
     ->group(function () {
-        Route::get('dashboard', [AdminKasController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [AdminKasController::class, 'dashboard'])->name('dashboard');
+        Route::get('/nasabah/edit/{no}', [AdminKasController::class, 'editNasabah'])->name('nasabah.edit');
+        Route::put('/nasabah/update/{no}', [AdminKasController::class, 'update'])->name('nasabah.update');
 });
 
 Route::prefix('account-officer')
     ->name('account-officer.')
     ->middleware('jabatan:5')
     ->group(function () {
-        Route::get('dashboard', [AccountOfficerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [AccountOfficerController::class, 'dashboard'])->name('dashboard');
+        Route::get('/nasabah/edit/{no}', [AccountOfficerController::class, 'editNasabah'])->name('nasabah.edit');
+        Route::put('/nasabah/update/{no}', [AccountOfficerController::class, 'update'])->name('nasabah.update');
 });
 
 

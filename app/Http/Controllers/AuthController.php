@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use App\Models\User;
+use App\Models\Key;
 use App\Models\Jabatan;
 use App\Models\VerifyUser;
 use Illuminate\Support\Facades\Hash;
@@ -138,71 +139,137 @@ class AuthController extends Controller
      * @return response()
      */
     public function postRegister(Request $request)
-    {
-        // Log the incoming request data
-        Log::info('Register request received', $request->all());
+{
+    // Log the incoming request data
+    Log::info('Register request received', $request->all());
 
-        try {
-            // Validasi data pendaftaran
-            $validated = $request->validate([
-                'name'             => 'required|max:255',
-                'email'            => 'required|email|unique:users|max:255',
-                'nip'              => 'required',
-                'password'         => 'required|min:6',
-                'confirm_password' => 'required|same:password',
-                'jabatan'          => 'required|exists:jabatans,id_jabatan', // Validasi jika jabatan ada di tabel jabatans
-            ]);
+    try {
+        // Validate registration data
+        $validated = $request->validate([
+            'name'             => 'required|max:255',
+            'email'            => 'required|email|unique:users|max:255',
+            'key'              => 'required|exists:keys,key',
+            'password'         => 'required|min:6',
+            'confirm_password' => 'required|same:password',
+        ]);
 
-            // Log validated data
-            Log::info('Validated registration data', $validated);
+        // Log validated data
+        Log::info('Validated registration data', $validated);
 
-            // Simpan data pengguna baru
-            $user = new User;
-            $user->name        = $validated['name'];
-            $user->email       = $validated['email'];
-            $user->nip         = $validated['nip'];
-            $user->password    = Hash::make($validated['password']);
-            $user->jabatan_id  = $validated['jabatan']; // Simpan jabatan_id ke tabel users
-            $user->save();
+        // Get the jabatan_id from the key
+        $key = Key::where('key', $validated['key'])->first();
 
-            // Log the newly created user
-            Log::info('New user created', ['user_id' => $user->id]);
+        // Save new user data
+        $user = new User;
+        $user->name        = $validated['name'];
+        $user->email       = $validated['email'];
+        $user->key        = $key->key;
+        $user->jabatan_id  = $key->jabatan;
+        $user->password    = Hash::make($validated['password']);
+        $user->save();
 
-            // Generate a token
-            $token = Str::random(64);
-            UserToken::create([
-                'user_id' => $user->id,
-                'token'   => $token,
-            ]);
+        // Log the newly created user
+        Log::info('New user created', ['user_id' => $user->id]);
 
-            // Log token generation
-            Log::info('Token generated', ['user_id' => $user->id, 'token' => $token]);
+        // Generate a token
+        $token = Str::random(64);
+        UserToken::create([
+            'user_id' => $user->id,
+            'token'   => $token,
+        ]);
 
-            // Send verification email
-            Mail::send('emails.verify_email', ['token' => $token], function ($message) use ($request) {
-                $message->to($request->email);
-                $message->subject('Email Verification Mail');
-            });
+        // Log token generation
+        Log::info('Token generated', ['user_id' => $user->id, 'token' => $token]);
 
-            // Log email sending
-            Log::info('Verification email sent', ['to' => $request->email]);
+        // Send verification email
+        Mail::send('emails.verify_email', ['token' => $token], function ($message) use ($request) {
+            $message->to($request->email);
+            $message->subject('Email Verification Mail');
+        });
 
-            return redirect("register")->withSuccess('A verification email is sent to ' . $request->email . ', please click the link in the email to verify your email.');
-        } catch (Exception $e) {
-            // Log the error and exception
-            Log::error('Error during registration', [
-                'message'   => $e->getMessage(),
-                'trace'     => $e->getTraceAsString(),
-                'request'   => $request->all(),
-                'code'      => $e->getCode()
-            ]);
+        // Log email sending
+        Log::info('Verification email sent', ['to' => $request->email]);
 
-            return redirect("register")->withErrors([
-                'error'     => 'Some error occurred, please try later',
-                'exception' => $e->getMessage()
-            ]);
-        }
+        return redirect("register")->withSuccess('Verifikasi Email telah dikirim ke ' . $request->email . ', mohon klik link di email untuk verifikasi Email anda.');
+    } catch (Exception $e) {
+        // Log the error and exception
+        Log::error('Error during registration', [
+            'message'   => $e->getMessage(),
+            'trace'     => $e->getTraceAsString(),
+            'request'   => $request->all(),
+            'code'      => $e->getCode()
+        ]);
+
+        return redirect("register")->withErrors([
+            'error'     => 'Some error occurred, please try later',
+            'exception' => $e->getMessage()
+        ]);
     }
+}
+    // public function postRegister(Request $request)
+    // {
+    //     // Log the incoming request data
+    //     Log::info('Register request received', $request->all());
+
+    //     try {
+    //         // Validasi data pendaftaran
+    //         $validated = $request->validate([
+    //             'name'             => 'required|max:255',
+    //             'email'            => 'required|email|unique:users|max:255',
+    //             'nip'              => 'required',
+    //             'password'         => 'required|min:6',
+    //             'confirm_password' => 'required|same:password',
+    //         ]);
+
+    //         // Log validated data
+    //         Log::info('Validated registration data', $validated);
+
+    //         // Simpan data pengguna baru
+    //         $user = new User;
+    //         $user->name        = $validated['name'];
+    //         $user->email       = $validated['email'];
+    //         $user->nip         = $validated['nip'];
+    //         $user->password    = Hash::make($validated['password']);
+    //         $user->save();
+
+    //         // Log the newly created user
+    //         Log::info('New user created', ['user_id' => $user->id]);
+
+    //         // Generate a token
+    //         $token = Str::random(64);
+    //         UserToken::create([
+    //             'user_id' => $user->id,
+    //             'token'   => $token,
+    //         ]);
+
+    //         // Log token generation
+    //         Log::info('Token generated', ['user_id' => $user->id, 'token' => $token]);
+
+    //         // Send verification email
+    //         Mail::send('emails.verify_email', ['token' => $token], function ($message) use ($request) {
+    //             $message->to($request->email);
+    //             $message->subject('Email Verification Mail');
+    //         });
+
+    //         // Log email sending
+    //         Log::info('Verification email sent', ['to' => $request->email]);
+
+    //         return redirect("register")->withSuccess('A verification email is sent to ' . $request->email . ', please click the link in the email to verify your email.');
+    //     } catch (Exception $e) {
+    //         // Log the error and exception
+    //         Log::error('Error during registration', [
+    //             'message'   => $e->getMessage(),
+    //             'trace'     => $e->getTraceAsString(),
+    //             'request'   => $request->all(),
+    //             'code'      => $e->getCode()
+    //         ]);
+
+    //         return redirect("register")->withErrors([
+    //             'error'     => 'Some error occurred, please try later',
+    //             'exception' => $e->getMessage()
+    //         ]);
+    //     }
+    // }
     /**
      * Write code on Method
      *

@@ -26,13 +26,15 @@ class DatabaseSeeder extends Seeder
             CabangSeeder::class,
             JabatanSeeder::class,
             UserSeeder::class,
+            KeySeeder::class,
+            
+            // NasabahSeeder::class,
+            // KepalaCabangSeeder::class,
+            // SupervisorSeeder::class,
+            // AdminKasSeeder::class,
+            // AccountOfficerSeeder::class,
             NasabahSeeder::class,
-            KepalaCabangSeeder::class,
-            SupervisorSeeder::class,
-            AdminKasSeeder::class,
-            AccountOfficerSeeder::class,
-            NasabahSeeder::class,
-            NipSeeder::class
+            // NipSeeder::class
         ]);
     
     }

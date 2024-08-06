@@ -30,11 +30,11 @@
                             </div>
                         </div>
                         <div class="form-group mb-3">
-                            <label for="text">NIP</label>
-                            <input type="text" name="nip" placeholder="nip" class="form-control"
-                                value="{{ old('nip') }}" />
+                            <label for="text">Key</label>
+                            <input type="text" name="key" placeholder="Masukkan Key" class="form-control"
+                                value="{{ old('key') }}" />
                             <div class="error">
-                                @error('nip')
+                                @error('key')
                                     {{ $message }}
                                 @enderror
                             </div>
@@ -71,21 +71,12 @@
                                 @enderror
                             </div>
                         </div>
-                        <div>
-                            <label>Jabatan:</label>
-                            <select name="jabatan" required>
-                                <option value="">Select Jabatan</option>
-                                @foreach($jabatans as $jabatan)
-                                    <option value="{{ $jabatan->id_jabatan }}" {{ old('jabatan_id') == $jabatan->id_jabatan ? 'selected' : '' }}>{{ $jabatan->nama_jabatan }}</option>
-                                @endforeach
-                            </select>
-                        </div>
                         <div class="form-group d-flex justify-content-end">
-                            <button type="submit" class="submit-btn">Create My Account</button>
+                            <button type="submit" class="submit-btn">Buat Akun</button>
                         </div>
                         <div id ="loader"></div>
                         <div class="mt-5">
-                            <p>Already have an account? <a href="{{ route('login') }}" class="create_now">Login</a></p>
+                            <p>Sudah punya akun? <a href="{{ route('login') }}" class="create_now">Login</a></p>
                         </div>
                     </form>
                 </div>

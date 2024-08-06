@@ -1,7 +1,5 @@
 @extends("layouts.master")
 @section("main-content")
-@extends("layouts.master")
-@section("main-content")
 <div class="container home">
     @if (session("success"))
     <div class="alert alert-success">
@@ -10,8 +8,26 @@
     @endif
 
     <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
-
-    <table class="table table-striped">
+    <div class="flex justify-between mb-4">
+    <div>
+        <form method="GET" action="{{ route('supervisor.dashboard') }}">
+            <select name="date_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                <option value="">Last 30 days</option>
+                <option value="last_7_days" {{ request('date_filter') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
+                <option value="last_30_days" {{ request('date_filter') == 'last_30_days' ? 'selected' : '' }}>Last 30 days</option>
+                <option value="last_month" {{ request('date_filter') == 'last_month' ? 'selected' : '' }}>Last month</option>
+                <option value="last_year" {{ request('date_filter') == 'last_year' ? 'selected' : '' }}>Last year</option>
+            </select>
+        </form>
+    </div>
+    <div>
+        <form method="GET" action="{{ route('search') }}">
+            <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Search by name, branch, region" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+        </form>
+    </div>
+</div>
+    
+    <table class="table table-striped" id="nasabah-table">
         <thead>
             <tr>
                 <th>No</th>
@@ -117,11 +133,9 @@
                     <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
                         <select class="form-control" id="addAccountOfficer" name="id_account_officer" required>
-                        @foreach($nasabahs as $nasabah)
-                            @if($nasabah->accountofficer)
-                                <option value="{{ $nasabah->accountofficer->id_account_officer }}">{{ $nasabah->accountofficer->nama_account_officer }}</option>
-                            @endif
-                        @endforeach
+                        @foreach($accountOfficers as $accountOfficer)
+                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                            @endforeach
 
                         </select>
                     </div>
@@ -136,6 +150,7 @@
 </div>
 
 <!-- Modal for Edit -->
+<!-- Modal for Edit -->
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -148,8 +163,8 @@
             <form id="editForm" method="POST" action="">
                 @csrf
                 @method('POST')
-                 
                 <div class="modal-body">
+                    <!-- Form fields -->
                     <div class="form-group">
                         <label for="editNo">No</label>
                         <input type="text" class="form-control" id="editNo" name="no" readonly>
@@ -205,10 +220,8 @@
                     <div class="form-group">
                         <label for="editAccountOfficer">Account Officer</label>
                         <select class="form-control" id="editAccountOfficer" name="id_account_officer" required>
-                        @foreach($nasabahs as $nasabah)
-        
-                                <option value="{{ $nasabah->accountofficer->id_account_officer }}">{{ $nasabah->accountofficer->nama_account_officer }}</option>
-                            
+                            @foreach($accountOfficers as $accountOfficer)
+                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -221,6 +234,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- Modal for Detail -->
 <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
@@ -271,11 +285,11 @@
                 </div>
                 <div class="form-group">
                     <label for="detailCabang">Cabang</label>
-                    <input type="text" class="form-control" id="detailCabang" name="cabang" readonly>
+                    <input type="text" class="form-control" id="detailCabang" name="detailCabang" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailWilayah">Wilayah</label>
-                    <input type="text" class="form-control" id="detailWilayah" name="wilayah" readonly>
+                    <input type="text" class="form-control" id="detailWilayah" name="detailWilayah" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailAccountOfficer">Account Officer</label>
@@ -316,30 +330,54 @@
 </div>
 
 <script>
-    $(document).ready(function() {
+    document.getElementById('search').addEventListener('keyup', function (event) {
+                            const query = event.target.value;
+                            const table = document.getElementById('nasabah-table');
+                            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+                            for (let i = 0; i < rows.length; i++) {
+                                const cells = rows[i].getElementsByTagName('td');
+                                let match = false;
+
+                                for (let j = 0; j < cells.length; j++) {
+                                    if (cells[j].innerText.toLowerCase().includes(query.toLowerCase())) {
+                                        match = true;
+                                        break;
+                                    }
+                                }
+
+                                if (match) {
+                                    rows[i].style.display = '';
+                                } else {
+                                    rows[i].style.display = 'none';
+                                }
+                            }
+                        });
         // Edit button click event
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');
             $.ajax({
-                url: '/nasabah/edit/' + no,
-                method: 'GET',
-                success: function(data) {
-                    // Mengisi data ke dalam modal
-                    $('#editNo').val(data.no);
-                    $('#editNama').val(data.nama);
-                    $('#editPokok').val(data.pokok);
-                    $('#editBunga').val(data.bunga);
-                    $('#editDenda').val(data.denda);
-                    $('#editTotal').val(data.total);
-                    $('#editKeterangan').val(data.keterangan);
-                    $('#editTtd').val(data.ttd);
-                    $('#editKembali').val(data.kembali);
-                    $('#editCabang').val(data.id_cabang);
-                    $('#editWilayah').val(data.id_wilayah);
-                    $('#editAccountOfficer').val(data.id_account_officer);
+                url: '/supervisor/nasabah/edit/' + no,
+        method: 'GET',
+        success: function(data) {
+            // Populate the modal with data
+            $('#editNo').val(data.no);
+            $('#editNama').val(data.nama);
+            $('#editPokok').val(data.pokok);
+            $('#editBunga').val(data.bunga);
+            $('#editDenda').val(data.denda);
+            $('#editTotal').val(data.total);
+            $('#editKeterangan').val(data.keterangan);
+            $('#editTtd').val(data.ttd);
+            $('#editKembali').val(data.kembali);
+            $('#editCabang').val(data.nama_cabang);
+            $('#editWilayah').val(data.nama_wilayah);
+            $('#editAccountOfficer').val(data.id_account_officer);
 
-                    // Menetapkan action form ke rute update dengan parameter no
-                    $('#editForm').attr('action', '{{ route("nasabah.update", ":no") }}'.replace(':no', no));
+            // Set the form action to the update route with the correct no
+            $('#editForm').attr('action', '/adminkas/nasabah/update/' + no);
+            $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
+
 
                     // Menampilkan modal
                     $('#editModal').modal('show');
@@ -355,6 +393,7 @@
             var no = $(this).data('no');
             var nasabah = @json($nasabahs->keyBy('no'));
             var data = nasabah[no];
+            
 
             $('#detailNo').val(data.no);
             $('#detailNama').val(data.nama);
@@ -365,9 +404,11 @@
             $('#detailKeterangan').val(data.keterangan);
             $('#detailTtd').val(data.ttd);
             $('#detailKembali').val(data.kembali);
-            $('#detailCabang').val(data.id_cabang);
-            $('#detailWilayah').val(data.id_wilayah);
-            $('#detailAccountOfficer').val(data.account_officer.nama_account_officer);
+            $('#detailCabang').val(data.cabang.nama_cabang);
+            $('#detailWilayah').val(data.wilayah.nama_wilayah);
+            // $('#detailAccountOfficer').val(data.user.name);
+            $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
+
         });
 
         // Delete button click event
@@ -398,7 +439,6 @@
         // Attach events for calculating total on input change
         $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
         $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
-    });
 </script>
 
 @endsection

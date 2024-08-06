@@ -4,7 +4,9 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use App\Models\Nip;
+use App\Models\Key;
 use App\Models\Jabatan;
+use App\Models\Nasabah;
 use App\Models\Wilayah;
 use App\Models\PegawaiAdminKas;
 use App\Models\PegawaiSupervisor;
@@ -19,16 +21,21 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
-    
+    protected $table = 'users';
     public function jabatan()
     {
         return $this->belongsTo(Jabatan::class, 'jabatan_id');
     }
     
 
-    public function nip()
+    // public function nip()
+    // {
+    //     return $this->belongsTo(Nip::class, 'nip', 'nip');
+    // }
+
+    public function key()
     {
-        return $this->belongsTo(Nip::class, 'nip', 'nip');
+        return $this->belongsTo(Key::class, 'key', 'key');
     }
 
     public function pegawaiKepalaCabang()
@@ -58,15 +65,23 @@ class User extends Authenticatable
     }
     public function cabang()
     {
-        return $this->belongsTo(Wilayah::class, 'id_cabang');
+        return $this->belongsTo(Cabang::class, 'id_cabang');
     }
+    protected $primaryKey = 'id'; // Atur primary key jika perlu
 
+    public function nasabah()
+    {
+        return $this->belongsTo(Nasabah::class, 'no','id');
+    }
     protected $fillable = [
         'name',
         'email',
         'password',
         'jabatan_id',
-        'nip'
+        'id_cabang',
+        'id_wilayah',
+        'key',
+        'status'
     ];
 
     protected $hidden = [
