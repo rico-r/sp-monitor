@@ -60,17 +60,21 @@
                     <td>{{ $nasabah->total }}</td>
                     <td>{{ $nasabah->keterangan }}</td>
                     <td>
-                        @php
-                            $progresSp = $suratPeringatans->firstWhere('no', $nasabah->no);
-                        @endphp
-                         @if($progresSp)
-                        <span class="tingkat-{{ $progresSp->tingkat }}">
-                            {{-- Optional visual indicators here --}}
-                        </span> 
-                        Tingkat {{ $progresSp->tingkat }}
-                    @else
-                        N/A
-                    @endif
+                    @php
+                $matchingSp = $suratPeringatans->where('no', $nasabah->no)->sortByDesc('tanggal')->values();
+    $totalSp = $matchingSp->count();
+    @endphp
+    @if($totalSp > 0)
+        <div class="sp-indicators">
+            @for($i = $totalSp - 1; $i >= 0; $i--)
+                <span class="tingkat-{{ $matchingSp[$i]->tingkat }}" 
+                      title="Tingkat {{ $matchingSp[$i]->tingkat }} - {{ $matchingSp[$i]->tanggal }}">
+                </span>
+            @endfor
+        </div>
+    @else
+        N/A
+    @endif
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>

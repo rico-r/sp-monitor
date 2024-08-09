@@ -96,37 +96,29 @@ ul {
     z-index: 99999;
 }
 
-@media only screen and (max-width: 768px) {
-    .custom-btn {
-        background-color: var(--orange);
-        color: #fff !important;
-        padding: 8px 7px !important;
-        border-radius: 7px;
+
+    .sp-indicators {
+        display: flex;
+        flex-direction: row;
+        gap: 5px; /* Adjust this value to control spacing between indicators */
     }
-    .tingkat-1 {
+
+    .tingkat-1, .tingkat-2, .tingkat-3 {
         width: 10px;
         height: 10px;
-        background-color: green;
         border-radius: 50%;
         display: inline-block;
+    }
+
+    .tingkat-1 {
+        background-color: green;
     }
 
     .tingkat-2 {
-        width: 10px;
-        height: 10px;
         background-color: orange;
-        border-radius: 50%;
-        display: inline-block;
     }
 
     .tingkat-3 {
-        width: 10px;
-        height: 10px;
         background-color: red;
-        border-radius: 50%;
-        display: inline-block;
     }
-
-
-}
 
