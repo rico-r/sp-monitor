@@ -103,5 +103,30 @@ ul {
         padding: 8px 7px !important;
         border-radius: 7px;
     }
+    .tingkat-1 {
+        width: 10px;
+        height: 10px;
+        background-color: green;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .tingkat-2 {
+        width: 10px;
+        height: 10px;
+        background-color: orange;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+    .tingkat-3 {
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        border-radius: 50%;
+        display: inline-block;
+    }
+
+
 }
 

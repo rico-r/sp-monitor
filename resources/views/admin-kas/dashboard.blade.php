@@ -61,9 +61,16 @@
                     <td>{{ $nasabah->keterangan }}</td>
                     <td>
                         @php
-                            $progresSp = $suratPeringatans->firstWhere('nasabah_no', $nasabah->no);
+                            $progresSp = $suratPeringatans->firstWhere('no', $nasabah->no);
                         @endphp
-                        {{ $progresSp ? $progresSp->tingkat : 'N/A' }}
+                         @if($progresSp)
+                        <span class="tingkat-{{ $progresSp->tingkat }}">
+                            {{-- Optional visual indicators here --}}
+                        </span> 
+                        Tingkat {{ $progresSp->tingkat }}
+                    @else
+                        N/A
+                    @endif
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>

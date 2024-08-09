@@ -5,7 +5,7 @@
                 <div class="col-md-12">
                     <div class="navbar_inner">
                         <nav class="navbar navbar-expand-lg">
-                            <a class="navbar-brand" href="{{ route('login') }}">
+                            <a class="navbar-brand" href="#">
                                 Monitoring SP
                             </a>
                             <ul class="d-flex justify-content-end w-100">

@@ -96,6 +96,7 @@ Route::prefix('admin-kas')
     ->group(function () {
         Route::get('/dashboard', [AdminKasController::class, 'dashboard'])->name('dashboard');
         Route::get('/nasabah/edit/{no}', [AdminKasController::class, 'editNasabah'])->name('nasabah.edit');
+        Route::get('/admin-kas/search', [AdminKasController::class, 'search'])->name('admin-kas.search');
         Route::put('/nasabah/update/{no}', [AdminKasController::class, 'update'])->name('nasabah.update');
         Route::post('nasabah/add', [AdminKasController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{no}', [AdminKasController::class, 'deleteNasabah'])->name('nasabah.delete');
