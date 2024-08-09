@@ -86,7 +86,7 @@ class AdminKasController extends Controller
 
     $nasabahs = $query->get();
 
-    $suratPeringatans = SuratPeringatan::select('no', 'tingkat')->get();
+    $suratPeringatans = SuratPeringatan::select('no', 'tingkat')->get()->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
     $currentUser = auth()->user();

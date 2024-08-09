@@ -89,8 +89,7 @@ class AccountOfficerController extends Controller
 
     $suratPeringatans = SuratPeringatan::select('no', 'tingkat', 'tanggal', 'bukti_gambar', 'scan_pdf')
         ->latest('tanggal')
-        ->get()
-        ->unique('no');
+        ->get();
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
     $currentUser = auth()->user();
