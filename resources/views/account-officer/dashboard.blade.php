@@ -45,7 +45,7 @@
         <thead>
             <tr>
                 <th>Nama</th>
-                <th>Tingkat SP</th>
+                <th>Progress SP</th>
                 <th>Tanggal</th>
                 <th>Scan PDF</th>
             </tr>
@@ -98,7 +98,7 @@
 
                     <!-- Tingkat Field -->
                     <div class="form-group">
-                        <label for="addTingkat">Tingkat SP</label>
+                        <label for="addTingkat">Progress SP</label>
                         <select class="form-control" id="addTingkat" name="tingkat" required>
                             <option value="1">1</option>
                             <option value="2">2</option>

@@ -151,6 +151,21 @@ public function addNasabah(Request $request)
             $nasabahData['bukti_gambar'] = $buktiGambarPath;
         }
 
+        //Handle limit
+        $existingEntries = SuratPeringatan::where('no', $nasabahData->nama)->count();
+
+        if ($existingEntries >= 3) {
+            return redirect()->back()->with('error', 'This Nasabah already has the maximum allowed Surat Peringatan entries (3).');
+        }
+
+        $duplicateTingkat = SuratPeringatan::where('no', $nasabahData->nama)
+            ->where('tingkat', $nasabahData['tingkat'])
+            ->exists();
+
+        if ($duplicateTingkat) {
+            return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} already exists for this Nasabah.");
+        }
+
         // Handle the PDF upload for 'scan_pdf'
         if ($request->hasFile('scan_pdf')) {
             $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
