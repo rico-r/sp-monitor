@@ -76,9 +76,7 @@
             <td>
                 {{-- Tampilkan gambar jika file adalah gambar --}}
                 @if(in_array(pathinfo($suratPeringatan->bukti_gambar, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif']))
-                    <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
-                        <img src="{{ asset('storage/' . $suratPeringatan->bukti_gambar) }}" alt="Bukti Gambar" style="width: 100px;">
-                    </a>
+                    <img src="{{ asset('storage/' . $suratPeringatan->bukti_gambar) }}" alt="Bukti Gambar" style="width: 50px;">
                 @else
                     No Image
                 @endif
@@ -220,23 +218,6 @@
     </div>
 </div>
 
-<!-- Modal -->
-<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="imageModalLabel">Bukti Gambar</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body text-center">
-        <img src="{{ asset('storage/' . $suratPeringatan->bukti_gambar) }}" alt="Bukti Gambar" class="img-fluid">
-      </div>
-    </div>
-  </div>
-</div>
-
-
-
 <script>
     document.getElementById('search').addEventListener('keyup', function (event) {
                             const query = event.target.value;
@@ -310,9 +291,5 @@
         // $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
         // $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
 </script>
-<script>
-    function showImageModal(imageUrl) {
-        document.getElementById('modalImage').src = imageUrl;
-    }
-</script>
+
 @endsection
