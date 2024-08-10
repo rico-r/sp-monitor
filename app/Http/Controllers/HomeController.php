@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Log;
 
 class HomeController extends Controller
 {
+  
     public function index()
     {
         $title = "Home";

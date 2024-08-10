@@ -7,7 +7,6 @@
     </div>
     @endif
 
-    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
     <div class="flex justify-between mb-4">
     <div>
         <form method="GET" action="{{ route('supervisor.dashboard') }}">
@@ -21,8 +20,22 @@
         </form>
     </div>
     <div>
-        <form method="GET" action="{{ route('search') }}">
+        <form method="GET" action="{{ route('supervisor.dashboard') }}">
             <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Search by name, branch, region" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+            
+            <select name="cabang_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                <option value="">Cabang</option>
+                @foreach($cabangs as $cabang)
+                    <option value="{{ $cabang->id_cabang }}" {{ request('cabang_filter') == $cabang->id_cabang ? 'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
+                @endforeach
+            </select>
+
+            <select name="wilayah_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                <option value="">Wilayah</option>
+                @foreach($wilayahs as $wilayah)
+                    <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter') == $wilayah->id_wilayah ? 'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
+                @endforeach
+            </select>
         </form>
     </div>
 </div>
@@ -52,10 +65,8 @@
                         {{ $progresSp ? $progresSp->tingkat : 'N/A' }}
                     </td>
                     <td>
-                        <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
                         <!-- <a href="{{ route('nasabah.edit', ['no' => $nasabah->no]) }}" class="btn btn-primary">Edit</a> -->
                         <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#detailModal">Detail</button>
-                        <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
                     </td>
                 </tr>
             @endforeach
@@ -136,7 +147,6 @@
                         @foreach($accountOfficers as $accountOfficer)
                                 <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
                             @endforeach
-
                         </select>
                     </div>
                 </div>
@@ -295,6 +305,10 @@
                     <label for="detailAccountOfficer">Account Officer</label>
                     <input type="text" class="form-control" id="detailAccountOfficer" name="account_officer" readonly>
                 </div>
+                <div class="form-group">
+                    <label for="detailAdminKas">Admin Kas</label>
+                    <input type="text" class="form-control" id="detailAdminKas" readonly>
+                </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -330,29 +344,42 @@
 </div>
 
 <script>
-    document.getElementById('search').addEventListener('keyup', function (event) {
-                            const query = event.target.value;
-                            const table = document.getElementById('nasabah-table');
-                            const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+    $(document).ready(function() {
+    $('#cabang_search').on('input', function() {
+        var query = $(this).val();
+        if (query.length > 2) {
+            $.ajax({
+                url: '{{ route("supervisor.dashboard") }}',
+                method: 'GET',
+                data: { query: query },
+                success: function(data) {
+                    $('#cabang_filter').empty();
+                    $('#cabang_filter').append('<option value="">Cabang</option>');
+                    $.each(data, function(key, value) {
+                        $('#cabang_filter').append('<option value="' + value.id_cabang + '">' + value.nama_cabang + '</option>');
+                    });
+                }
+            });
+        }
+    });
 
-                            for (let i = 0; i < rows.length; i++) {
-                                const cells = rows[i].getElementsByTagName('td');
-                                let match = false;
-
-                                for (let j = 0; j < cells.length; j++) {
-                                    if (cells[j].innerText.toLowerCase().includes(query.toLowerCase())) {
-                                        match = true;
-                                        break;
-                                    }
-                                }
-
-                                if (match) {
-                                    rows[i].style.display = '';
-                                } else {
-                                    rows[i].style.display = 'none';
-                                }
-                            }
-                        });
+    $('#wilayah_search').on('input', function() {
+        var query = $(this).val();
+        if (query.length > 2) {
+            $.ajax({
+                url: '{{ route("supervisor.dashboard") }}',
+                method: 'GET',
+                data: { query: query },
+                success: function(data) {
+                    $('#wilayah_filter').empty();
+                    $('#wilayah_filter').append('<option value="">Wilayah</option>');
+                    $.each(data, function(key, value) {
+                        $('#wilayah_filter').append('<option value="' + value.id_wilayah + '">' + value.nama_wilayah + '</option>');
+                    });
+                }
+            });
+        }
+    });
         // Edit button click event
         $('.edit-btn').on('click', function() {
             var no = $(this).data('no');
@@ -408,37 +435,13 @@
             $('#detailWilayah').val(data.wilayah.nama_wilayah);
             // $('#detailAccountOfficer').val(data.user.name);
             $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
+            $('#detailAdminKas').val(data.admin_kas ? data.admin_kas.name : '');
 
         });
-
-        // Delete button click event
-        $('.delete-btn').on('click', function() {
-            var no = $(this).data('no');
-            $('#deleteNo').val(no);
-            $('#deleteForm').attr('action', '/supervisor/nasabah/delete/' + no);
-        });
-
-        // Calculate total for add form
-        function calculateAddTotal() {
-            var pokok = parseFloat($('#addPokok').val()) || 0;
-            var bunga = parseFloat($('#addBunga').val()) || 0;
-            var denda = parseFloat($('#addDenda').val()) || 0;
-            var total = pokok + bunga + denda;
-            $('#addTotal').val(total);
-        }
-
-        // Calculate total for edit form
-        function calculateEditTotal() {
-            var pokok = parseFloat($('#editPokok').val()) || 0;
-            var bunga = parseFloat($('#editBunga').val()) || 0;
-            var denda = parseFloat($('#editDenda').val()) || 0;
-            var total = pokok + bunga + denda;
-            $('#editTotal').val(total);
-        }
-
         // Attach events for calculating total on input change
         $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
         $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
+    });
 </script>
 
 @endsection

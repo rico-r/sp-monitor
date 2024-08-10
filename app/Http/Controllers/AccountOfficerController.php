@@ -152,13 +152,13 @@ public function addNasabah(Request $request)
         }
 
         //Handle limit
-        $existingEntries = SuratPeringatan::where('no', $nasabahData->nama)->count();
+        $existingEntries = SuratPeringatan::where('no', $nasabahData['nama'])->count();
 
         if ($existingEntries >= 3) {
             return redirect()->back()->with('error', 'This Nasabah already has the maximum allowed Surat Peringatan entries (3).');
         }
 
-        $duplicateTingkat = SuratPeringatan::where('no', $nasabahData->nama)
+        $duplicateTingkat = SuratPeringatan::where('no', $nasabahData['nama'])
             ->where('tingkat', $nasabahData['tingkat'])
             ->exists();
 

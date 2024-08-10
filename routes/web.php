@@ -12,6 +12,7 @@ use App\Http\Controllers\DireksiController;
 use App\Http\Controllers\KepalaCabangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\FileController;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,6 @@ use App\Http\Controllers\AuthController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
-
 Route::get('home',[HomeController::class,'index'])->name('home');
 Route::get('dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
 Route::get('nasabah/edit/{no}', [HomeController::class, 'editNasabah'])->name('nasabah.edit');
@@ -52,7 +52,6 @@ Route::get('forget-password', [AuthController::class, 'forgetPasswordForm'])->na
 Route::post('forget-password', [AuthController::class, 'forgetPasswordPost'])->name('forget.password.post');
 Route::get('reset-password/{token}', [AuthController::class, 'resetPasswordForm'])->name('reset.password.get');
 Route::post('reset-password', [AuthController::class, 'resetPasswordPost'])->name('reset.password.post');
-
 Route::middleware('auth:web')->group(function(){
     
         Route::get('logout', [AuthController::class, 'logout'])->name('logout');

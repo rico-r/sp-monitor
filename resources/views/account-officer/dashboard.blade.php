@@ -48,6 +48,8 @@
                 <th>Progress SP</th>
                 <th>Tanggal</th>
                 <th>Scan PDF</th>
+                <th>Gambar</th>
+                <th>Aksi</th>
             </tr>
         </thead>
         @foreach($suratPeringatans as $suratPeringatan)
@@ -64,11 +66,27 @@
                 </td>
                 <td>{{ $suratPeringatan->tanggal }}</td>
                 <td>
-                    @if($suratPeringatan->scan_pdf)
-                        <a href="{{ asset('storage/' . $suratPeringatan->scan_pdf) }}" target="_blank">View PDF</a>
-                    @else
-                        No PDF
-                    @endif
+                {{-- Tampilkan link untuk file PDF --}}
+                @if(pathinfo($suratPeringatan->scan_pdf, PATHINFO_EXTENSION) === 'pdf')
+                    <a href="{{ asset('storage/' . $suratPeringatan->scan_pdf) }}" target="_blank">View PDF</a>
+                @else
+                    No PDF
+                @endif
+            </td>
+            <td>
+                {{-- Tampilkan gambar jika file adalah gambar --}}
+                @if(in_array(pathinfo($suratPeringatan->bukti_gambar, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif']))
+                    <a href="#" data-bs-toggle="modal" data-bs-target="#imageModal">
+                        <img src="{{ asset('storage/' . $suratPeringatan->bukti_gambar) }}" alt="Bukti Gambar" style="width: 100px;">
+                    </a>
+                @else
+                    No Image
+                @endif
+            </td>
+                <td>
+                    <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $suratPeringatan->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
+                    <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->nama }}" data-toggle="modal" data-target="#detailModal">Detail</button>
+                    <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $suratPeringatan->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
                 </td>
             </tr>
         @endforeach
@@ -138,153 +156,40 @@
     </div>
 </div>
 
-
-<!-- Modal for Edit -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editModalLabel">Edit Data Nasabah</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <form id="editForm" method="POST" action="">
-                @csrf
-                @method('POST')
-                <div class="modal-body">
-                    <div class="form-group">
-                        <label for="editNo">No</label>
-                        <input type="text" class="form-control" id="editNo" name="no" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="editNama">Nama</label>
-                        <input type="text" class="form-control" id="editNama" name="nama" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editPokok">Pokok</label>
-                        <input type="number" class="form-control" id="editPokok" name="pokok" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editBunga">Bunga</label>
-                        <input type="number" class="form-control" id="editBunga" name="bunga" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editDenda">Denda</label>
-                        <input type="number" class="form-control" id="editDenda" name="denda" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editTotal">Total</label>
-                        <input type="number" class="form-control" id="editTotal" name="total" readonly>
-                    </div>
-                    <div class="form-group">
-                        <label for="editKeterangan">Keterangan</label>
-                        <textarea class="form-control" id="editKeterangan" name="keterangan" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label for="editTtd">TTD</label>
-                        <input type="datetime-local" class="form-control" id="editTtd" name="ttd" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editKembali">Kembali</label>
-                        <input type="datetime-local" class="form-control" id="editKembali" name="kembali" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="editCabang">Cabang</label>
-                        <select class="form-control" id="editCabang" name="id_cabang" required>
-                            @foreach($cabangs as $cabang)
-                                <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editWilayah">Wilayah</label>
-                        <select class="form-control" id="editWilayah" name="id_wilayah" required>
-                            @foreach($wilayahs as $wilayah)
-                                <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editAccountOfficer">Account Officer</label>
-                        <select class="form-control" id="editAccountOfficer" name="id_account_officer" required>
-                            @foreach($accountOfficers as $accountOfficer)
-                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
-                </div>
-            </form>
-        </div>
-    </div>
-</div>
-
-<!-- Modal for Detail -->
+<!-- Detail Modal -->
 <div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="detailModalLabel">Detail Data Nasabah</h5>
+                <h5 class="modal-title" id="detailModalLabel">Detail Surat Peringatan</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
                 <div class="form-group">
-                    <label for="detailNo">No</label>
-                    <input type="text" class="form-control" id="detailNo" name="no" readonly>
-                </div>
-                <div class="form-group">
                     <label for="detailNama">Nama</label>
-                    <input type="text" class="form-control" id="detailNama" name="nama" readonly>
+                    <input type="text" class="form-control" id="detailNama" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="detailPokok">Pokok</label>
-                    <input type="number" class="form-control" id="detailPokok" name="pokok" readonly>
+                    <label for="detailTingkat">Progress SP</label>
+                    <input type="text" class="form-control" id="detailTingkat" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="detailBunga">Bunga</label>
-                    <input type="number" class="form-control" id="detailBunga" name="bunga" readonly>
+                    <label for="detailTanggal">Tanggal</label>
+                    <input type="text" class="form-control" id="detailTanggal" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="detailDenda">Denda</label>
-                    <input type="number" class="form-control" id="detailDenda" name="denda" readonly>
+                    <label for="detailPdf">Scan PDF</label>
+                    <p id="detailPdf"></p>
                 </div>
                 <div class="form-group">
-                    <label for="detailTotal">Total</label>
-                    <input type="number" class="form-control" id="detailTotal" name="total" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailKeterangan">Keterangan</label>
-                    <textarea class="form-control" id="detailKeterangan" name="keterangan" readonly></textarea>
-                </div>
-                <div class="form-group">
-                    <label for="detailTtd">TTD</label>
-                    <input type="datetime-local" class="form-control" id="detailTtd" name="ttd" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailKembali">Kembali</label>
-                    <input type="datetime-local" class="form-control" id="detailKembali" name="kembali" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailCabang">Cabang</label>
-                    <input type="text" class="form-control" id="detailCabang" name="id_cabang" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailWilayah">Wilayah</label>
-                    <input type="text" class="form-control" id="detailWilayah" name="id_wilayah" readonly>
-                </div>
-                <div class="form-group">
-                    <label for="detailAccountOfficer">Account Officer</label>
-                    <input type="text" class="form-control" id="detailAccountOfficer" readonly>
+                    <label for="detailGambar">Bukti Gambar</label>
+                    <img id="detailGambar" src="" alt="Bukti Gambar" style="max-width: 100%; margin-top: 10px;">
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
             </div>
         </div>
     </div>
@@ -315,6 +220,23 @@
     </div>
 </div>
 
+<!-- Modal -->
+<div class="modal fade" id="imageModal" tabindex="-1" aria-labelledby="imageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="imageModalLabel">Bukti Gambar</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="{{ asset('storage/' . $suratPeringatan->bukti_gambar) }}" alt="Bukti Gambar" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 <script>
     document.getElementById('search').addEventListener('keyup', function (event) {
                             const query = event.target.value;
@@ -339,60 +261,19 @@
                                 }
                             }
                         });
-        // Edit button click event
-        $('.edit-btn').on('click', function() {
-            var no = $(this).data('no');
-            $.ajax({
-                url: '/admin-kas/nasabah/edit/' + no,
-        method: 'GET',
-        success: function(data) {
-            // Populate the modal with data
-            $('#editNo').val(data.no);
-            $('#editNama').val(data.nama);
-            $('#editPokok').val(data.pokok);
-            $('#editBunga').val(data.bunga);
-            $('#editDenda').val(data.denda);
-            $('#editTotal').val(data.total);
-            $('#editKeterangan').val(data.keterangan);
-            $('#editTtd').val(data.ttd);
-            $('#editKembali').val(data.kembali);
-            $('#editCabang').val(data.nama_cabang);
-            $('#editWilayah').val(data.nama_wilayah);
-            $('#editAccountOfficer').val(data.id_account_officer);
-            $('#detailAccountOfficer').val(data.adminKas ? data.adminKas.name : '');
-
-            // Set the form action to the update route with the correct no
-            $('#editForm').attr('action', '/admin-kas/nasabah/update/' + no);
-            $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
-
-
-                    // Menampilkan modal
-                    $('#editModal').modal('show');
-                },
-                error: function(xhr) {
-                    alert('Terjadi kesalahan saat memuat data.');
-                }
-            });
-        });
 
         // Detail button click event
         $('.detail-btn').on('click', function() {
             var no = $(this).data('no');
-            var nasabah = @json($nasabahs->keyBy('no'));
+            var nasabah = @json($nasabahs->keyBy('nama'));
             var data = nasabah[no];
             
 
-            $('#detailNo').val(data.no);
             $('#detailNama').val(data.nama);
-            $('#detailPokok').val(data.pokok);
-            $('#detailBunga').val(data.bunga);
-            $('#detailDenda').val(data.denda);
-            $('#detailTotal').val(data.total);
-            $('#detailKeterangan').val(data.keterangan);
-            $('#detailTtd').val(data.ttd);
-            $('#detailKembali').val(data.kembali);
-            $('#detailCabang').val(data.cabang.nama_cabang);
-            $('#detailWilayah').val(data.wilayah.nama_wilayah);
+            $('#detailTingkat').val(data.tingkat);
+            $('#detailTanggal').val(data.tanggal);
+            $('#detailPdf').val(data.pdf);
+            $('#detailGambar').val(data.gambar);
             // $('#detailAccountOfficer').val(data.user.name);
             $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
             // $('#detailAccountOfficer').val(data.admin_kas ? data.admin_kas.name : '');
@@ -403,31 +284,35 @@
         // Delete button click event
         $('.delete-btn').on('click', function() {
             var no = $(this).data('no');
-            $('#deleteNo').val(no);
-            $('#deleteForm').attr('action', '/admin-kas/nasabah/delete/' + no);
+            $('#deleteNo').val(nama);
+            $('#deleteForm').attr('action', '/account-officer/nasabah/delete/' + nama);
         });
 
-        // Calculate total for add form
-        function calculateAddTotal() {
-            var pokok = parseFloat($('#addPokok').val()) || 0;
-            var bunga = parseFloat($('#addBunga').val()) || 0;
-            var denda = parseFloat($('#addDenda').val()) || 0;
-            var total = pokok + bunga + denda;
-            $('#addTotal').val(total);
-        }
+        // // Calculate total for add form
+        // function calculateAddTotal() {
+        //     var pokok = parseFloat($('#addPokok').val()) || 0;
+        //     var bunga = parseFloat($('#addBunga').val()) || 0;
+        //     var denda = parseFloat($('#addDenda').val()) || 0;
+        //     var total = pokok + bunga + denda;
+        //     $('#addTotal').val(total);
+        // }
 
         // Calculate total for edit form
-        function calculateEditTotal() {
-            var pokok = parseFloat($('#editPokok').val()) || 0;
-            var bunga = parseFloat($('#editBunga').val()) || 0;
-            var denda = parseFloat($('#editDenda').val()) || 0;
-            var total = pokok + bunga + denda;
-            $('#editTotal').val(total);
-        }
+        // function calculateEditTotal() {
+        //     var pokok = parseFloat($('#editPokok').val()) || 0;
+        //     var bunga = parseFloat($('#editBunga').val()) || 0;
+        //     var denda = parseFloat($('#editDenda').val()) || 0;
+        //     var total = pokok + bunga + denda;
+        //     $('#editTotal').val(total);
+        // }
 
         // Attach events for calculating total on input change
-        $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
-        $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
+        // $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
+        // $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
 </script>
-
+<script>
+    function showImageModal(imageUrl) {
+        document.getElementById('modalImage').src = imageUrl;
+    }
+</script>
 @endsection
