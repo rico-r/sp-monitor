@@ -73,6 +73,11 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Nasabah::class, 'no','id');
     }
+    public function infostatus()
+    {
+        return $this->belongsTo(Status::class, 'status', 'id');
+    }
+    
     protected $fillable = [
         'name',
         'email',
@@ -83,6 +88,7 @@ class User extends Authenticatable
         'key',
         'status'
     ];
+
 
     protected $hidden = [
         'password',
