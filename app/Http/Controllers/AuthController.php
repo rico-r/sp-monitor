@@ -89,16 +89,19 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
 
-        $user = User::where('email', $request->email)->first();
+        $user = User::where('email', $request->email)
+                ->join('statuses', 'users.status', '=', 'statuses.id')
+                ->select('users.*', 'status as status_name')
+                ->first();
 
-        if ($user) {
-            if ($user->aktif === null || $user->aktif == 2) {
-                $message = $user->aktif === null ? 'Akun belum diverifikasi.' : 'Akun belum diaktifkan.';
-                return back()->withInput()->withErrors([
-                    'email' => $message . ' Silakan hubungi administrator.',
-                ]);
-            }
+    if ($user) {
+        if ($user->status != 1) {
+            $message = $user->status === null ? 'Status akun tidak valid.' : 'Akun tidak aktif.';
+            return back()->withInput()->withErrors([
+                'email' => $message . ' Silakan hubungi administrator.',
+            ]);
         }
+    }
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
