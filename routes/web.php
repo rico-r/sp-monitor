@@ -109,7 +109,7 @@ Route::prefix('account-officer')
         Route::get('/nasabah/edit/{no}', [AccountOfficerController::class, 'editNasabah'])->name('nasabah.edit');
         Route::put('/nasabah/update/{no}', [AccountOfficerController::class, 'update'])->name('nasabah.update');
         Route::post('nasabah/add', [AccountOfficerController::class, 'addNasabah'])->name('nasabah.add');
-        Route::delete('surat-peringatan/delete/{id_peringatan}', [AccountOfficerController::class, 'deleteNasabah'])->name('nasabah.delete');
+        Route::delete('nasabah/delete/{id_peringatan}', [AccountOfficerController::class, 'deleteNasabah'])->name('nasabah.delete');
 });
 
 

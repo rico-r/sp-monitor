@@ -118,9 +118,9 @@ public function update(Request $request, $no)
         return redirect()->route('account-officer.dashboard')->with('success', 'Data berhasil di update');
     }
 
-public function deleteNasabah($no)
+public function deleteNasabah($id_peringatan)
 {
-    Nasabah::find($no)->delete();
+    SuratPeringatan::find($id_peringatan)->delete();
     return redirect()->route('account-officer.dashboard')->with('success', 'Data berhasil di hapus');
 }
 
@@ -138,8 +138,8 @@ public function addNasabah(Request $request)
         'nama' => 'required',
         'tingkat' => 'required',
         'tanggal' => 'required|date',
-        'bukti_gambar' => 'required|image|max:2048', // Validate image
-        'scan_pdf' => 'required|mimes:pdf|max:2048' // Validate PDF
+        'bukti_gambar' => 'required|image|max:2048', 
+        'scan_pdf' => 'required|mimes:pdf|max:2048'
     ]);
 
     try {

@@ -84,8 +84,7 @@
                 <td>
                     <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $suratPeringatan->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
                     <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->nama }}" data-toggle="modal" data-target="#detailModal">Detail</button>
-                    <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $suratPeringatan->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
-                </td>
+                    <button class="btn btn-danger btn-sm delete-btn" data-id_peringatan="{{ $suratPeringatan->id_peringatan }}" data-toggle="modal" data-target="#deleteModal">Delete</button>                </td>
             </tr>
         @endforeach
     </table>
@@ -206,6 +205,7 @@
             <form id="deleteForm" method="POST" action="">
                 @csrf
                 @method('DELETE')
+                <input type="hidden" id="deleteIdPeringatan" name="id_peringatan">
                 <div class="modal-body">
                     <p>Apakah Anda yakin ingin menghapus data nasabah ini?</p>
                 </div>
@@ -264,9 +264,11 @@
 
         // Delete button click event
         $('.delete-btn').on('click', function() {
-            var no = $(this).data('no');
-            $('#deleteNo').val(nama);
-            $('#deleteForm').attr('action', '/account-officer/nasabah/delete/' + nama);
+            console.log('Delete button clicked');
+            var id_peringatan = $(this).data('id_peringatan');
+            console.log('ID Peringatan:', id_peringatan);
+        
+        $('#deleteForm').attr('action', '/account-officer/surat-peringatan/delete/' + id_peringatan);
         });
 
         // // Calculate total for add form
