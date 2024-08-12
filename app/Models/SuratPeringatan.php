@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class SuratPeringatan extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'id_peringatan';
+
     protected $fillable = [
         'no', 'tingkat', 'tanggal', 'keterangan', 'bukti_gambar', 'scan_pdf', 'id_account_officer'
     ];

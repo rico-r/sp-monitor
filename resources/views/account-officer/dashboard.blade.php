@@ -143,6 +143,7 @@
                         <label for="account_officer"></label>
                         <input type="hidden" id="account_officer" value="{{ auth()->user()->name }}" readonly>
                         <input type="hidden" name="id_account_officer" value="{{ auth()->user()->id }}">
+                </div>
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -268,7 +269,7 @@
             var id_peringatan = $(this).data('id_peringatan');
             console.log('ID Peringatan:', id_peringatan);
         
-        $('#deleteForm').attr('action', '/account-officer/surat-peringatan/delete/' + id_peringatan);
+        $('#deleteForm').attr('action', '/account-officer/nasabah/delete/' + id_peringatan);
         });
 
         // // Calculate total for add form

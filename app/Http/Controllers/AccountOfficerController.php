@@ -87,7 +87,7 @@ class AccountOfficerController extends Controller
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
-    $suratPeringatans = SuratPeringatan::select('no', 'tingkat', 'tanggal', 'bukti_gambar', 'scan_pdf')
+    $suratPeringatans = SuratPeringatan::select('id_peringatan', 'no', 'tingkat', 'tanggal', 'bukti_gambar', 'scan_pdf')
         ->latest('tanggal')
         ->get();
     $cabangs = Cabang::all();
