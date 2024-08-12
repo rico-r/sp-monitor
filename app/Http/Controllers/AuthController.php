@@ -180,6 +180,7 @@ class AuthController extends Controller
         $user->key        = $key->key;
         $user->jabatan_id  = $key->jabatan;
         $user->password    = Hash::make($validated['password']);
+        $user->status      = 2;
         $user->save();
 
         // Log the newly created user
