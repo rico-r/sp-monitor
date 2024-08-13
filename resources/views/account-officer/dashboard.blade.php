@@ -47,7 +47,6 @@
                 <th>Nama</th>
                 <th>Progress SP</th>
                 <th>Tanggal</th>
-                <th>Scan PDF</th>
                 <th>Gambar</th>
                 <th>Aksi</th>
             </tr>
@@ -65,13 +64,13 @@
             Tingkat {{ $suratPeringatan->tingkat }}
                 </td>
                 <td>{{ $suratPeringatan->tanggal }}</td>
-                <td>
+                <!-- <td>
                 {{-- Tampilkan link untuk file PDF --}}
                 @if(pathinfo($suratPeringatan->scan_pdf, PATHINFO_EXTENSION) === 'pdf')
                     <a href="{{ asset('storage/' . $suratPeringatan->scan_pdf) }}" target="_blank">View PDF</a>
                 @else
                     No PDF
-                @endif
+                @endif -->
             </td>
             <td>
                 {{-- Tampilkan gambar jika file adalah gambar --}}
@@ -134,15 +133,16 @@
                     </div>
 
                     <!-- Scan PDF Field -->
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="addScanPdf">Scan PDF</label>
                         <input type="file" class="form-control" id="addScanPdf" name="scan_pdf" accept="application/pdf" required>
-                    </div>
+                    </div> -->
                 </div>
                 <div class="form-group">
                         <label for="account_officer"></label>
                         <input type="hidden" id="account_officer" value="{{ auth()->user()->name }}" readonly>
                         <input type="hidden" name="id_account_officer" value="{{ auth()->user()->id }}">
+                </div>
                 <!-- Modal Footer -->
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -254,7 +254,7 @@
             $('#detailTingkat').val(data.tingkat);
             $('#detailTanggal').val(data.tanggal);
             $('#detailPdf').val(data.pdf);
-            $('#detailGambar').val(data.gambar);
+            $('#detailGambar').val(data.bukti_gambar);
             // $('#detailAccountOfficer').val(data.user.name);
             $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
             // $('#detailAccountOfficer').val(data.admin_kas ? data.admin_kas.name : '');
@@ -268,7 +268,7 @@
             var id_peringatan = $(this).data('id_peringatan');
             console.log('ID Peringatan:', id_peringatan);
         
-        $('#deleteForm').attr('action', '/account-officer/surat-peringatan/delete/' + id_peringatan);
+            $('#deleteForm').attr('action', '/account-officer/nasabah/delete/' + id_peringatan);
         });
 
         // // Calculate total for add form

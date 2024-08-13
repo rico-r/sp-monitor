@@ -7,7 +7,8 @@
     </div>
     @endif
 
-    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Data</button>
+    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Nasabah</button>
+    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addSurat">Tambah SP</button>
     <div class="flex justify-between mb-4">
     <div>
         <form method="GET" action="{{ route('admin-kas.dashboard') }}">
@@ -162,8 +163,67 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="admin_kas">Admin Kas</label>
-                        <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                        <label for="admin_kas"></label>
+                        <input type="hidden" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                        <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for Surat -->
+<div class="modal fade" id="addSurat" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Tambah Data Surat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addSuratForm" method="POST" action="{{ route('admin-kas.nasabah.add') }}">
+                @csrf
+                <div class="modal-body">
+                    <select class="form-control" id="addNama" name="nama" required>
+                            <option value="">Pilih Nasabah</option>
+                            @foreach($nasabahNames as $no => $nama)
+                                <option value="{{ $nama }}">{{ $nama }}</option>
+                            @endforeach
+                        </select>
+                    <div class="form-group">
+                        <label for="addTingkat">Progress SP</label>
+                        <select class="form-control" id="addTingkat" name="tingkat" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTanggal">Tanggal</label>
+                        <input type="datetime-local" class="form-control" id="addTanggal" name="tanggal" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addScanPdf">Scan PDF</label>
+                        <input type="file" class="form-control" id="addScanPdf" name="scan_pdf" accept="application/pdf" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="addAccountOfficer">Account Officer</label>
+                        <select class="form-control select2" id="addAccountOfficer" name="id_account_officer" required>
+                            <option value="">Pilih Account Officer</option>
+                            @foreach($accountOfficers as $accountOfficer)
+                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_kas"></label>
+                        <input type="hidden" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
                         <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
                     </div>
                 </div>
@@ -470,6 +530,14 @@
             var total = pokok + bunga + denda;
             $('#editTotal').val(total);
         }
+        
+        $(document).ready(function() {
+            $('#addAccountOfficer').select2({
+                placeholder: "Pilih Account Officer",
+                allowClear: true,
+                width: '100%'
+            });
+        });
 
         // Attach events for calculating total on input change
         $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);

@@ -40,6 +40,11 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'api' => [
+            'driver' => 'token', // atau 'passport' atau 'sanctum' tergantung pada metode autentikasi yang digunakan
+            'provider' => 'users',
+            'hash' => false,
+        ],
     ],
 
     /*
@@ -64,6 +69,7 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
+        
 
         // 'users' => [
         //     'driver' => 'database',

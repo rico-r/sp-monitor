@@ -87,7 +87,7 @@ class AccountOfficerController extends Controller
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
-    $suratPeringatans = SuratPeringatan::select('no', 'tingkat', 'tanggal', 'bukti_gambar', 'scan_pdf')
+    $suratPeringatans = SuratPeringatan::select('id_peringatan', 'no', 'tingkat', 'tanggal', 'bukti_gambar', 'scan_pdf')
         ->latest('tanggal')
         ->get();
     $cabangs = Cabang::all();
@@ -124,9 +124,9 @@ public function deleteNasabah($id_peringatan)
     return redirect()->route('account-officer.dashboard')->with('success', 'Data berhasil di hapus');
 }
 
-public function detailNasabah($no)
+public function detailNasabah($id_peringatan)
 {
-    $nasabah = Nasabah::find($no);
+    $nasabah = SuratPeringatan::find($id_peringatan);
     return response()->json($nasabah);
 }
 
@@ -137,9 +137,7 @@ public function addNasabah(Request $request)
     $request->validate([
         'nama' => 'required',
         'tingkat' => 'required',
-        'tanggal' => 'required|date',
         'bukti_gambar' => 'required|image|max:2048', 
-        'scan_pdf' => 'required|mimes:pdf|max:2048'
     ]);
 
     try {
@@ -166,11 +164,13 @@ public function addNasabah(Request $request)
             return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} already exists for this Nasabah.");
         }
 
+        $nasabahData['scan_pdf'] = null;
+
         // Handle the PDF upload for 'scan_pdf'
-        if ($request->hasFile('scan_pdf')) {
-            $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
-            $nasabahData['scan_pdf'] = $scanPdfPath;
-        }
+        // if ($request->hasFile('scan_pdf')) {
+        //     $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
+        //     $nasabahData['scan_pdf'] = $scanPdfPath;
+        // }
 
         // Retrieve the Nasabah by name
         $nasabah = Nasabah::where('nama', $nasabahData['nama'])->first();

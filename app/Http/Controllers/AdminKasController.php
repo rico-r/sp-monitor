@@ -85,13 +85,14 @@ class AdminKasController extends Controller
     Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
 
     $nasabahs = $query->get();
+    $nasabahNames = Nasabah::pluck('nama', 'no');
 
     $suratPeringatans = SuratPeringatan::select('no', 'tingkat')->get()->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
     $currentUser = auth()->user();
 
-    return view('admin-kas.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser'));
+    return view('admin-kas.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
 }
 public function editNasabah($no)
 {
@@ -130,6 +131,79 @@ public function detailNasabah($no)
 {
     $nasabah = Nasabah::find($no);
     return response()->json($nasabah);
+}
+
+public function addSurat(Request $request)
+{
+    Log::info('Add Nasabah request received', $request->all());
+
+    $request->validate([
+        'nama' => 'required',
+        'tingkat' => 'required',
+        'tanggal' => 'required|date',
+        'bukti_gambar' => 'required|image|max:2048', 
+        'scan_pdf' => 'required|mimes:pdf|max:2048'
+    ]);
+
+    try {
+        $nasabahData = $request->only(['nama', 'tingkat', 'tanggal']);
+
+        // Handle the image upload for 'bukti_gambar'
+        // if ($request->hasFile('bukti_gambar')) {
+        //     $buktiGambarPath = $request->file('bukti_gambar')->store('bukti_gambar', 'public');
+        //     $nasabahData['bukti_gambar'] = $buktiGambarPath;
+        // }
+
+        //Handle limit
+        $existingEntries = SuratPeringatan::where('no', $nasabahData['nama'])->count();
+
+        if ($existingEntries >= 3) {
+            return redirect()->back()->with('error', 'This Nasabah already has the maximum allowed Surat Peringatan entries (3).');
+        }
+
+        $duplicateTingkat = SuratPeringatan::where('no', $nasabahData['nama'])
+            ->where('tingkat', $nasabahData['tingkat'])
+            ->exists();
+
+        if ($duplicateTingkat) {
+            return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} already exists for this Nasabah.");
+        }
+
+        // Handle the PDF upload for 'scan_pdf'
+        if ($request->hasFile('scan_pdf')) {
+            $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
+            $nasabahData['scan_pdf'] = $scanPdfPath;
+        }
+
+        // Retrieve the Nasabah by name
+        $nasabah = Nasabah::where('nama', $nasabahData['nama'])->first();
+
+        if (!$nasabah) {
+            return redirect()->back()->with('error', 'Nasabah not found.');
+        }
+
+        $adminkasId = auth()->user()->id;
+
+        // Save the Surat Peringatan
+        SuratPeringatan::create([
+            'no' => $nasabah->no,
+            'tingkat' => $nasabahData['tingkat'],
+            'tanggal' => $nasabahData['tanggal'],
+            'scan_pdf' => $nasabahData['scan_pdf'],
+            'id_admin_kas' => $adminkasId,
+        ]);
+
+        Log::info('Nasabah added successfully', $nasabahData);
+
+        return redirect()->route('admin-kas.dashboard')->with('success', 'Surat berhasil ditambahkan');
+    } catch (\Exception $e) {
+        Log::error('Error adding Nasabah: ' . $e->getMessage(), [
+            'request' => $request->all(),
+            'exception' => $e->getTraceAsString()
+        ]);
+
+        return redirect()->back()->with('error', 'Failed to add data');
+    }
 }
 
 public function addNasabah(Request $request)
