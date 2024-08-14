@@ -168,6 +168,12 @@ public function addNasabah(Request $request)
         $accountOfficerId = auth()->user()->id;
 
         // Update the existing Surat Peringatan
+        $suratPeringatan = SuratPeringatan::where('no', $nasabahData['no'])
+            ->where('tingkat', $nasabahData['tingkat'])
+            ->where('id_account_officer', $accountOfficerId)
+            ->whereNull('bukti_gambar')
+            ->firstOrFail();
+
         $suratPeringatan->update([
             'tanggal' => $nasabahData['tanggal'],
             'bukti_gambar' => $nasabahData['bukti_gambar'],
@@ -186,4 +192,21 @@ public function addNasabah(Request $request)
         return redirect()->back()->with('error', 'Failed to update data');
     }
 }
+    public function showAddNasabahForm()
+    {
+        $loggedInAccountOfficerId = auth()->user()->id;
+
+        $nasabahWithPendingSuratPeringatan = SuratPeringatan::whereNull('bukti_gambar')
+            ->where('id_account_officer', $loggedInAccountOfficerId)
+            ->join('nasabah', 'surat_peringatan.no', '=', 'nasabah.no')
+            ->select('nasabah.no', 'nasabah.nama', 'surat_peringatan.tingkat')
+            ->get()
+            ->groupBy('nama')
+            ->map(function ($group) {
+                return $group->pluck('tingkat', 'no')->toArray();
+            });
+
+        return view('account_officer.dashboard', compact('nasabahSurat'));
+    }
+
 }

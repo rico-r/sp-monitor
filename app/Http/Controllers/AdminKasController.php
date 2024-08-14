@@ -135,70 +135,58 @@ public function detailNasabah($no)
 
 public function addSurat(Request $request)
 {
-    Log::info('Add Nasabah request received', $request->all());
+    Log::info('Add Surat request received', $request->all());
 
     $request->validate([
-        'nama' => 'required',
+        'no' => 'required',
         'tingkat' => 'required',
         'scan_pdf' => 'required|mimes:pdf|max:2048'
     ]);
 
+    Log::info('Data passed validation', $request->all());
+
     try {
-        $nasabahData = $request->only(['nama', 'tingkat', 'tanggal']);
+        $suratData = $request->only(['no', 'tingkat', 'tanggal']);
 
-        // Handle the image upload for 'bukti_gambar'
-        // if ($request->hasFile('bukti_gambar')) {
-        //     $buktiGambarPath = $request->file('bukti_gambar')->store('bukti_gambar', 'public');
-        //     $nasabahData['bukti_gambar'] = $buktiGambarPath;
-        // }
-
-        //Handle limit
-        $existingEntries = SuratPeringatan::where('no', $nasabahData['nama'])->count();
+        // Handle limit
+        $existingEntries = SuratPeringatan::where('no', $suratData['no'])->count();
 
         if ($existingEntries >= 3) {
             return redirect()->back()->with('error', 'This Nasabah already has the maximum allowed Surat Peringatan entries (3).');
         }
 
-        $duplicateTingkat = SuratPeringatan::where('no', $nasabahData['nama'])
-            ->where('tingkat', $nasabahData['tingkat'])
+        $duplicateTingkat = SuratPeringatan::where('no', $suratData['no'])
+            ->where('tingkat', $suratData['tingkat'])
             ->exists();
 
         if ($duplicateTingkat) {
-            return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} already exists for this Nasabah.");
+            return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$suratData['tingkat']} already exists for this Nasabah.");
         }
-
-        $nasabahData['bukti_gambar'] = null;
 
         // Handle the PDF upload for 'scan_pdf'
         if ($request->hasFile('scan_pdf')) {
             $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
-            $nasabahData['scan_pdf'] = $scanPdfPath;
-        }
+            $suratData['scan_pdf'] = $scanPdfPath;
 
-        // Retrieve the Nasabah by name
-        $nasabah = Nasabah::where('nama', $nasabahData['nama'])->first();
-
-        if (!$nasabah) {
-            return redirect()->back()->with('error', 'Nasabah not found.');
+            Log::info('PDF file uploaded successfully', ['path' => $scanPdfPath]);
         }
 
         $accountOfficerId = auth()->user()->id;
 
         // Save the Surat Peringatan
         SuratPeringatan::create([
-            'no' => $nasabah->no, // Assuming you have a relationship between Nasabah and SuratPeringatan
-            'tingkat' => $nasabahData['tingkat'],
-            'tanggal' => $nasabahData['tanggal'],
-            'bukti_gambar' => $nasabahData['bukti_gambar'],
-            'scan_pdf' => $nasabahData['scan_pdf'],
+            'no' => $suratData['no'],
+            'tingkat' => $suratData['tingkat'],
+            'tanggal' => $suratData['tanggal'],
+            'scan_pdf' => $suratData['scan_pdf'],
             'id_account_officer' => $accountOfficerId,
         ]);
 
-        Log::info('Nasabah added successfully', $nasabahData);
+        Log::info('Surat Peringatan added successfully', $suratData);
 
         return redirect()->route('admin-kas.dashboard')->with('success', 'Data berhasil ditambahkan');
     } catch (\Exception $e) {
-        Log::error('Error adding Nasabah: ' . $e->getMessage(), [
+        Log::error('Error adding Surat Peringatan: ' . $e->getMessage(), [
             'request' => $request->all(),
             'exception' => $e->getTraceAsString()
         ]);

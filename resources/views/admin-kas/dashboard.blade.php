@@ -8,7 +8,6 @@
     @endif
 
     <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Nasabah</button>
-    <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addSurat">Tambah SP</button>
     <div class="flex justify-between mb-4">
     <div>
         <form method="GET" action="{{ route('admin-kas.dashboard') }}">
@@ -66,21 +65,61 @@
     $totalSp = $matchingSp->count();
     @endphp
     @if($totalSp > 0)
-        <div class="sp-indicators">
-            @for($i = $totalSp - 1; $i >= 0; $i--)
-                <span class="tingkat-{{ $matchingSp[$i]->tingkat }}" 
-                      title="Tingkat {{ $matchingSp[$i]->tingkat }} - {{ $matchingSp[$i]->tanggal }}">
-                </span>
-            @endfor
-        </div>
-    @else
-        N/A
-    @endif
+    <div class="sp-indicators">
+        @for($i = $totalSp - 1; $i >= 0; $i--)
+            <span class="tingkat-{{ $matchingSp[$i]->tingkat }}" 
+                  title="Tingkat {{ $matchingSp[$i]->tingkat }} - {{ $matchingSp[$i]->tanggal }}"
+                  data-toggle="modal" data-target="#modalDetail{{ $i }}">
+            </span>
+
+            <!-- Modal -->
+            <div class="modal fade" id="modalDetail{{ $i }}" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel{{ $i }}" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalDetailLabel{{ $i }}">Detail Tingkat {{ $matchingSp[$i]->tingkat }}</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Menampilkan detail dari surat_peringatans -->
+                            <p>No: {{ $matchingSp[$i]->no }}</p>
+                            <p>Nama: {{ $matchingSp[$i]->nama }}</p>
+                            <p>Tingkat: {{ $matchingSp[$i]->tingkat }}</p>
+                            <p>Tanggal: {{ $matchingSp[$i]->tanggal }}</p>
+
+                            <!-- Menampilkan Bukti Gambar -->
+                            @if($matchingSp[$i]->bukti_gambar)
+                                <p>Bukti Gambar:</p>
+                                <img src="{{ asset('storage/'.$matchingSp[$i]->bukti_gambar) }}" alt="Bukti Gambar" class="img-fluid">
+                            @endif
+
+                            <!-- Menampilkan Scan PDF -->
+                            @if($matchingSp[$i]->scan_pdf)
+                                <p>Scan PDF:</p>
+                                <a href="{{ asset('storage/'.$matchingSp[$i]->scan_pdf) }}" target="_blank" class="btn btn-primary">Lihat PDF</a>
+                            @endif
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        @endfor
+    </div>
+@else
+    N/A
+@endif
+
+
                     </td>
                     <td>
                         <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
                         <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#detailModal">Detail</button>
                         <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#deleteModal">Delete</button>
+                        <button class="btn btn-success mt-1 tambah-btn" data-no="{{ $nasabah->no}}" data-toggle="modal" data-target="#addSurat">Tambah SP</button>
                     </td>
                 </tr>
             @endforeach
@@ -190,12 +229,17 @@
             <form id="addSuratForm" method="POST" action="{{ route('admin-kas.nasabah.surat') }}"  enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
+                    <!-- <input type="text" value="{{ $nasabah->no }}">
                     <select class="form-control" id="addNama" name="nama" required>
                             <option value="">Pilih Nasabah</option>
                             @foreach($nasabahNames as $no => $nama)
                                 <option value="{{ $nama }}">{{ $nama }}</option>
                             @endforeach
-                        </select>
+                        </select> -->
+                        <div class="form-group">
+                        <label for="tambahNo">No</label>
+                        <input type="text" class="form-control" id="tambahNo" name="no" readonly>
+                    </div>
                     <div class="form-group">
                         <label for="addTingkat">Progress SP</label>
                         <select class="form-control" id="addTingkat" name="tingkat" required>
@@ -511,6 +555,42 @@
             var no = $(this).data('no');
             $('#deleteNo').val(no);
             $('#deleteForm').attr('action', '/admin-kas/nasabah/delete/' + no);
+        });
+
+        // Tambah button
+        $('.tambah-btn').on('click', function() {
+            var no = $(this).data('no');
+            $.ajax({
+                url: '/admin-kas/nasabah/edit/' + no,
+        method: 'GET',
+        success: function(data) {
+            // Populate the modal with data
+            $('#tambahNo').val(data.no);
+            // $('#editNama').val(data.nama);
+            // $('#editPokok').val(data.pokok);
+            // $('#editBunga').val(data.bunga);
+            // $('#editDenda').val(data.denda);
+            // $('#editTotal').val(data.total);
+            // $('#editKeterangan').val(data.keterangan);
+            // $('#editTtd').val(data.ttd);
+            // $('#editKembali').val(data.kembali);
+            // $('#editCabang').val(data.nama_cabang);
+            // $('#editWilayah').val(data.nama_wilayah);
+            // $('#editAccountOfficer').val(data.id_account_officer);
+            // $('#detailAdminKas').val(data.adminKas ? data.adminKas.name : '');
+
+            // Set the form action to the update route with the correct no
+            $('#editForm').attr('action', '/admin-kas/nasabah/update/' + no);
+            $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
+
+
+                    // Menampilkan modal
+                    $('#editModal').modal('show');
+                },
+                error: function(xhr) {
+                    alert('Terjadi kesalahan saat memuat data.');
+                }
+            });
         });
 
         // Calculate total for add form
