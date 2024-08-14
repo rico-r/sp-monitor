@@ -131,11 +131,11 @@
                     </div>
                     <div class="form-group">
                         <label for="addTtd">TTD</label>
-                        <input type="datetime-local" class="form-control" id="addTtd" name="ttd" required>
+                        <input type="datetime-local" class="form-control" id="addTtd" name="ttd">
                     </div>
                     <div class="form-group">
                         <label for="addKembali">Kembali</label>
-                        <input type="datetime-local" class="form-control" id="addKembali" name="kembali" required>
+                        <input type="datetime-local" class="form-control" id="addKembali" name="kembali">
                     </div>
                     <div class="form-group">
                         <label for="addCabang">Cabang</label>
@@ -187,7 +187,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addSuratForm" method="POST" action="{{ route('admin-kas.nasabah.add') }}">
+            <form id="addSuratForm" method="POST" action="{{ route('admin-kas.nasabah.surat') }}"  enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
                     <select class="form-control" id="addNama" name="nama" required>
@@ -204,15 +204,15 @@
                             <option value="3">3</option>
                         </select>
                     </div>
-                    <div class="form-group">
+                    <div class="form-group" style="display: none;">
                         <label for="addTanggal">Tanggal</label>
-                        <input type="datetime-local" class="form-control" id="addTanggal" name="tanggal" required>
+                        <input type="hidden" class="form-control" id="addTanggal" name="tanggal" value="">
                     </div>
                     <div class="form-group">
                         <label for="addScanPdf">Scan PDF</label>
                         <input type="file" class="form-control" id="addScanPdf" name="scan_pdf" accept="application/pdf" required>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
                         <select class="form-control select2" id="addAccountOfficer" name="id_account_officer" required>
                             <option value="">Pilih Account Officer</option>
@@ -225,7 +225,7 @@
                         <label for="admin_kas"></label>
                         <input type="hidden" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
                         <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
-                    </div>
+                    </div> -->
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>

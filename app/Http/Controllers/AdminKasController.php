@@ -140,8 +140,6 @@ public function addSurat(Request $request)
     $request->validate([
         'nama' => 'required',
         'tingkat' => 'required',
-        'tanggal' => 'required|date',
-        'bukti_gambar' => 'required|image|max:2048', 
         'scan_pdf' => 'required|mimes:pdf|max:2048'
     ]);
 
@@ -169,6 +167,8 @@ public function addSurat(Request $request)
             return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} already exists for this Nasabah.");
         }
 
+        $nasabahData['bukti_gambar'] = null;
+
         // Handle the PDF upload for 'scan_pdf'
         if ($request->hasFile('scan_pdf')) {
             $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
@@ -182,20 +182,21 @@ public function addSurat(Request $request)
             return redirect()->back()->with('error', 'Nasabah not found.');
         }
 
-        $adminkasId = auth()->user()->id;
+        $accountOfficerId = auth()->user()->id;
 
         // Save the Surat Peringatan
         SuratPeringatan::create([
-            'no' => $nasabah->no,
+            'no' => $nasabah->no, // Assuming you have a relationship between Nasabah and SuratPeringatan
             'tingkat' => $nasabahData['tingkat'],
             'tanggal' => $nasabahData['tanggal'],
+            'bukti_gambar' => $nasabahData['bukti_gambar'],
             'scan_pdf' => $nasabahData['scan_pdf'],
-            'id_admin_kas' => $adminkasId,
+            'id_account_officer' => $accountOfficerId,
         ]);
 
         Log::info('Nasabah added successfully', $nasabahData);
 
-        return redirect()->route('admin-kas.dashboard')->with('success', 'Surat berhasil ditambahkan');
+        return redirect()->route('admin-kas.dashboard')->with('success', 'Data berhasil ditambahkan');
     } catch (\Exception $e) {
         Log::error('Error adding Nasabah: ' . $e->getMessage(), [
             'request' => $request->all(),
