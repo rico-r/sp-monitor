@@ -137,7 +137,7 @@ public function addNasabah(Request $request)
     $request->validate([
         'nama' => 'required',
         'tingkat' => 'required',
-        'bukti_gambar' => 'required|image|max:2048', 
+        'bukti_gambar' => 'required|image|max:2048',
     ]);
 
     try {
@@ -149,29 +149,6 @@ public function addNasabah(Request $request)
             $nasabahData['bukti_gambar'] = $buktiGambarPath;
         }
 
-        //Handle limit
-        $existingEntries = SuratPeringatan::where('no', $nasabahData['nama'])->count();
-
-        if ($existingEntries >= 3) {
-            return redirect()->back()->with('error', 'This Nasabah already has the maximum allowed Surat Peringatan entries (3).');
-        }
-
-        $duplicateTingkat = SuratPeringatan::where('no', $nasabahData['nama'])
-            ->where('tingkat', $nasabahData['tingkat'])
-            ->exists();
-
-        if ($duplicateTingkat) {
-            return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} already exists for this Nasabah.");
-        }
-
-        $nasabahData['scan_pdf'] = null;
-
-        // Handle the PDF upload for 'scan_pdf'
-        // if ($request->hasFile('scan_pdf')) {
-        //     $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
-        //     $nasabahData['scan_pdf'] = $scanPdfPath;
-        // }
-
         // Retrieve the Nasabah by name
         $nasabah = Nasabah::where('nama', $nasabahData['nama'])->first();
 
@@ -179,28 +156,34 @@ public function addNasabah(Request $request)
             return redirect()->back()->with('error', 'Nasabah not found.');
         }
 
+        // Check if the Surat Peringatan already exists
+        $suratPeringatan = SuratPeringatan::where('no', $nasabah->no)
+            ->where('tingkat', $nasabahData['tingkat'])
+            ->first();
+
+        if (!$suratPeringatan) {
+            return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$nasabahData['tingkat']} not found for this Nasabah.");
+        }
+
         $accountOfficerId = auth()->user()->id;
 
-        // Save the Surat Peringatan
-        SuratPeringatan::create([
-            'no' => $nasabah->no, // Assuming you have a relationship between Nasabah and SuratPeringatan
-            'tingkat' => $nasabahData['tingkat'],
+        // Update the existing Surat Peringatan
+        $suratPeringatan->update([
             'tanggal' => $nasabahData['tanggal'],
             'bukti_gambar' => $nasabahData['bukti_gambar'],
-            'scan_pdf' => $nasabahData['scan_pdf'],
             'id_account_officer' => $accountOfficerId,
         ]);
 
-        Log::info('Nasabah added successfully', $nasabahData);
+        Log::info('Nasabah updated successfully by Account Officer', $nasabahData);
 
-        return redirect()->route('account-officer.dashboard')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('account-officer.dashboard')->with('success', 'Data berhasil diperbarui');
     } catch (\Exception $e) {
-        Log::error('Error adding Nasabah: ' . $e->getMessage(), [
+        Log::error('Error updating Nasabah: ' . $e->getMessage(), [
             'request' => $request->all(),
             'exception' => $e->getTraceAsString()
         ]);
 
-        return redirect()->back()->with('error', 'Failed to add data');
+        return redirect()->back()->with('error', 'Failed to update data');
     }
 }
 }

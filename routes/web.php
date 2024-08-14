@@ -99,7 +99,8 @@ Route::prefix('admin-kas')
         Route::put('/nasabah/update/{no}', [AdminKasController::class, 'update'])->name('nasabah.update');
         Route::post('nasabah/add', [AdminKasController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{no}', [AdminKasController::class, 'deleteNasabah'])->name('nasabah.delete');
-});
+        Route::post('/nasabah/surat', [AdminKasController::class, 'addSurat'])->name('nasabah.surat');
+    });
 
 Route::prefix('account-officer')
     ->name('account-officer.')
