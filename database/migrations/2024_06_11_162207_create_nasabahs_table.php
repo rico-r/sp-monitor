@@ -19,8 +19,8 @@ return new class extends Migration
             $table->string('denda');
             $table->integer('total');
             $table->text('keterangan');
-            $table->datetime('ttd');
-            $table->datetime('kembali');
+            // $table->datetime('ttd');
+            // $table->datetime('kembali');
             $table->unsignedBigInteger('id_cabang');
             $table->unsignedBigInteger('id_wilayah');
             $table->unsignedBigInteger('id_account_officer');

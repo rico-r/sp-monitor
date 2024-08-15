@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
             JabatanSeeder::class,
             UserSeeder::class,
             KeySeeder::class,
-            
+            StatusSeeder::class,
             // NasabahSeeder::class,
             // KepalaCabangSeeder::class,
             // SupervisorSeeder::class,

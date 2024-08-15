@@ -16,14 +16,16 @@ return new class extends Migration
                 $table->id('id_peringatan');
                 $table->unsignedBigInteger('no');
                 $table->integer('tingkat');
-                $table->datetime('tanggal');
-                $table->string('bukti_gambar');
-                $table->string('scan_pdf');
+                $table->datetime('dibuat')->nullable();
+                $table->datetime('kembali')->nullable();
+                $table->datetime('diserahkan')->nullable();
+                $table->string('bukti_gambar')->nullable();
+                $table->string('scan_pdf')->nullable();
                 $table->unsignedBigInteger('id_account_officer');
                 $table->timestamps();
     
                 $table->foreign('no')->references('no')->on('nasabahs')->onDelete('cascade');
-                $table->foreign('id_account_officer')->references('id_account_officer')->on('pegawai_account_offices')->onDelete('cascade');
+                $table->foreign('id_account_officer')->references('id')->on('users')->onDelete('cascade');
             });
         }  
     }

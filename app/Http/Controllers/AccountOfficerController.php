@@ -30,10 +30,10 @@ class AccountOfficerController extends Controller
     // Log query awal
     Log::info('Query awal: ', ['query' => $query->toSql()]);
 
-    // Filter berdasarkan tanggal
+    // Filter berdasarkan diserahkan
     if ($request->has('date_filter')) {
         $dateFilter = $request->input('date_filter');
-        Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
+        Log::info('Filter diserahkan diterapkan', ['date_filter' => $dateFilter]);
 
         switch ($dateFilter) {
             case 'last_7_days':
@@ -51,8 +51,8 @@ class AccountOfficerController extends Controller
         }
     }
 
-    // Log query setelah filter tanggal
-    Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
+    // Log query setelah filter diserahkan
+    Log::info('Query setelah filter diserahkan: ', ['query' => $query->toSql()]);
 
     // Filter berdasarkan pencarian
     $search = $request->input('search');
@@ -87,8 +87,8 @@ class AccountOfficerController extends Controller
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
-    $suratPeringatans = SuratPeringatan::select('id_peringatan', 'no', 'tingkat', 'tanggal', 'bukti_gambar', 'scan_pdf')
-        ->latest('tanggal')
+    $suratPeringatans = SuratPeringatan::select('id_peringatan', 'no', 'tingkat', 'diserahkan', 'bukti_gambar', 'scan_pdf')
+        ->latest('diserahkan')
         ->get();
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
@@ -107,7 +107,7 @@ public function update(Request $request, $no)
         $request->validate([
             'nama'=> 'required',
             'tingkat' => 'required|integer|in:1,2,3',
-            'tanggal' => 'required|date',
+            'diserahkan' => 'required|date',
             'bukti_gambar' => 'required',
             'scan_pdf' => 'required'
         ]);
@@ -141,7 +141,7 @@ public function addNasabah(Request $request)
     ]);
 
     try {
-        $nasabahData = $request->only(['nama', 'tingkat', 'tanggal']);
+        $nasabahData = $request->only(['nama', 'tingkat', 'diserahkan']);
 
         // Handle the image upload for 'bukti_gambar'
         if ($request->hasFile('bukti_gambar')) {
@@ -168,14 +168,8 @@ public function addNasabah(Request $request)
         $accountOfficerId = auth()->user()->id;
 
         // Update the existing Surat Peringatan
-        $suratPeringatan = SuratPeringatan::where('no', $nasabahData['no'])
-            ->where('tingkat', $nasabahData['tingkat'])
-            ->where('id_account_officer', $accountOfficerId)
-            ->whereNull('bukti_gambar')
-            ->firstOrFail();
-
         $suratPeringatan->update([
-            'tanggal' => $nasabahData['tanggal'],
+            'diserahkan' => $nasabahData['diserahkan'],
             'bukti_gambar' => $nasabahData['bukti_gambar'],
             'id_account_officer' => $accountOfficerId,
         ]);

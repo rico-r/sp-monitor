@@ -146,7 +146,7 @@ public function addSurat(Request $request)
     Log::info('Data passed validation', $request->all());
 
     try {
-        $suratData = $request->only(['no', 'tingkat', 'tanggal']);
+        $suratData = $request->only(['no', 'tingkat', 'dibuat','kembali']);
 
         // Handle limit
         $existingEntries = SuratPeringatan::where('no', $suratData['no'])->count();
@@ -177,7 +177,8 @@ public function addSurat(Request $request)
         SuratPeringatan::create([
             'no' => $suratData['no'],
             'tingkat' => $suratData['tingkat'],
-            'tanggal' => $suratData['tanggal'],
+            'dibuat' => $suratData['dibuat'],
+            'kembali' => $suratData['kembali'],
             'scan_pdf' => $suratData['scan_pdf'],
             'id_account_officer' => $accountOfficerId,
         ]);
@@ -207,8 +208,8 @@ public function addNasabah(Request $request)
         'denda' => 'required|numeric',
         'total' => 'required|numeric',
         'keterangan' => 'required',
-        'ttd' => 'required|date',
-        'kembali' => 'required|date',
+        // 'ttd' => 'required|date',
+        // 'kembali' => 'required|date',
         'id_cabang' => 'required|exists:cabangs,id_cabang',
         'id_wilayah' => 'required|exists:wilayahs,id_wilayah',
         'id_account_officer' => 'required',

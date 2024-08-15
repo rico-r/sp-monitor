@@ -46,7 +46,7 @@
             <tr>
                 <th>Nama</th>
                 <th>Progress SP</th>
-                <th>Tanggal</th>
+                <th>Diserahkan</th>
                 <th>Gambar</th>
                 <th>Aksi</th>
             </tr>
@@ -63,7 +63,7 @@
             </span>
             Tingkat {{ $suratPeringatan->tingkat }}
                 </td>
-                <td>{{ $suratPeringatan->tanggal }}</td>
+                <td>{{ $suratPeringatan->diserahkan }}</td>
                 <!-- <td>
                 {{-- Tampilkan link untuk file PDF --}}
                 @if(pathinfo($suratPeringatan->scan_pdf, PATHINFO_EXTENSION) === 'pdf')
@@ -122,8 +122,8 @@
 
                     <!-- Tanggal Field -->
                     <div class="form-group">
-                        <label for="addTanggal">Tanggal</label>
-                        <input type="datetime-local" class="form-control" id="addTanggal" name="tanggal" required>
+                        <label for="addTanggal">Diserahkan</label>
+                        <input type="datetime-local" class="form-control" id="addTanggal" name="diserahkan" required>
                     </div>
 
                     <!-- Bukti Gambar Field -->

@@ -62,7 +62,7 @@
                     <td>
                     @php
                 $matchingSp = $suratPeringatans->where('no', $nasabah->no)->sortByDesc('tanggal')->values();
-    $totalSp = $matchingSp->count();
+                $totalSp = $matchingSp->count();
     @endphp
     @if($totalSp > 0)
     <div class="sp-indicators">
@@ -72,12 +72,12 @@
                   data-toggle="modal" data-target="#modalDetail{{ $i }}">
             </span>
 
-            <!-- Modal -->
+            <!-- Modal Detail SP -->
             <div class="modal fade" id="modalDetail{{ $i }}" tabindex="-1" role="dialog" aria-labelledby="modalDetailLabel{{ $i }}" aria-hidden="true">
                 <div class="modal-dialog" role="document">
                     <div class="modal-content">
                         <div class="modal-header">
-                            <h5 class="modal-title" id="modalDetailLabel{{ $i }}">Detail Tingkat {{ $matchingSp[$i]->tingkat }}</h5>
+                            <h5 class="modal-title" id="modalDetailLabel{{ $i }}">Surat Peringatan {{ $matchingSp[$i]->tingkat }}</h5>
                             <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                 <span aria-hidden="true">&times;</span>
                             </button>
@@ -168,14 +168,14 @@
                         <label for="addKeterangan">Keterangan</label>
                         <textarea class="form-control" id="addKeterangan" name="keterangan" required></textarea>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="addTtd">TTD</label>
                         <input type="datetime-local" class="form-control" id="addTtd" name="ttd">
                     </div>
                     <div class="form-group">
                         <label for="addKembali">Kembali</label>
                         <input type="datetime-local" class="form-control" id="addKembali" name="kembali">
-                    </div>
+                    </div> -->
                     <div class="form-group">
                         <label for="addCabang">Cabang</label>
                         <select class="form-control" id="addCabang" name="id_cabang" required>
@@ -248,9 +248,13 @@
                             <option value="3">3</option>
                         </select>
                     </div>
-                    <div class="form-group" style="display: none;">
-                        <label for="addTanggal">Tanggal</label>
-                        <input type="hidden" class="form-control" id="addTanggal" name="tanggal" value="">
+                    <div class="form-group">
+                        <label for="addTtd">Dibuat</label>
+                        <input type="datetime-local" class="form-control" id="addTtd" name="dibuat">
+                    </div>
+                    <div class="form-group">
+                        <label for="addKembali">Kembali</label>
+                        <input type="datetime-local" class="form-control" id="addKembali" name="kembali">
                     </div>
                     <div class="form-group">
                         <label for="addScanPdf">Scan PDF</label>
@@ -539,8 +543,8 @@
             $('#detailDenda').val(data.denda);
             $('#detailTotal').val(data.total);
             $('#detailKeterangan').val(data.keterangan);
-            $('#detailTtd').val(data.ttd);
-            $('#detailKembali').val(data.kembali);
+            // $('#detailTtd').val(data.ttd);
+            // $('#detailKembali').val(data.kembali);
             $('#detailCabang').val(data.cabang.nama_cabang);
             $('#detailWilayah').val(data.wilayah.nama_wilayah);
             // $('#detailAccountOfficer').val(data.user.name);

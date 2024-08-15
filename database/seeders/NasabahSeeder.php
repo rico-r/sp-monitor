@@ -30,8 +30,8 @@ class NasabahSeeder extends Seeder
             $nasabah->denda = $faker->randomNumber(4); // Contoh: 10000 (IDR 10,000)
             $nasabah->total = $faker->randomNumber(7); // Contoh: 2000000 (IDR 2,000,000)
             $nasabah->keterangan = $faker->sentence();
-            $nasabah->ttd = $faker->dateTimeThisYear();
-            $nasabah->kembali = $faker->dateTimeThisYear();
+            // $nasabah->ttd = $faker->dateTimeThisYear();
+            // $nasabah->kembali = $faker->dateTimeThisYear();
 
             // Ambil id_cabang secara acak
             $nasabah->id_cabang = \App\Models\Cabang::inRandomOrder()->first()->id_cabang;
