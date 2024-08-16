@@ -65,7 +65,13 @@ Route::prefix('direksi')
     ->name('direksi.')
     ->middleware('jabatan:1')
     ->group(function () {
-        Route::get('dashboard', [DireksiController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [DireksiController::class, 'dashboard'])->name('dashboard');
+        Route::get('/nasabah/edit/{no}', [DireksiController::class, 'editNasabah'])->name('nasabah.edit');
+        Route::get('/admin-kas/search', [DireksiController::class, 'search'])->name('admin-kas.search');
+        Route::put('/nasabah/update/{no}', [DireksiController::class, 'update'])->name('nasabah.update');
+        Route::post('nasabah/add', [DireksiController::class, 'addNasabah'])->name('nasabah.add');
+        Route::delete('nasabah/delete/{no}', [DireksiController::class, 'deleteNasabah'])->name('nasabah.delete');
+        Route::post('/nasabah/surat', [DireksiController::class, 'addSurat'])->name('nasabah.surat');
 });
 
 Route::prefix('kepala-cabang')
