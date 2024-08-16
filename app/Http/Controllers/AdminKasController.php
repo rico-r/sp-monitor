@@ -18,20 +18,23 @@ class AdminKasController extends Controller
 {
    
     
-
-    public function dashboard(Request $request)
+public function dashboard(Request $request)
 {
     Log::info('Memasuki fungsi dashboard');
 
     $title = "Dashboard";
 
     // Retrieve account officers with jabatan_id = 5
-    $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
+    $accountOfficers = User::where('jabatan_id', 5)->get();
 
-    
-    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+    // Dapatkan ID admin kas yang sedang login
+    $currentUser = auth()->user();
+    $adminKasId = $currentUser->id;
 
-    // Log query awal
+    // Memulai query dengan relasi yang diperlukan
+    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah')
+                ->where('id_admin_kas', $adminKasId);  // Filter berdasarkan id_admin_kas
+
     Log::info('Query awal: ', ['query' => $query->toSql()]);
 
     // Filter berdasarkan tanggal
@@ -55,7 +58,6 @@ class AdminKasController extends Controller
         }
     }
 
-    // Log query setelah filter tanggal
     Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
 
     // Filter berdasarkan pencarian
@@ -97,10 +99,92 @@ class AdminKasController extends Controller
     ->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
-    $currentUser = auth()->user();
 
     return view('admin-kas.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
 }
+
+//     public function dashboard(Request $request)
+// {
+//     Log::info('Memasuki fungsi dashboard');
+
+//     $title = "Dashboard";
+
+//     // Retrieve account officers with jabatan_id = 5
+//     $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
+
+    
+//     $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+
+//     // Log query awal
+//     Log::info('Query awal: ', ['query' => $query->toSql()]);
+
+//     // Filter berdasarkan tanggal
+//     if ($request->has('date_filter')) {
+//         $dateFilter = $request->input('date_filter');
+//         Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
+
+//         switch ($dateFilter) {
+//             case 'last_7_days':
+//                 $query->where('created_at', '>=', now()->subDays(7));
+//                 break;
+//             case 'last_30_days':
+//                 $query->where('created_at', '>=', now()->subDays(30));
+//                 break;
+//             case 'last_month':
+//                 $query->whereMonth('created_at', '=', now()->subMonth()->month);
+//                 break;
+//             case 'last_year':
+//                 $query->whereYear('created_at', '=', now()->subYear()->year);
+//                 break;
+//         }
+//     }
+
+//     // Log query setelah filter tanggal
+//     Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
+
+//     // Filter berdasarkan pencarian
+//     $search = $request->input('search');
+//     if ($search) {
+//         $query->where('nama', 'like', "%{$search}%")
+//               ->orWhereHas('cabang', function ($q) use ($search) {
+//                   $q->where('nama_cabang', 'like', "%{$search}%");
+//               })
+//               ->orWhereHas('wilayah', function ($q) use ($search) {
+//                   $q->where('nama_wilayah', 'like', "%{$search}%");
+//               });
+//     }
+
+//     // Filter based on cabang
+//     $cabangFilter = $request->input('cabang_filter');
+//     if ($cabangFilter) {
+//         $query->whereHas('cabang', function ($q) use ($cabangFilter) {
+//             $q->where('id_cabang', $cabangFilter);
+//         });
+//     }
+
+//     // Filter based on wilayah
+//     $wilayahFilter = $request->input('wilayah_filter');
+//     if ($wilayahFilter) {
+//         $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
+//             $q->where('id_wilayah', $wilayahFilter);
+//         });
+//     }
+
+//     Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
+
+//     $nasabahs = $query->get();
+//     $nasabahNames = Nasabah::pluck('nama', 'no');
+
+//     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
+//     ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
+//     ->get()
+//     ->sortByDesc('tingkat');
+//     $cabangs = Cabang::all();
+//     $wilayahs = Wilayah::all();
+//     $currentUser = auth()->user();
+
+//     return view('admin-kas.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
+// }
 public function editNasabah($no)
 {
     $nasabah = Nasabah::find($no);
