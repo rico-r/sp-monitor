@@ -109,7 +109,6 @@
                             <option value="{{ $nama }}">{{ $nama }}</option>
                         @endforeach
                     </select>
-
                     <!-- Tingkat Field -->
                     <div class="form-group">
                         <label for="addTingkat">Progress SP</label>

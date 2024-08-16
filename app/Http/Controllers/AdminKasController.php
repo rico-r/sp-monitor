@@ -237,7 +237,16 @@ public function addSurat(Request $request)
     Log::info('Data passed validation', $request->all());
 
     try {
-        $suratData = $request->only(['no', 'tingkat', 'dibuat','kembali']);
+        $suratData = $request->only(['no', 'tingkat', 'dibuat', 'kembali']);
+
+        // Ambil id_account_officer dari tabel Nasabah berdasarkan 'no'
+        $nasabah = Nasabah::where('no', $suratData['no'])->first();
+
+        if (!$nasabah) {
+            return redirect()->back()->with('error', 'Nasabah not found.');
+        }
+
+        $accountOfficerId = $nasabah->id_account_officer;
 
         // Handle limit
         $existingEntries = SuratPeringatan::where('no', $suratData['no'])->count();
@@ -262,8 +271,6 @@ public function addSurat(Request $request)
             Log::info('PDF file uploaded successfully', ['path' => $scanPdfPath]);
         }
 
-        $accountOfficerId = auth()->user()->id;
-
         // Save the Surat Peringatan
         SuratPeringatan::create([
             'no' => $suratData['no'],
@@ -286,6 +293,70 @@ public function addSurat(Request $request)
         return redirect()->back()->with('error', 'Failed to add data');
     }
 }
+
+
+// public function addSurat(Request $request)
+// {
+//     Log::info('Add Surat request received', $request->all());
+
+//     $request->validate([
+//         'no' => 'required',
+//         'tingkat' => 'required',
+//         'scan_pdf' => 'required|mimes:pdf|max:2048'
+//     ]);
+
+//     Log::info('Data passed validation', $request->all());
+
+//     try {
+//         $suratData = $request->only(['no', 'tingkat', 'dibuat','kembali']);
+
+//         // Handle limit
+//         $existingEntries = SuratPeringatan::where('no', $suratData['no'])->count();
+
+//         if ($existingEntries >= 3) {
+//             return redirect()->back()->with('error', 'This Nasabah already has the maximum allowed Surat Peringatan entries (3).');
+//         }
+
+//         $duplicateTingkat = SuratPeringatan::where('no', $suratData['no'])
+//             ->where('tingkat', $suratData['tingkat'])
+//             ->exists();
+
+//         if ($duplicateTingkat) {
+//             return redirect()->back()->with('error', "Surat Peringatan with Tingkat {$suratData['tingkat']} already exists for this Nasabah.");
+//         }
+
+//         // Handle the PDF upload for 'scan_pdf'
+//         if ($request->hasFile('scan_pdf')) {
+//             $scanPdfPath = $request->file('scan_pdf')->store('scan_pdf', 'public');
+//             $suratData['scan_pdf'] = $scanPdfPath;
+
+//             Log::info('PDF file uploaded successfully', ['path' => $scanPdfPath]);
+//         }
+
+//         $accountOfficerId = auth()->user()->id;
+
+//         // Save the Surat Peringatan
+//         SuratPeringatan::create([
+//             'no' => $suratData['no'],
+//             'tingkat' => $suratData['tingkat'],
+//             'dibuat' => $suratData['dibuat'],
+//             'kembali' => $suratData['kembali'],
+//             'scan_pdf' => $suratData['scan_pdf'],
+//             'id_account_officer' => $accountOfficerId,
+//         ]);
+
+//         Log::info('Surat Peringatan added successfully', $suratData);
+
+//         return redirect()->route('admin-kas.dashboard')->with('success', 'Data berhasil ditambahkan');
+//     } catch (\Exception $e) {
+//         Log::error('Error adding Surat Peringatan: ' . $e->getMessage(), [
+//             'request' => $request->all(),
+//             'exception' => $e->getTraceAsString()
+//         ]);
+
+//         return redirect()->back()->with('error', 'Failed to add data');
+//     }
+// }
 
 public function addNasabah(Request $request)
 {

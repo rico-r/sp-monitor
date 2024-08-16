@@ -78,7 +78,13 @@ Route::prefix('kepala-cabang')
     ->name('kepala-cabang.')
     ->middleware('jabatan:2')
     ->group(function () {
-        Route::get('dashboard', [KepalaCabangController::class, 'dashboard'])->name('dashboard');
+        Route::get('/dashboard', [KepalaCabangController::class, 'dashboard'])->name('dashboard');
+        Route::get('/nasabah/edit/{no}', [KepalaCabangController::class, 'editNasabah'])->name('nasabah.edit');
+        Route::get('/admin-kas/search', [KepalaCabangController::class, 'search'])->name('admin-kas.search');
+        Route::put('/nasabah/update/{no}', [KepalaCabangController::class, 'update'])->name('nasabah.update');
+        Route::post('nasabah/add', [KepalaCabangController::class, 'addNasabah'])->name('nasabah.add');
+        Route::delete('nasabah/delete/{no}', [KepalaCabangController::class, 'deleteNasabah'])->name('nasabah.delete');
+        Route::post('/nasabah/surat', [KepalaCabangController::class, 'addSurat'])->name('nasabah.surat');
 });
 
 // Routes for supervisor
