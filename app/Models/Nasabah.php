@@ -59,7 +59,7 @@ class Nasabah extends Model
     // }
     public function suratPeringatan()
     {
-        return $this->hasMany(SuratPeringatan::class, 'nasabah_no' ,'no');
+        return $this->hasMany(SuratPeringatan::class, 'no' ,'no');
     }
     public function accountOfficer()
     {

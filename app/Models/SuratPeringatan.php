@@ -16,6 +16,6 @@ class SuratPeringatan extends Model
 
     public function nasabah()
     {
-        return $this->belongsTo(Nasabah::class, 'no');
+        return $this->belongsTo(Nasabah::class, 'no','no');
     }
 }

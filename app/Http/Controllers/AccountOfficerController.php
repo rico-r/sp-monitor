@@ -20,6 +20,8 @@ class AccountOfficerController extends Controller
     Log::info('Memasuki fungsi dashboard');
 
     $title = "Dashboard";
+    $currentUser = auth()->user();
+
 
     // Retrieve account officers with jabatan_id = 5
     $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
@@ -85,14 +87,20 @@ class AccountOfficerController extends Controller
     Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
 
     $nasabahs = $query->get();
-    $nasabahNames = Nasabah::pluck('nama', 'no');
+    // $nasabahNames = Nasabah::pluck('nama', 'no');
+    $nasabahNames = SuratPeringatan::where('id_account_officer', $currentUser->id)
+    ->whereNull('bukti_gambar')
+    ->with('nasabah') // Memuat relasi nasabah
+    ->get()
+    ->pluck('nasabah.nama', 'no');
 
-    $suratPeringatans = SuratPeringatan::select('id_peringatan', 'no', 'tingkat', 'diserahkan', 'bukti_gambar', 'scan_pdf')
-        ->latest('diserahkan')
-        ->get();
+
+    $suratPeringatans = SuratPeringatan::where('id_account_officer', $currentUser->id)
+    ->select('id_peringatan', 'no', 'tingkat', 'diserahkan', 'bukti_gambar', 'scan_pdf')
+    ->latest('diserahkan')
+    ->get();
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
-    $currentUser = auth()->user();
 
     return view('account-officer.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser', 'nasabahNames'));
 }
@@ -166,7 +174,7 @@ public function addNasabah(Request $request)
         }
 
         $accountOfficerId = auth()->user()->id;
-
+        
         // Update the existing Surat Peringatan
         $suratPeringatan->update([
             'diserahkan' => $nasabahData['diserahkan'],
