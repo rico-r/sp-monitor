@@ -145,7 +145,7 @@ public function addNasabah(Request $request)
     $request->validate([
         'nama' => 'required',
         'tingkat' => 'required',
-        'bukti_gambar' => 'required|image|max:2048',
+        'bukti_gambar' => 'required|image',
     ]);
 
     try {

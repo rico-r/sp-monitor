@@ -74,7 +74,7 @@
             </td>
             <td>
                 {{-- Tampilkan gambar jika file adalah gambar --}}
-                @if(in_array(pathinfo($suratPeringatan->bukti_gambar, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif']))
+                @if(in_array(pathinfo($suratPeringatan->bukti_gambar, PATHINFO_EXTENSION), ['jpg', 'jpeg', 'png', 'gif','webp']))
                     <img src="{{ asset('storage/' . $suratPeringatan->bukti_gambar) }}" alt="Bukti Gambar" style="width: 50px;">
                 @else
                     No Image

@@ -7,39 +7,51 @@
     </div>
     @endif
 
+    <!-- <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Nasabah</button> -->
     <div class="flex justify-between mb-4">
-    <div>
-        <form method="GET" action="{{ route('supervisor.dashboard') }}">
-            <select name="date_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                <option value="">Last 30 days</option>
-                <option value="last_7_days" {{ request('date_filter') == 'last_7_days' ? 'selected' : '' }}>Last 7 days</option>
-                <option value="last_30_days" {{ request('date_filter') == 'last_30_days' ? 'selected' : '' }}>Last 30 days</option>
-                <option value="last_month" {{ request('date_filter') == 'last_month' ? 'selected' : '' }}>Last month</option>
-                <option value="last_year" {{ request('date_filter') == 'last_year' ? 'selected' : '' }}>Last year</option>
-            </select>
-        </form>
-    </div>
-    <div>
-        <form method="GET" action="{{ route('supervisor.dashboard') }}">
-            <input type="text" id="search" name="search" value="{{ request('search') }}" placeholder="Search by name, branch, region" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-            
-            <select name="cabang_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                <option value="">Cabang</option>
-                @foreach($cabangs as $cabang)
-                    <option value="{{ $cabang->id_cabang }}" {{ request('cabang_filter') == $cabang->id_cabang ? 'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
-                @endforeach
-            </select>
+        <div>
+            <form method="GET" action="{{ route('supervisor.dashboard') }}">
+                <select name="date_filter" onchange="this.form.submit()"
+                    class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                    <option value="">Last 30 days</option>
+                    <option value="last_7_days" {{ request('date_filter')=='last_7_days' ? 'selected' : '' }}>Last 7
+                        days</option>
+                    <option value="last_30_days" {{ request('date_filter')=='last_30_days' ? 'selected' : '' }}>Last 30
+                        days</option>
+                    <option value="last_month" {{ request('date_filter')=='last_month' ? 'selected' : '' }}>Last month
+                    </option>
+                    <option value="last_year" {{ request('date_filter')=='last_year' ? 'selected' : '' }}>Last year
+                    </option>
+                </select>
+            </form>
+        </div>
+        <div>
+            <form method="GET" action="{{ route('supervisor.dashboard') }}">
+                <input type="text" id="search" name="search" value="{{ request('search') }}"
+                    placeholder="Search by name, branch, region"
+                    class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
 
-            <select name="wilayah_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                <option value="">Wilayah</option>
-                @foreach($wilayahs as $wilayah)
-                    <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter') == $wilayah->id_wilayah ? 'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
-                @endforeach
-            </select>
-        </form>
+                <select name="cabang_filter" onchange="this.form.submit()"
+                    class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                    <option value="">Cabang</option>
+                    @foreach($cabangs as $cabang)
+                    <option value="{{ $cabang->id_cabang }}" {{ request('cabang_filter')==$cabang->id_cabang ?
+                        'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
+                    @endforeach
+                </select>
+
+                <select name="wilayah_filter" onchange="this.form.submit()"
+                    class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                    <option value="">Wilayah</option>
+                    @foreach($wilayahs as $wilayah)
+                    <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter')==$wilayah->id_wilayah ?
+                        'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
+                    @endforeach
+                </select>
+            </form>
+        </div>
     </div>
-</div>
-    
+
     <table class="table table-striped" id="nasabah-table">
         <thead>
             <tr>
@@ -51,26 +63,81 @@
                 <th>Aksi</th>
             </tr>
         </thead>
-        <tbody>
-            @foreach($nasabahs as $index => $nasabah)
-                <tr>
-                    <td>{{ $nasabah->no }}</td>
-                    <td>{{ $nasabah->nama }}</td>
-                    <td>{{ $nasabah->total }}</td>
-                    <td>{{ $nasabah->keterangan }}</td>
-                    <td>
-                        @php
-                            $progresSp = $suratPeringatans->firstWhere('nasabah_no', $nasabah->no);
-                        @endphp
-                        {{ $progresSp ? $progresSp->tingkat : 'N/A' }}
-                    </td>
-                    <td>
-                        <!-- <a href="{{ route('nasabah.edit', ['no' => $nasabah->no]) }}" class="btn btn-primary">Edit</a> -->
-                        <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal" data-target="#detailModal">Detail</button>
-                    </td>
-                </tr>
-            @endforeach
-        </tbody>
+        @foreach($nasabahs as $index => $nasabah)
+    <tr>
+        <td>{{ $nasabah->no }}</td>
+        <td>{{ $nasabah->nama }}</td>
+        <td>{{ $nasabah->total }}</td>
+        <td>{{ $nasabah->keterangan }}</td>
+        <td>
+            @php
+            $matchingSp = $suratPeringatans->where('no', $nasabah->no)->sortByDesc('dibuat')->values();
+            $totalSp = $matchingSp->count();
+            @endphp
+
+            @if($totalSp > 0)
+            <div class="sp-indicators">
+                @for($i = $totalSp - 1; $i >= 0; $i--)
+                <span class="tingkat-{{ $matchingSp[$i]->tingkat }}"
+                    title="Tingkat {{ $matchingSp[$i]->tingkat }} - {{ $matchingSp[$i]->dibuat }}"
+                    data-toggle="modal" data-target="#modalDetail{{ $index }}-{{ $i }}">
+                </span>
+
+                <!-- Modal Detail SP -->
+                <div class="modal fade" id="modalDetail{{ $index }}-{{ $i }}" tabindex="-1" role="dialog"
+                    aria-labelledby="modalDetailLabel{{ $index }}-{{ $i }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalDetailLabel{{ $index }}-{{ $i }}">Surat Peringatan {{
+                                    $matchingSp[$i]->tingkat }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Menampilkan detail dari surat_peringatans -->
+                                <p>No: {{ $matchingSp[$i]->no }}</p>
+                                <p>Nama: {{ $matchingSp[$i]->nama }}</p>
+                                <p>Tingkat: {{ $matchingSp[$i]->tingkat }}</p>
+                                <p>Dibuat: {{ $matchingSp[$i]->dibuat }}</p>
+                                <p>Diserahkan: {{ $matchingSp[$i]->diserahkan }}</p>
+                                <p>Kembali: {{ $matchingSp[$i]->kembali }}</p>
+
+                                <!-- Menampilkan Bukti Gambar -->
+                                @if($matchingSp[$i]->bukti_gambar)
+                                <p>Bukti Gambar:</p>
+                                <img src="{{ asset('storage/'.$matchingSp[$i]->bukti_gambar) }}"
+                                    alt="Bukti Gambar" class="img-fluid">
+                                @endif
+
+                                <!-- Menampilkan Scan PDF -->
+                                @if($matchingSp[$i]->scan_pdf)
+                                <p>Scan PDF:</p>
+
+                                <button onclick="openPdf('{{ asset('storage/'.$matchingSp[$i]->scan_pdf) }}')" class="btn btn-primary">Lihat PDF</button>
+                                @endif
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endfor
+            </div>
+            @else
+            N/A
+            @endif
+
+        </td>
+        <td>
+            <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal"
+                data-target="#detailModal">Detail</button>
+        </td>
+    </tr>
+    @endforeach
     </table>
 </div>
 
@@ -84,7 +151,7 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="addForm" method="POST" action="{{ route('supervisor.nasabah.add') }}">
+            <form id="addForm" method="POST" action="{{ route('admin-kas.nasabah.add') }}">
                 @csrf
                 <div class="modal-body">
                     <div class="form-group">
@@ -115,19 +182,19 @@
                         <label for="addKeterangan">Keterangan</label>
                         <textarea class="form-control" id="addKeterangan" name="keterangan" required></textarea>
                     </div>
-                    <div class="form-group">
+                    <!-- <div class="form-group">
                         <label for="addTtd">TTD</label>
-                        <input type="datetime-local" class="form-control" id="addTtd" name="ttd" required>
+                        <input type="datetime-local" class="form-control" id="addTtd" name="ttd">
                     </div>
                     <div class="form-group">
                         <label for="addKembali">Kembali</label>
-                        <input type="datetime-local" class="form-control" id="addKembali" name="kembali" required>
-                    </div>
+                        <input type="datetime-local" class="form-control" id="addKembali" name="kembali">
+                    </div> -->
                     <div class="form-group">
                         <label for="addCabang">Cabang</label>
                         <select class="form-control" id="addCabang" name="id_cabang" required>
                             @foreach($cabangs as $cabang)
-                                <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
+                            <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -135,19 +202,23 @@
                         <label for="addWilayah">Wilayah</label>
                         <select class="form-control" id="addWilayah" name="id_wilayah" required>
                             @foreach($wilayahs as $wilayah)
-                                <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
+                            <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <input type="hidden" id="addIdAdminKas" name="id_admin_kas" value="{{ $currentUser->pegawaiAdminKas->id_admin_kas?? '' }}">
 
                     <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
                         <select class="form-control" id="addAccountOfficer" name="id_account_officer" required>
-                        @foreach($accountOfficers as $accountOfficer)
-                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                            @foreach($accountOfficers as $accountOfficer)
+                            <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_kas"></label>
+                        <input type="hidden" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                        <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -159,9 +230,71 @@
     </div>
 </div>
 
+<!-- Modal for Surat -->
+<div class="modal fade" id="addSurat" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addModalLabel">Tambah Data Surat</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="addSuratForm" method="POST" action="{{ route('admin-kas.nasabah.surat') }}"
+                enctype="multipart/form-data">
+                @csrf
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="tambahNo">No</label>
+                        <input type="text" class="form-control" id="tambahNo" name="no" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTingkat">Progress SP</label>
+                        <select class="form-control" id="addTingkat" name="tingkat" required>
+                            <option value="1">1</option>
+                            <option value="2">2</option>
+                            <option value="3">3</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="addTtd">Dibuat</label>
+                        <input type="datetime-local" class="form-control" id="addTtd" name="dibuat">
+                    </div>
+                    <div class="form-group">
+                        <label for="addKembali">Kembali</label>
+                        <input type="datetime-local" class="form-control" id="addKembali" name="kembali">
+                    </div>
+                    <div class="form-group">
+                        <label for="addScanPdf">Scan PDF</label>
+                        <input type="file" class="form-control" id="addScanPdf" name="scan_pdf" accept="application/pdf"
+                            required>
+                    </div>
+                    <!-- <div class="form-group">
+                        <label for="addAccountOfficer">Account Officer</label>
+                        <select class="form-control select2" id="addAccountOfficer" name="id_account_officer" required>
+                            <option value="">Pilih Account Officer</option>
+                            @foreach($accountOfficers as $accountOfficer)
+                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="admin_kas"></label>
+                        <input type="hidden" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
+                        <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
+                    </div> -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                    <button type="submit" class="btn btn-primary">Simpan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- Modal for Edit -->
-<!-- Modal for Edit -->
-<div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
+<!-- <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -174,7 +307,6 @@
                 @csrf
                 @method('POST')
                 <div class="modal-body">
-                    <!-- Form fields -->
                     <div class="form-group">
                         <label for="editNo">No</label>
                         <input type="text" class="form-control" id="editNo" name="no" readonly>
@@ -215,7 +347,7 @@
                         <label for="editCabang">Cabang</label>
                         <select class="form-control" id="editCabang" name="id_cabang" required>
                             @foreach($cabangs as $cabang)
-                                <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
+                            <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -223,7 +355,7 @@
                         <label for="editWilayah">Wilayah</label>
                         <select class="form-control" id="editWilayah" name="id_wilayah" required>
                             @foreach($wilayahs as $wilayah)
-                                <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
+                            <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -231,9 +363,14 @@
                         <label for="editAccountOfficer">Account Officer</label>
                         <select class="form-control" id="editAccountOfficer" name="id_account_officer" required>
                             @foreach($accountOfficers as $accountOfficer)
-                                <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                            <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
                             @endforeach
                         </select>
+                    </div>
+                    <input type="hidden" name="id_admin_kas" value="{{ auth()->user()->id }}">
+                    <div class="form-group">
+                        <label for="admin_kas">Admin Kas</label>
+                        <input type="text" id="admin_kas" value="{{ auth()->user()->name }}" readonly>
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -243,11 +380,11 @@
             </form>
         </div>
     </div>
-</div>
-
+</div> -->
 
 <!-- Modal for Detail -->
-<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel" aria-hidden="true">
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
@@ -295,15 +432,16 @@
                 </div>
                 <div class="form-group">
                     <label for="detailCabang">Cabang</label>
-                    <input type="text" class="form-control" id="detailCabang" name="detailCabang" readonly>
+                    <input type="text" class="form-control" id="detailCabang" name="id_cabang" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailWilayah">Wilayah</label>
-                    <input type="text" class="form-control" id="detailWilayah" name="detailWilayah" readonly>
+                    <input type="text" class="form-control" id="detailWilayah" name="id_wilayah" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailAccountOfficer">Account Officer</label>
-                    <input type="text" class="form-control" id="detailAccountOfficer" name="account_officer" readonly>
+                    <input type="text" class="form-control" id="detailAccountOfficer" name="id_account_officer"
+                        readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailAdminKas">Admin Kas</label>
@@ -317,12 +455,13 @@
     </div>
 </div>
 
-<!-- Modal for Delete -->
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel" aria-hidden="true">
+<!-- Modal for Delete
+<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="deleteModalLabel"
+    aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="deleteModalLabel">Hapus Data Nasabah</h5>
+                <h5 class="modal-title" id="deleteModalLabel">Konfirmasi Hapus Data Nasabah</h5>
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
@@ -331,8 +470,7 @@
                 @csrf
                 @method('DELETE')
                 <div class="modal-body">
-                    <p>Apakah Anda yakin ingin menghapus data ini?</p>
-                    <input type="hidden" id="deleteNo" name="no">
+                    <p>Apakah Anda yakin ingin menghapus data nasabah ini?</p>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
@@ -341,107 +479,160 @@
             </form>
         </div>
     </div>
-</div>
+</div> -->
 
 <script>
-    $(document).ready(function() {
-    $('#cabang_search').on('input', function() {
-        var query = $(this).val();
-        if (query.length > 2) {
-            $.ajax({
-                url: '{{ route("supervisor.dashboard") }}',
-                method: 'GET',
-                data: { query: query },
-                success: function(data) {
-                    $('#cabang_filter').empty();
-                    $('#cabang_filter').append('<option value="">Cabang</option>');
-                    $.each(data, function(key, value) {
-                        $('#cabang_filter').append('<option value="' + value.id_cabang + '">' + value.nama_cabang + '</option>');
-                    });
+    document.getElementById('search').addEventListener('keyup', function (event) {
+        const query = event.target.value;
+        const table = document.getElementById('nasabah-table');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const cells = rows[i].getElementsByTagName('td');
+            let match = false;
+
+            for (let j = 0; j < cells.length; j++) {
+                if (cells[j].innerText.toLowerCase().includes(query.toLowerCase())) {
+                    match = true;
+                    break;
                 }
-            });
+            }
+
+            if (match) {
+                rows[i].style.display = '';
+            } else {
+                rows[i].style.display = 'none';
+            }
         }
     });
+    // Edit button click event
+    $('.edit-btn').on('click', function () {
+        var no = $(this).data('no');
+        $.ajax({
+            url: '/admin-kas/nasabah/edit/' + no,
+            method: 'GET',
+            success: function (data) {
+                // Populate the modal with data
+                $('#editNo').val(data.no);
+                $('#editNama').val(data.nama);
+                $('#editPokok').val(data.pokok);
+                $('#editBunga').val(data.bunga);
+                $('#editDenda').val(data.denda);
+                $('#editTotal').val(data.total);
+                $('#editKeterangan').val(data.keterangan);
+                $('#editTtd').val(data.ttd);
+                $('#editKembali').val(data.kembali);
+                $('#editCabang').val(data.nama_cabang);
+                $('#editWilayah').val(data.nama_wilayah);
+                $('#editAccountOfficer').val(data.id_account_officer);
+                $('#detailAdminKas').val(data.adminKas ? data.adminKas.name : '');
 
-    $('#wilayah_search').on('input', function() {
-        var query = $(this).val();
-        if (query.length > 2) {
-            $.ajax({
-                url: '{{ route("supervisor.dashboard") }}',
-                method: 'GET',
-                data: { query: query },
-                success: function(data) {
-                    $('#wilayah_filter').empty();
-                    $('#wilayah_filter').append('<option value="">Wilayah</option>');
-                    $.each(data, function(key, value) {
-                        $('#wilayah_filter').append('<option value="' + value.id_wilayah + '">' + value.nama_wilayah + '</option>');
-                    });
-                }
-            });
-        }
-    });
-        // Edit button click event
-        $('.edit-btn').on('click', function() {
-            var no = $(this).data('no');
-            $.ajax({
-                url: '/supervisor/nasabah/edit/' + no,
-        method: 'GET',
-        success: function(data) {
-            // Populate the modal with data
-            $('#editNo').val(data.no);
-            $('#editNama').val(data.nama);
-            $('#editPokok').val(data.pokok);
-            $('#editBunga').val(data.bunga);
-            $('#editDenda').val(data.denda);
-            $('#editTotal').val(data.total);
-            $('#editKeterangan').val(data.keterangan);
-            $('#editTtd').val(data.ttd);
-            $('#editKembali').val(data.kembali);
-            $('#editCabang').val(data.nama_cabang);
-            $('#editWilayah').val(data.nama_wilayah);
-            $('#editAccountOfficer').val(data.id_account_officer);
-
-            // Set the form action to the update route with the correct no
-            $('#editForm').attr('action', '/supervisor/nasabah/update/' + no);
-            $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
+                // Set the form action to the update route with the correct no
+                $('#editForm').attr('action', '/admin-kas/nasabah/update/' + no);
+                $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
 
 
-                    // Menampilkan modal
-                    $('#editModal').modal('show');
-                },
-                error: function(xhr) {
-                    alert('Terjadi kesalahan saat memuat data.');
-                }
-            });
+                // Menampilkan modal
+                $('#editModal').modal('show');
+            },
+            error: function (xhr) {
+                alert('Terjadi kesalahan saat memuat data.');
+            }
         });
-
-        // Detail button click event
-        $('.detail-btn').on('click', function() {
-            var no = $(this).data('no');
-            var nasabah = @json($nasabahs->keyBy('no'));
-            var data = nasabah[no];
-            
-
-            $('#detailNo').val(data.no);
-            $('#detailNama').val(data.nama);
-            $('#detailPokok').val(data.pokok);
-            $('#detailBunga').val(data.bunga);
-            $('#detailDenda').val(data.denda);
-            $('#detailTotal').val(data.total);
-            $('#detailKeterangan').val(data.keterangan);
-            $('#detailTtd').val(data.ttd);
-            $('#detailKembali').val(data.kembali);
-            $('#detailCabang').val(data.cabang.nama_cabang);
-            $('#detailWilayah').val(data.wilayah.nama_wilayah);
-            // $('#detailAccountOfficer').val(data.user.name);
-            $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
-            $('#detailAdminKas').val(data.admin_kas ? data.admin_kas.name : '');
-
-        });
-        // Attach events for calculating total on input change
-        $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
-        $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
     });
+
+    // Detail button click event
+    $('.detail-btn').on('click', function () {
+        var no = $(this).data('no');
+        var nasabah = @json($nasabahs -> keyBy('no'));
+        var data = nasabah[no];
+
+
+        $('#detailNo').val(data.no);
+        $('#detailNama').val(data.nama);
+        $('#detailPokok').val(data.pokok);
+        $('#detailBunga').val(data.bunga);
+        $('#detailDenda').val(data.denda);
+        $('#detailTotal').val(data.total);
+        $('#detailKeterangan').val(data.keterangan);
+        // $('#detailTtd').val(data.ttd);
+        // $('#detailKembali').val(data.kembali);
+        $('#detailCabang').val(data.cabang.nama_cabang);
+        $('#detailWilayah').val(data.wilayah.nama_wilayah);
+        // $('#detailAccountOfficer').val(data.user.name);
+        $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
+        $('#detailAdminKas').val(data.admin_kas ? data.admin_kas.name : '');
+
+
+    });
+
+    // Delete button click event
+    $('.delete-btn').on('click', function () {
+        var no = $(this).data('no');
+        $('#deleteNo').val(no);
+        $('#deleteForm').attr('action', '/admin-kas/nasabah/delete/' + no);
+    });
+
+    // Tambah button
+    $('.tambah-btn').on('click', function () {
+        var no = $(this).data('no');
+        $.ajax({
+            url: '/admin-kas/nasabah/edit/' + no,
+            method: 'GET',
+            success: function (data) {
+                // Populate the modal with data
+                $('#tambahNo').val(data.no);
+                // $('#editNama').val(data.nama);
+                // $('#editPokok').val(data.pokok);
+                // $('#editBunga').val(data.bunga);
+                // $('#editDenda').val(data.denda);
+                // $('#editTotal').val(data.total);
+                // $('#editKeterangan').val(data.keterangan);
+                // $('#editTtd').val(data.ttd);
+                // $('#editKembali').val(data.kembali);
+                // $('#editCabang').val(data.nama_cabang);
+                // $('#editWilayah').val(data.nama_wilayah);
+                // $('#editAccountOfficer').val(data.id_account_officer);
+                // $('#detailAdminKas').val(data.adminKas ? data.adminKas.name : '');
+
+                // Set the form action to the update route with the correct no
+                $('#editForm').attr('action', '/admin-kas/nasabah/update/' + no);
+                $('#editForm').find('input[name="_method"]').val('PUT'); // Set the method to PUT
+
+
+                // Menampilkan modal
+                $('#editModal').modal('show');
+            },
+            error: function (xhr) {
+                alert('Terjadi kesalahan saat memuat data.');
+            }
+        });
+    });
+    function openPdf(url) {
+        window.open(url, '_blank');
+    }
+
+    // Calculate total for add form
+    function calculateAddTotal() {
+        var pokok = parseFloat($('#addPokok').val()) || 0;
+        var bunga = parseFloat($('#addBunga').val()) || 0;
+        var denda = parseFloat($('#addDenda').val()) || 0;
+        var total = pokok + bunga + denda;
+        $('#addTotal').val(total);
+    }
+
+    // Calculate total for edit form
+    function calculateEditTotal() {
+        var pokok = parseFloat($('#editPokok').val()) || 0;
+        var bunga = parseFloat($('#editBunga').val()) || 0;
+        var denda = parseFloat($('#editDenda').val()) || 0;
+        var total = pokok + bunga + denda;
+        $('#editTotal').val(total);
+    }
+
+    // Attach events for calculating total on input change
+    $('#addPokok, #addBunga, #addDenda').on('input', calculateAddTotal);
+    $('#editPokok, #editBunga, #editDenda').on('input', calculateEditTotal);
 </script>
 
 @endsection

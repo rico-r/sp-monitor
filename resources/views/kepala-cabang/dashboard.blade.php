@@ -64,89 +64,81 @@
             </tr>
         </thead>
         <tbody>
-            @foreach($nasabahs as $index => $nasabah)
-            <tr>
-                <td>{{ $nasabah->no }}</td>
-                <td>{{ $nasabah->nama }}</td>
-                <td>{{ $nasabah->total }}</td>
-                <td>{{ $nasabah->keterangan }}</td>
-                <td>
-                    @php
-                    $matchingSp = $suratPeringatans->where('no', $nasabah->no)->sortByDesc('dibuat')->values();
-                    $totalSp = $matchingSp->count();
-                    @endphp
+    @foreach($nasabahs as $index => $nasabah)
+    <tr>
+        <td>{{ $nasabah->no }}</td>
+        <td>{{ $nasabah->nama }}</td>
+        <td>{{ $nasabah->total }}</td>
+        <td>{{ $nasabah->keterangan }}</td>
+        <td>
+            @php
+            $matchingSp = $suratPeringatans->where('no', $nasabah->no)->sortByDesc('dibuat')->values();
+            $totalSp = $matchingSp->count();
+            @endphp
 
-                    @if($totalSp > 0)
-                    <div class="sp-indicators">
-                        @for($i = $totalSp - 1; $i >= 0; $i--)
-                        <span class="tingkat-{{ $matchingSp[$i]->tingkat }}"
-                            title="Tingkat {{ $matchingSp[$i]->tingkat }} - {{ $matchingSp[$i]->dibuat }}"
-                            data-toggle="modal" data-target="#modalDetail{{ $i }}">
-                        </span>
+            @if($totalSp > 0)
+            <div class="sp-indicators">
+                @for($i = $totalSp - 1; $i >= 0; $i--)
+                <span class="tingkat-{{ $matchingSp[$i]->tingkat }}"
+                    title="Tingkat {{ $matchingSp[$i]->tingkat }} - {{ $matchingSp[$i]->dibuat }}"
+                    data-toggle="modal" data-target="#modalDetail{{ $index }}-{{ $i }}">
+                </span>
 
-                        <!-- Modal Detail SP -->
-                        <div class="modal fade" id="modalDetail{{ $i }}" tabindex="-1" role="dialog"
-                            aria-labelledby="modalDetailLabel{{ $i }}" aria-hidden="true">
-                            <div class="modal-dialog" role="document">
-                                <div class="modal-content">
-                                    <div class="modal-header">
-                                        <h5 class="modal-title" id="modalDetailLabel{{ $i }}">Surat Peringatan {{
-                                            $matchingSp[$i]->tingkat }}</h5>
-                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                            <span aria-hidden="true">&times;</span>
-                                        </button>
-                                    </div>
-                                    <div class="modal-body">
-                                        <!-- Menampilkan detail dari surat_peringatans -->
-                                        <p>No: {{ $matchingSp[$i]->no }}</p>
-                                        <p>Nama: {{ $matchingSp[$i]->nama }}</p>
-                                        <p>Tingkat: {{ $matchingSp[$i]->tingkat }}</p>
-                                        <p>Dibuat: {{ $matchingSp[$i]->dibuat }}</p>
-                                        <p>Diserahkan: {{ $matchingSp[$i]->diserahkan }}</p>
-                                        <p>Kembali: {{ $matchingSp[$i]->kembali }}</p>
+                <!-- Modal Detail SP -->
+                <div class="modal fade" id="modalDetail{{ $index }}-{{ $i }}" tabindex="-1" role="dialog"
+                    aria-labelledby="modalDetailLabel{{ $index }}-{{ $i }}" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalDetailLabel{{ $index }}-{{ $i }}">Surat Peringatan {{
+                                    $matchingSp[$i]->tingkat }}</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            <div class="modal-body">
+                                <!-- Menampilkan detail dari surat_peringatans -->
+                                <p>No: {{ $matchingSp[$i]->no }}</p>
+                                <p>Nama: {{ $matchingSp[$i]->nama }}</p>
+                                <p>Tingkat: {{ $matchingSp[$i]->tingkat }}</p>
+                                <p>Dibuat: {{ $matchingSp[$i]->dibuat }}</p>
+                                <p>Diserahkan: {{ $matchingSp[$i]->diserahkan }}</p>
+                                <p>Kembali: {{ $matchingSp[$i]->kembali }}</p>
 
-                                        <!-- Menampilkan Bukti Gambar -->
-                                        @if($matchingSp[$i]->bukti_gambar)
-                                        <p>Bukti Gambar:</p>
-                                        <img src="{{ asset('storage/'.$matchingSp[$i]->bukti_gambar) }}"
-                                            alt="Bukti Gambar" class="img-fluid">
-                                        @endif
+                                <!-- Menampilkan Bukti Gambar -->
+                                @if($matchingSp[$i]->bukti_gambar)
+                                <p>Bukti Gambar:</p>
+                                <img src="{{ asset('storage/'.$matchingSp[$i]->bukti_gambar) }}"
+                                    alt="Bukti Gambar" class="img-fluid">
+                                @endif
 
-                                        <!-- Menampilkan Scan PDF -->
-                                        @if($matchingSp[$i]->scan_pdf)
-                                        <p>Scan PDF:</p>
+                                <!-- Menampilkan Scan PDF -->
+                                @if($matchingSp[$i]->scan_pdf)
+                                <p>Scan PDF:</p>
 
-                                        <button onclick="openPdf('{{ asset('storage/'.$matchingSp[$i]->scan_pdf) }}')" class="btn btn-primary">Lihat PDF</button>
-                                        @endif
-                                        
-                                    </div>
-                                    <div class="modal-footer">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-dismiss="modal">Close</button>
-                                    </div>
-                                </div>
+                                <button onclick="openPdf('{{ asset('storage/'.$matchingSp[$i]->scan_pdf) }}')" class="btn btn-primary">Lihat PDF</button>
+                                @endif
+                                
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                             </div>
                         </div>
-                        @endfor
                     </div>
-                    @else
-                    N/A
-                    @endif
+                </div>
+                @endfor
+            </div>
+            @else
+            N/A
+            @endif
 
-                </td>
-                <td>
-                    <!-- <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $nasabah->no }}" data-toggle="modal"
-                        data-target="#editModal">Edit</button> -->
-                    <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal"
-                        data-target="#detailModal">Detail</button>
-                    <!-- <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $nasabah->no }}" data-toggle="modal"
-                        data-target="#deleteModal">Delete</button>
-                    <button class="btn btn-success mt-1 tambah-btn" data-no="{{ $nasabah->no}}" data-toggle="modal"
-                        data-target="#addSurat">Tambah SP</button> -->
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
+        </td>
+        <td>
+            <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->no }}" data-toggle="modal"
+                data-target="#detailModal">Detail</button>
+        </td>
+    </tr>
+    @endforeach
     </table>
 </div>
 

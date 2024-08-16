@@ -84,7 +84,7 @@ Route::prefix('kepala-cabang')
         Route::put('/nasabah/update/{no}', [KepalaCabangController::class, 'update'])->name('nasabah.update');
         Route::post('nasabah/add', [KepalaCabangController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{no}', [KepalaCabangController::class, 'deleteNasabah'])->name('nasabah.delete');
-        Route::post('/nasabah/surat', [KepalaCabangController::class, 'addSurat'])->name('nasabah.surat');
+        // Route::post('/nasabah/surat', [KepalaCabangController::class, 'addSurat'])->name('nasabah.surat');
 });
 
 // Routes for supervisor
@@ -92,11 +92,12 @@ Route::prefix('supervisor')
     ->name('supervisor.')
     ->middleware('jabatan:3')
     ->group(function () {
-    Route::get('/dashboard', [SupervisorController::class, 'dashboard'])->name('dashboard');
-    Route::get('/nasabah/edit/{no}', [SupervisorController::class, 'editNasabah'])->name('nasabah.edit');
-    Route::put('/nasabah/update/{no}', [SupervisorController::class, 'update'])->name('nasabah.update');
-    Route::post('nasabah/add', [SupervisorController::class, 'addNasabah'])->name('nasabah.add');
-    Route::delete('nasabah/delete/{no}', [SupervisorController::class, 'deleteNasabah'])->name('nasabah.delete');
+        Route::get('/dashboard', [SupervisorController::class, 'dashboard'])->name('dashboard');
+        Route::get('/nasabah/edit/{no}', [SupervisorController::class, 'editNasabah'])->name('nasabah.edit');
+        Route::get('/admin-kas/search', [SupervisorController::class, 'search'])->name('admin-kas.search');
+        Route::put('/nasabah/update/{no}', [SupervisorController::class, 'update'])->name('nasabah.update');
+        Route::post('nasabah/add', [SupervisorController::class, 'addNasabah'])->name('nasabah.add');
+        Route::delete('nasabah/delete/{no}', [SupervisorController::class, 'deleteNasabah'])->name('nasabah.delete');
 
 
 });
