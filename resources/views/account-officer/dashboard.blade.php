@@ -63,7 +63,7 @@
             </span>
             Tingkat {{ $suratPeringatan->tingkat }}
                 </td>
-                <td>{{ $suratPeringatan->diserahkan }}</td>
+                <td>{{ $suratPeringatan->diserahkan ?? 'Belum ada Data' }}</td>
                 <!-- <td>
                 {{-- Tampilkan link untuk file PDF --}}
                 @if(pathinfo($suratPeringatan->scan_pdf, PATHINFO_EXTENSION) === 'pdf')

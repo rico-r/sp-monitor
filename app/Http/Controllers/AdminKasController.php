@@ -11,10 +11,14 @@ use App\Models\SuratPeringatan;
 use App\Models\Cabang;
 use App\Models\Wilayah;
 use App\Models\User;
+use Response;
 
 
 class AdminKasController extends Controller
 {
+   
+    
+
     public function dashboard(Request $request)
 {
     Log::info('Memasuki fungsi dashboard');
@@ -87,7 +91,10 @@ class AdminKasController extends Controller
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
-    $suratPeringatans = SuratPeringatan::select('no', 'tingkat')->get()->sortByDesc('tingkat');
+    $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
+    ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
+    ->get()
+    ->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
     $currentUser = auth()->user();
@@ -234,4 +241,5 @@ public function addNasabah(Request $request)
         return response()->json(['error' => 'Failed to add data']);
     }
 }
+
 }
