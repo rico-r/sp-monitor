@@ -19,13 +19,12 @@ class KepalaCabangController extends Controller
     public function dashboard(Request $request)
 {
     Log::info('Memasuki fungsi dashboard');
-
     $title = "Dashboard";
     $currentUser = auth()->user();
-
+    
     // Retrieve account officers with jabatan_id = 5
     $accountOfficers = User::where('jabatan_id', 5)->get();
-
+    
     // Query nasabah dengan filter berdasarkan id_cabang dari user yang login
     $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah')
         ->where('id_cabang', $currentUser->id_cabang);  // Filter based on id_cabang of the logged-in user
@@ -35,12 +34,11 @@ class KepalaCabangController extends Controller
         $noFilter = $request->input('no');
         $query->where('no', $noFilter);
     }
-
+    
     // Filter berdasarkan tanggal
     if ($request->has('date_filter')) {
         $dateFilter = $request->input('date_filter');
         Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
-
         switch ($dateFilter) {
             case 'last_7_days':
                 $query->where('created_at', '>=', now()->subDays(7));
@@ -56,43 +54,42 @@ class KepalaCabangController extends Controller
                 break;
         }
     }
-
+    
     // Filter berdasarkan pencarian
     $search = $request->input('search');
     if ($search) {
-        $query->where('nama', 'like', "%{$search}%")
-              ->orWhereHas('cabang', function ($q) use ($search) {
-                  $q->where('nama_cabang', 'like', "%{$search}%");
+        $query->where(function($q) use ($search) {
+            $q->where('nama', 'like', "%{$search}%")
+              ->orWhereHas('cabang', function ($subQ) use ($search) {
+                  $subQ->where('nama_cabang', 'like', "%{$search}%");
               })
-              ->orWhereHas('wilayah', function ($q) use ($search) {
-                  $q->where('nama_wilayah', 'like', "%{$search}%");
+              ->orWhereHas('wilayah', function ($subQ) use ($search) {
+                  $subQ->where('nama_wilayah', 'like', "%{$search}%");
               });
+        });
     }
-
+    
     // Filter berdasarkan cabang, jika ada filter tambahan
     $cabangFilter = $request->input('cabang_filter');
     if ($cabangFilter) {
         $query->where('id_cabang', $cabangFilter);
     }
-
+    
     // Filter based on wilayah
     $wilayahFilter = $request->input('wilayah_filter');
     if ($wilayahFilter) {
-        $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
-            $q->where('id_wilayah', $wilayahFilter);
-        });
+        $query->where('id_wilayah', $wilayahFilter);
     }
-
+    
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
-
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
         ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
         ->get()
         ->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
-
+    
     return view('kepala-cabang.dashboard', compact('title', 'accountOfficers', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser', 'nasabahNames'));
 }
 

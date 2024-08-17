@@ -15,26 +15,31 @@ use Illuminate\Support\Facades\Log;
 
 class SupervisorController extends Controller
 {
+
     public function dashboard(Request $request)
 {
     Log::info('Memasuki fungsi dashboard');
-
     $title = "Dashboard";
-
-    // Retrieve account officers with jabatan_id = 5
-    $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
-
+    $currentUser = auth()->user();
     
-    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+    // Retrieve account officers with jabatan_id = 5
+    $accountOfficers = User::where('jabatan_id', 5)->get();
+    
+    // Query nasabah dengan filter berdasarkan id_cabang dari user yang login
+    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah')
+        ->where('id_cabang', $currentUser->id_cabang)  // Filter based on id_cabang of the logged-in user
+        ->where('id_wilayah', $currentUser->id_wilayah);
 
-    // Log query awal
-    Log::info('Query awal: ', ['query' => $query->toSql()]);
-
+    // Filter berdasarkan no
+    if ($request->has('no')) {
+        $noFilter = $request->input('no');
+        $query->where('no', $noFilter);
+    }
+    
     // Filter berdasarkan tanggal
     if ($request->has('date_filter')) {
         $dateFilter = $request->input('date_filter');
         Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
-
         switch ($dateFilter) {
             case 'last_7_days':
                 $query->where('created_at', '>=', now()->subDays(7));
@@ -50,52 +55,43 @@ class SupervisorController extends Controller
                 break;
         }
     }
-
-    // Log query setelah filter tanggal
-    Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
-
+    
     // Filter berdasarkan pencarian
     $search = $request->input('search');
     if ($search) {
-        $query->where('nama', 'like', "%{$search}%")
-              ->orWhereHas('cabang', function ($q) use ($search) {
-                  $q->where('nama_cabang', 'like', "%{$search}%");
+        $query->where(function($q) use ($search) {
+            $q->where('nama', 'like', "%{$search}%")
+              ->orWhereHas('cabang', function ($subQ) use ($search) {
+                  $subQ->where('nama_cabang', 'like', "%{$search}%");
               })
-              ->orWhereHas('wilayah', function ($q) use ($search) {
-                  $q->where('nama_wilayah', 'like', "%{$search}%");
+              ->orWhereHas('wilayah', function ($subQ) use ($search) {
+                  $subQ->where('nama_wilayah', 'like', "%{$search}%");
               });
-    }
-
-    // Filter based on cabang
-    $cabangFilter = $request->input('cabang_filter');
-    if ($cabangFilter) {
-        $query->whereHas('cabang', function ($q) use ($cabangFilter) {
-            $q->where('id_cabang', $cabangFilter);
         });
     }
-
+    
+    // Filter berdasarkan cabang, jika ada filter tambahan
+    $cabangFilter = $request->input('cabang_filter');
+    if ($cabangFilter) {
+        $query->where('id_cabang', $cabangFilter);
+    }
+    
     // Filter based on wilayah
     $wilayahFilter = $request->input('wilayah_filter');
     if ($wilayahFilter) {
-        $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
-            $q->where('id_wilayah', $wilayahFilter);
-        });
+        $query->where('id_wilayah', $wilayahFilter);
     }
-
-    Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
-
+    
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
-
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
-    ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
-    ->get()
-    ->sortByDesc('tingkat');
+        ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
+        ->get()
+        ->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
-    $currentUser = auth()->user();
-
-    return view('supervisor.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
+    
+    return view('supervisor.dashboard', compact('title', 'accountOfficers', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser', 'nasabahNames'));
 }
 
 //     public function dashboard(Request $request)
@@ -178,7 +174,7 @@ class SupervisorController extends Controller
 //     $wilayahs = Wilayah::all();
 //     $currentUser = auth()->user();
 
-//     return view('supervisor.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
+//     return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
 // }
 public function editNasabah($no)
 {
@@ -204,13 +200,13 @@ public function update(Request $request, $no)
         $nasabah = Nasabah::where('no', $no)->firstOrFail();
         $nasabah->update($request->all());
 
-        return redirect()->route('supervisor.dashboard')->with('success', 'Data berhasil di update');
+        return redirect()->route('direksi.dashboard')->with('success', 'Data berhasil di update');
     }
 
 public function deleteNasabah($no)
 {
     Nasabah::find($no)->delete();
-    return redirect()->route('supervisor.dashboard')->with('success', 'Data berhasil di hapus');
+    return redirect()->route('direksi.dashboard')->with('success', 'Data berhasil di hapus');
 }
 
 public function detailNasabah($no)
@@ -271,7 +267,7 @@ public function addSurat(Request $request)
 
         Log::info('Surat Peringatan added successfully', $suratData);
 
-        return redirect()->route('supervisor.dashboard')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('direksi.dashboard')->with('success', 'Data berhasil ditambahkan');
     } catch (\Exception $e) {
         Log::error('Error adding Surat Peringatan: ' . $e->getMessage(), [
             'request' => $request->all(),
@@ -310,7 +306,7 @@ public function addNasabah(Request $request)
         Log::info('Nasabah added successfully', $nasabahData);
         
 
-        return redirect()->route('supervisor.dashboard')->with('success', 'Data berhasil ditambahkan');
+        return redirect()->route('direksi.dashboard')->with('success', 'Data berhasil ditambahkan');
     } catch (\Exception $e) {
         Log::error('Error adding Nasabah: ' . $e->getMessage(), [
             'request' => $request->all(),
