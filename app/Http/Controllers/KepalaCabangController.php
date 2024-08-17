@@ -15,20 +15,26 @@ use Illuminate\Support\Facades\Log;
 
 class KepalaCabangController extends Controller
 {
+
     public function dashboard(Request $request)
 {
     Log::info('Memasuki fungsi dashboard');
 
     $title = "Dashboard";
+    $currentUser = auth()->user();
 
     // Retrieve account officers with jabatan_id = 5
-    $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
+    $accountOfficers = User::where('jabatan_id', 5)->get();
 
-    
-    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+    // Query nasabah dengan filter berdasarkan id_cabang dari user yang login
+    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah')
+        ->where('id_cabang', $currentUser->id_cabang);  // Filter based on id_cabang of the logged-in user
 
-    // Log query awal
-    Log::info('Query awal: ', ['query' => $query->toSql()]);
+    // Filter berdasarkan no
+    if ($request->has('no')) {
+        $noFilter = $request->input('no');
+        $query->where('no', $noFilter);
+    }
 
     // Filter berdasarkan tanggal
     if ($request->has('date_filter')) {
@@ -51,9 +57,6 @@ class KepalaCabangController extends Controller
         }
     }
 
-    // Log query setelah filter tanggal
-    Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
-
     // Filter berdasarkan pencarian
     $search = $request->input('search');
     if ($search) {
@@ -66,12 +69,10 @@ class KepalaCabangController extends Controller
               });
     }
 
-    // Filter based on cabang
+    // Filter berdasarkan cabang, jika ada filter tambahan
     $cabangFilter = $request->input('cabang_filter');
     if ($cabangFilter) {
-        $query->whereHas('cabang', function ($q) use ($cabangFilter) {
-            $q->where('id_cabang', $cabangFilter);
-        });
+        $query->where('id_cabang', $cabangFilter);
     }
 
     // Filter based on wilayah
@@ -82,21 +83,20 @@ class KepalaCabangController extends Controller
         });
     }
 
-    Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
-
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
-    ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
-    ->get()
-    ->sortByDesc('tingkat');
+        ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
+        ->get()
+        ->sortByDesc('tingkat');
     $cabangs = Cabang::all();
     $wilayahs = Wilayah::all();
-    $currentUser = auth()->user();
 
-    return view('kepala-cabang.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
+    return view('kepala-cabang.dashboard', compact('title', 'accountOfficers', 'nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser', 'nasabahNames'));
 }
+
+
 
 //     public function dashboard(Request $request)
 // {
