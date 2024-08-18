@@ -119,6 +119,8 @@ class AuthController extends Controller
                                 return redirect()->intended(route('admin-kas.dashboard'));   
                                 case '5':
                                     return redirect()->intended(route('account-officer.dashboard'));
+                                    case '99':
+                                        return redirect()->intended(route('super-admin.dashboard'));
 
                 // dst ...
 

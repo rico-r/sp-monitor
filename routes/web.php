@@ -12,6 +12,7 @@ use App\Http\Controllers\DireksiController;
 use App\Http\Controllers\KepalaCabangController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\SuperAdminController;
 use App\Http\Controllers\FileController;
 
 /*
@@ -127,5 +128,14 @@ Route::prefix('account-officer')
         Route::post('nasabah/add', [AccountOfficerController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{id_peringatan}', [AccountOfficerController::class, 'deleteNasabah'])->name('nasabah.delete');
 });
+
+Route::prefix('super-admin')
+    ->name('super-admin.')
+    ->middleware('jabatan:99')
+    ->group(function () {
+        Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/super-admin/user/edit/{id}', [SuperAdminController::class, 'edit'])->name('super-admin.user.edit');
+        Route::put('/user/update/{id}', [SuperAdminController::class, 'update'])->name('super-admin.user.update'); 
+    });
 
 
