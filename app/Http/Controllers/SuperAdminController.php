@@ -15,19 +15,21 @@ use App\Models\User;
 
 class SuperAdminController extends Controller
 {
-    
     public function dashboard(Request $request)
     {
         Log::info('Memasuki fungsi dashboard');
     
         $title = "Dashboard";
+        Log::info('Title set: ' . $title);
     
         // Retrieve account officers with jabatan_id = 5
         $accountOfficers = User::where('jabatan_id', 5)->get();
+        Log::info('Account Officers retrieved: ', ['count' => $accountOfficers->count()]);
     
         // Dapatkan ID admin kas yang sedang login
         $currentUser = auth()->user();
         $adminKasId = $currentUser->id;
+        Log::info('Current User ID: ', ['adminKasId' => $adminKasId]);
     
         // Memulai query dengan relasi yang diperlukan
         $query = User::with('jabatan', 'cabang', 'wilayah','infostatus')
@@ -35,7 +37,7 @@ class SuperAdminController extends Controller
     
         Log::info('Query awal: ', ['query' => $query->toSql()]);
     
-        // Filter berdasarkan tanggal (jika diperlukan, sesuaikan dengan kolom yang relevan di tabel users)
+        // Filter berdasarkan tanggal (jika diperlukan)
         if ($request->has('date_filter')) {
             $dateFilter = $request->input('date_filter');
             Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
@@ -43,24 +45,29 @@ class SuperAdminController extends Controller
             switch ($dateFilter) {
                 case 'last_7_days':
                     $query->where('created_at', '>=', now()->subDays(7));
+                    Log::info('Filter last 7 days diterapkan');
                     break;
                 case 'last_30_days':
                     $query->where('created_at', '>=', now()->subDays(30));
+                    Log::info('Filter last 30 days diterapkan');
                     break;
                 case 'last_month':
                     $query->whereMonth('created_at', '=', now()->subMonth()->month);
+                    Log::info('Filter last month diterapkan');
                     break;
                 case 'last_year':
                     $query->whereYear('created_at', '=', now()->subYear()->year);
+                    Log::info('Filter last year diterapkan');
                     break;
             }
         }
     
         Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
     
-        // Filter berdasarkan pencarian (sesuaikan kolom yang akan dicari)
+        // Filter berdasarkan pencarian
         $search = $request->input('search');
         if ($search) {
+            Log::info('Pencarian diterapkan', ['search' => $search]);
             $query->where('name', 'like', "%{$search}%")
                 ->orWhereHas('cabang', function ($q) use ($search) {
                     $q->where('nama_cabang', 'like', "%{$search}%");
@@ -73,6 +80,7 @@ class SuperAdminController extends Controller
         // Filter berdasarkan cabang
         $cabangFilter = $request->input('cabang_filter');
         if ($cabangFilter) {
+            Log::info('Filter cabang diterapkan', ['cabang_filter' => $cabangFilter]);
             $query->whereHas('cabang', function ($q) use ($cabangFilter) {
                 $q->where('id_cabang', $cabangFilter);
             });
@@ -81,6 +89,7 @@ class SuperAdminController extends Controller
         // Filter berdasarkan wilayah
         $wilayahFilter = $request->input('wilayah_filter');
         if ($wilayahFilter) {
+            Log::info('Filter wilayah diterapkan', ['wilayah_filter' => $wilayahFilter]);
             $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
                 $q->where('id_wilayah', $wilayahFilter);
             });
@@ -89,39 +98,63 @@ class SuperAdminController extends Controller
         Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
     
         $users = $query->get(); // Mengambil data dari tabel users
+        Log::info('Users retrieved: ', ['count' => $users->count()]);
 
         $cabangs = Cabang::all();
+        Log::info('Cabangs retrieved: ', ['count' => $cabangs->count()]);
         $wilayahs = Wilayah::all();
+        Log::info('Wilayahs retrieved: ', ['count' => $wilayahs->count()]);
         $jabatans = Jabatan::all();
+        Log::info('Jabatans retrieved: ', ['count' => $jabatans->count()]);
         $statuses = Status::all(); 
+        Log::info('Statuses retrieved: ', ['count' => $statuses->count()]);
 
-    // Mengambil semua data user (tanpa filter)
-        $allUsers = User::all();     
+        // Mengambil semua data user (tanpa filter)
+        $allUsers = User::all();  
+        Log::info('All users retrieved: ', ['count' => $allUsers->count()]);
+
         return view('super-admin.dashboard', compact('title', 'accountOfficers','statuses', 'jabatans', 'users','allUsers', 'cabangs', 'wilayahs', 'currentUser')); 
     }
+
     public function edit($id)
     {
-        $user = User::with('jabatan', 'cabang', 'wilayah', 'status')->findOrFail($id);
-        $jabatans = Jabatan::all();
-        $cabangs = Cabang::all();
-        $wilayahs = Wilayah::all();
-        $statuses = Status::all(); // Pastikan Anda memiliki model Status
+        Log::info('Memasuki fungsi edit', ['user_id' => $id]);
 
-        return view('super-admin.user.edit', compact('user', 'jabatans', 'cabangs', 'wilayahs', 'statuses')); // Sesuaikan dengan nama view Anda
+        $user = User::with('jabatan', 'cabang', 'wilayah','infostatus')->findOrFail($id);
+        Log::info('User found for editing: ', ['user' => $user]);
+        // $allUsers = User::all();  
+
+        $jabatans = Jabatan::all();
+        Log::info('Jabatans retrieved: ', ['count' => $jabatans->count()]);
+        $cabangs = Cabang::all();
+        Log::info('Cabangs retrieved: ', ['count' => $cabangs->count()]);
+        $wilayahs = Wilayah::all();
+        Log::info('Wilayahs retrieved: ', ['count' => $wilayahs->count()]);
+        $statuses = Status::all(); 
+        Log::info('Statuses retrieved: ', ['count' => $statuses->count()]);
+
+        // return view('super-admin.dashboard', compact('allUsers','user', 'jabatans', 'cabangs', 'wilayahs', 'statuses'));
+        return response()->json($user);
     }
 
     public function update(Request $request, $id)
     {
+        Log::info('Memasuki fungsi update', ['user_id' => $id]);
+
         // Validasi data input jika diperlukan
-        $request->validate([
+        $validatedData = $request->validate([
             'name' => 'required',
             'jabatan_id' => 'required',
             'id_cabang' => 'required',
             'id_wilayah' => 'required',
         ]);
+        Log::info('Data tervalidasi: ', ['validated_data' => $validatedData]);
 
         $user = User::findOrFail($id);
+        Log::info('User found for updating: ', ['user' => $user]);
+
         $user->update($request->all());
+        Log::info('User updated successfully', ['user' => $user]);
 
         return redirect()->route('super-admin.dashboard')->with('success', 'Data pengguna berhasil diperbarui!');
     }

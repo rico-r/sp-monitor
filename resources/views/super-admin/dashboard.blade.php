@@ -52,36 +52,36 @@
     </div>
 
     <table class="table table-striped" id="nasabah-table">
-    <thead>
-        <tr>
-            <th>Nama</th>
-            <th>Status</th>
-            <th>Jabatan</th>
-            <th>Cabang</th>
-            <th>Wilayah</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach($allUsers as $user) 
-        <tr>
-            <td>{{ $user->name }}</td> 
-            <td>{{ $user->infostatus ? $user->infostatus->nama_status : 'Tidak ada Status' }}</td>  
-            <td>{{ $user->jabatan->nama_jabatan }}</td> 
-            <td>{{ $user->cabang ? $user->cabang->nama_cabang : 'Tidak ada Cabang' }}</td>
-            <td>{{ $user->wilayah ? $user->wilayah->nama_wilayah : 'Tidak ada Wilayah' }}</td>
-            <td>
-                <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $user->id }}" data-toggle="modal"
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>Email</th>
+                <th>Status</th>
+                <th>Jabatan</th>
+                <th>Cabang</th>
+                <th>Wilayah</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach($allUsers as $user)
+            <tr>
+                <td>{{ $user->name }}</td>
+                <td>{{ $user->email}}</td>
+                <td>{{ $user->infostatus ? $user->infostatus->nama_status : 'N/A' }}</td>
+                <td>{{ $user->jabatan->nama_jabatan }}</td>
+                <td>{{ $user->cabang ? $user->cabang->nama_cabang : 'N/A' }}</td>
+                <td>{{ $user->wilayah ? $user->wilayah->nama_wilayah : 'N/A' }}</td>
+                <td>
+                    <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $user->id }}" data-toggle="modal"
                         data-target="#editModal">Edit</button>
-                <button class="btn btn-info btn-sm detail-btn" data-id="{{ $user->id }}" data-toggle="modal"
+                    <button class="btn btn-info btn-sm detail-btn" data-id="{{ $user->id }}" data-toggle="modal"
                         data-target="#detailModal">Detail</button>
-                <button class="btn btn-danger btn-sm delete-btn" data-id="{{ $user->id }}" data-toggle="modal"
-                        data-target="#deleteModal">Delete</button>
-            </td>
-        </tr>
-        @endforeach
-    </tbody>
-</table>
+                </td>
+            </tr>
+            @endforeach
+        </tbody>
+    </table>
 </div>
 
 <!-- Modal for Edit -->
@@ -94,62 +94,64 @@
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
-            <form id="editForm" method="POST" action="{{ route('super-admin.user.update', ['id' => $user->id]) }}"> 
+            <form id="editForm" method="POST" action="">
                 @csrf
                 @method('PUT')
-                </form>
-                <div class="modal-body">
+            </form>
+            <div class="modal-body">
                 <div class="form-group">
-                        <label for="editNama">Nama</label>
-                        <input type="text" class="form-control" id="editNama" name="name" required> 
-                    </div>
-                    <div class="form-group">
-                        <label for="editStatus">Status</label>
-                        <select class="form-control" id="editStatus" name="status" required>
-                        <option value="" disabled selected>Pilih Jabatan</option>
+                    <label for="editNama">Nama</label>
+                    <input type="text" class="form-control" id="editNama" name="name" readonly required>
+                </div>
+                <div class="form-group">
+                    <label for="editStatus">Status</label>
+                    <select class="form-control" id="editStatus" name="status" required>
+                        <option value="" disabled selected>Pilih Status</option>
                         <option value="1">Aktif</option>
                         <option value="2">Tidak Aktif</option>
-                    </select> 
-                    </div>
-                    <div class="form-group">
-                        <label for="editStatus">Status</label>
-                        <select class="form-control" id="editStatus" name="status" required>
-                            <option value="" disabled selected>Pilih Status</option>
-                            @foreach ($statuses as $status)
-                                <option value="{{ $status->id }}">{{ $status->nama_status }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editJabatan">Jabatan</label>
-                        <select class="form-control" id="editJabatan" name="jabatan_id" required>
-                            <option value="" disabled selected>Pilih Jabatan</option>
-                            @foreach ($jabatans as $jabatan)
-                                <option value="{{ $jabatan->id_jabatan }}">{{ $jabatan->nama_jabatan }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editCabang">Cabang</label>
-                        <select class="form-control" id="editCabang" name="id_cabang" required>
-                            @foreach($cabangs as $cabang)
-                            <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="editWilayah">Wilayah</label>
-                        <select class="form-control" id="editWilayah" name="id_wilayah" required>
-                            @foreach($wilayahs as $wilayah)
-                            <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
-                            @endforeach
-                        </select>
-                    </div>
+                    </select>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                    <button type="submit" class="btn btn-primary">Simpan</button>
+                <!-- <div class="form-group">
+                    <label for="editJabatan">Jabatan</label>
+                    <select class="form-control" id="editJabatan" name="jabatan" required>
+                        <option value="" disabled selected>Pilih Jabatan</option>
+                        @foreach ($statuses as $status)
+                        <option value="{{ $status->id }}">{{ $status->nama_status }}</option>
+                        @endforeach
+                    </select>
+                </div> -->
+                <div class="form-group">
+                    <label for="editJabatan">Jabatan</label>
+                    <select class="form-control" id="editJabatan" name="jabatan_id" required>
+                        <option value="" disabled selected>Pilih Jabatan</option>
+                        @foreach ($jabatans as $jabatan)
+                        <option value="{{ $jabatan->id_jabatan }}">{{ $jabatan->nama_jabatan }}</option>
+                        @endforeach
+                    </select>
                 </div>
+                <div class="form-group">
+                    <label for="editCabang">Cabang</label>
+                    <select class="form-control" id="editCabang" name="id_cabang" required>
+                        <option value="" disabled selected>Pilih Cabang</option>
+                        @foreach($cabangs as $cabang)
+                        <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="editWilayah">Wilayah</label>
+                    <select class="form-control" id="editWilayah" name="id_wilayah" required>
+                        <option value="" disabled selected>Pilih Wilayah</option>
+                        @foreach($wilayahs as $wilayah)
+                        <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
+                        @endforeach
+                    </select>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                <button type="submit" class="btn btn-primary">Simpan</button>
+            </div>
             </form>
         </div>
     </div>
@@ -280,38 +282,33 @@
     });
     // Edit button click event
     $('.edit-btn').on('click', function () {
-    var id = $(this).data('id'); // Menggunakan 'id' sebagai pengenal pengguna
+        var id = $(this).data('id'); // Menggunakan 'id' sebagai pengenal pengguna
 
-    $.ajax({
-        url: '/super-admin/user/edit/' + id, // Ubah rute ke /super-admin/user/edit/{id}
-        method: 'GET',
-        success: function (data) {
-            // Populate the modal with data
-            $('#editNama').val(data.name);
-            $('#editStatus').val(data.status_id); // Mengisi dropdown status dengan ID status yang sesuai
-            $('#editJabatan').val(data.jabatan_id); // Mengisi dropdown jabatan dengan ID jabatan yang sesuai
-            $('#editCabang').val(data.id_cabang); // Mengisi dropdown cabang dengan ID cabang yang sesuai
-            $('#editWilayah').val(data.id_wilayah); // Mengisi dropdown wilayah dengan ID wilayah yang sesuai
+        $.ajax({
+            url: '/super-admin/user/edit/' + id, // Ubah rute ke /super-admin/user/edit/{id}
+            method: 'GET',
+            success: function (data) {
+                // Populate the modal with data
+                $('#editNama').val(data.name);
+                $('#editStatus').val(data.status); // Mengisi dropdown status dengan ID status yang sesuai
+                $('#editJabatan').val(data.jabatan_id); // Mengisi dropdown jabatan dengan ID jabatan yang sesuai
+                $('#editCabang').val(data.id_cabang); // Mengisi dropdown cabang dengan ID cabang yang sesuai
+                $('#editWilayah').val(data.id_wilayah); // Mengisi dropdown wilayah dengan ID wilayah yang sesuai
 
-            // Set the form action to the update route with the correct id
-            $('#editForm').attr('action', '/super-admin/user/update/' + id); // Ubah rute ke /super-admin/user/update/{id}
-            $('#editForm').find('input[name="_method"]').val('PUT');  
+                // Set the form action to the update route with the correct id
+                $('#editForm').attr('action', '/user/update/' + id); // Ubah rute ke /super-admin/user/update/{id}
+                $('#editForm').find('input[name="_method"]').val('PUT');
 
-            // Menampilkan modal
-            $('#editModal').modal('show');
-        },
-        error: function (xhr, status, error) {
-            console.error('Error #editForm:', error); // Log error ke konsol browser
-            alert('Terjadi kesalahan saat memuat data.');
-        }
+                // Menampilkan modal
+                $('#editModal').modal('show');
+            },
+            error: function (xhr, status, error) {
+                console.error('Error #editForm:', error); // Log error ke konsol browser
+                alert('Terjadi kesalahan saat memuat data.');
+            }
+        });
     });
-});
-    // Delete button click event
-    $('.delete-btn').on('click', function () {
-        var no = $(this).data('no');
-        $('#deleteNo').val(no);
-        $('#deleteForm').attr('action', '/admin-kas/nasabah/delete/' + no);
-    });
+   
 
 </script>
 
