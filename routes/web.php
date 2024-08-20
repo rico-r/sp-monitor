@@ -134,8 +134,8 @@ Route::prefix('super-admin')
     ->middleware('jabatan:99')
     ->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
-        Route::get('/super-admin/user/edit/{id}', [SuperAdminController::class, 'edit'])->name('super-admin.user.edit');
-        Route::put('/user/update/{id}', [SuperAdminController::class, 'update'])->name('super-admin.user.update'); 
-    });
+        Route::get('/user/edit/{id}', [SuperAdminController::class, 'edit'])->name('user.edit');
+        Route::put('/user/update/{id}', [SuperAdminController::class, 'update'])->name('user.update'); 
+});
 
 
