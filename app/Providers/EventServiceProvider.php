@@ -21,9 +21,9 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
-        UserRegisteredMobile::class => [
-            AssignRoleToUser::class,
-        ],
+        // UserRegisteredMobile::class => [
+        //     AssignRoleToUser::class,
+        // ],
     ];
 
     /**

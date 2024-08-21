@@ -37,7 +37,7 @@ class NasabahSeeder extends Seeder
             $nasabah->id_cabang = \App\Models\Cabang::inRandomOrder()->first()->id_cabang;
 
             // Ambil id_wilayah secara acak
-            $nasabah->id_wilayah = \App\Models\Wilayah::inRandomOrder()->first()->id_wilayah;
+            $nasabah->id_kantorkas = \App\Models\KantorKas::inRandomOrder()->first()->id_kantorkas;
 
             // Ambil id_account_officer dari User yang memiliki jabatan_id = 5 secara acak
             $nasabah->id_account_officer = \App\Models\User::where('jabatan_id', 5)->inRandomOrder()->first()->id;

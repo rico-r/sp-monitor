@@ -22,13 +22,13 @@ return new class extends Migration
         $table->foreignId('status')->nullable();
         $table->foreignId('jabatan_id');
         $table->foreignId('id_cabang')->nullable();
-        $table->foreignId('id_wilayah')->nullable();
+        $table->foreignId('id_kantorkas')->nullable();
         $table->rememberToken();
         $table->timestamps();
         $table->foreign('key')->references('key')->on('keys')->onDelete('cascade');
         $table->foreign('status')->references('id')->on('statuses')->onDelete('cascade');
         $table->foreign('id_cabang')->references('id_cabang')->on('cabangs')->onDelete('cascade');
-        $table->foreign('id_wilayah')->references('id_wilayah')->on('wilayahs')->onDelete('cascade');
+        $table->foreign('id_kantorkas')->references('id_kantorkas')->on('kantorkas')->onDelete('cascade');
 
 
     });

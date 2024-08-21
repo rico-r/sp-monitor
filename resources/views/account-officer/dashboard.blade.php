@@ -33,7 +33,7 @@
 
             <select name="wilayah_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                 <option value="">Wilayah</option>
-                @foreach($wilayahs as $wilayah)
+                @foreach($kantorkas as $wilayah)
                     <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter') == $wilayah->id_wilayah ? 'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
                 @endforeach
             </select>

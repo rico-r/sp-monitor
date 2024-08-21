@@ -16,6 +16,7 @@ return new class extends Migration
         Schema::create('keys', function (Blueprint $table) {
             $table->id('key');
             $table->string('jabatan');
+            $table->string('key_status')->nullable();
             $table->timestamps();
         });
     }

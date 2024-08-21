@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Nip;
 use App\Models\User;
 use App\Models\Jabatan;
-use App\Models\Wilayah;
+use App\Models\KantorKas;
 use App\Models\PegawaiAdminKas;
 use App\Models\PegawaiSupervisor;
 use Laravel\Sanctum\HasApiTokens;
@@ -31,7 +31,7 @@ class Nasabah extends Model
         // 'ttd',
         // 'kembali',
         'id_cabang',
-        'id_wilayah',
+        'id_kantorkas',
         'id_account_officer',
         'id_admin_kas',
     ];
@@ -39,9 +39,9 @@ class Nasabah extends Model
     {
         return $this->belongsTo(Cabang::class, 'id_cabang');
     }
-    public function wilayah()
+    public function kantorkas()
     {
-        return $this->belongsTo(Wilayah::class, 'id_wilayah');
+        return $this->belongsTo(KantorKas::class, 'id_kantorkas');
     }
     protected $primaryKey = 'no';
 

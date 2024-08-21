@@ -44,8 +44,8 @@
                     class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                     <option value="">Wilayah</option>
                     @foreach($wilayahs as $wilayah)
-                    <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter')==$wilayah->id_wilayah ?
-                        'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
+                    <option value="{{ $wilayah->id_kantorkas }}" {{ request('wilayah_filter')==$wilayah->id_kantorkas ?
+                        'selected' : '' }}>{{ $wilayah->nama_kantorkas }}</option>
                     @endforeach
                 </select>
             </form>
@@ -200,9 +200,9 @@
                     </div>
                     <div class="form-group">
                         <label for="addWilayah">Wilayah</label>
-                        <select class="form-control" id="addWilayah" name="id_wilayah" required>
+                        <select class="form-control" id="addWilayah" name="id_kantorkas" required>
                             @foreach($wilayahs as $wilayah)
-                            <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
+                            <option value="{{ $wilayah->id_kantorkas }}">{{ $wilayah->nama_kantorkas }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -353,9 +353,9 @@
                     </div>
                     <div class="form-group">
                         <label for="editWilayah">Wilayah</label>
-                        <select class="form-control" id="editWilayah" name="id_wilayah" required>
+                        <select class="form-control" id="editWilayah" name="id_kantorkas" required>
                             @foreach($wilayahs as $wilayah)
-                            <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
+                            <option value="{{ $wilayah->id_kantorkas }}">{{ $wilayah->nama_kantorkas }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -436,7 +436,7 @@
                 </div>
                 <div class="form-group">
                     <label for="detailWilayah">Wilayah</label>
-                    <input type="text" class="form-control" id="detailWilayah" name="id_wilayah" readonly>
+                    <input type="text" class="form-control" id="detailWilayah" name="id_kantorkas" readonly>
                 </div>
                 <div class="form-group">
                     <label for="detailAccountOfficer">Account Officer</label>
@@ -523,7 +523,7 @@
                 $('#editTtd').val(data.ttd);
                 $('#editKembali').val(data.kembali);
                 $('#editCabang').val(data.nama_cabang);
-                $('#editWilayah').val(data.nama_wilayah);
+                $('#editWilayah').val(data.nama_kantorkas);
                 $('#editAccountOfficer').val(data.id_account_officer);
                 $('#detailAdminKas').val(data.adminKas ? data.adminKas.name : '');
 
@@ -558,7 +558,7 @@
         // $('#detailTtd').val(data.ttd);
         // $('#detailKembali').val(data.kembali);
         $('#detailCabang').val(data.cabang.nama_cabang);
-        $('#detailWilayah').val(data.wilayah.nama_wilayah);
+        $('#detailWilayah').val(data.kantorkas.nama_kantorkas);
         // $('#detailAccountOfficer').val(data.user.name);
         $('#detailAccountOfficer').val(data.account_officer ? data.account_officer.name : ''); // Mengakses nama account officer dari relasi account_officer
         $('#detailAdminKas').val(data.admin_kas ? data.admin_kas.name : '');
@@ -591,7 +591,7 @@
                 // $('#editTtd').val(data.ttd);
                 // $('#editKembali').val(data.kembali);
                 // $('#editCabang').val(data.nama_cabang);
-                // $('#editWilayah').val(data.nama_wilayah);
+                // $('#editWilayah').val(data.nama_kantorkas);
                 // $('#editAccountOfficer').val(data.id_account_officer);
                 // $('#detailAdminKas').val(data.adminKas ? data.adminKas.name : '');
 

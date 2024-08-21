@@ -42,9 +42,9 @@
                 <select name="wilayah_filter" onchange="this.form.submit()"
                         class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                     <option value="">Wilayah</option>
-                    @foreach($wilayahs as $wilayah)
-                        <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter')==$wilayah->id_wilayah ?
-                            'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
+                    @foreach($kantorkas as $wilayah)
+                        <option value="{{ $wilayah->id_kantorkas }}" {{ request('wilayah_filter')==$wilayah->id_kantorkas ?
+                            'selected' : '' }}>{{ $wilayah->nama_kantorkas }}</option>
                     @endforeach
                 </select>
             </form>
@@ -71,7 +71,7 @@
                 <td>{{ $user->infostatus ? $user->infostatus->nama_status : 'N/A' }}</td>
                 <td>{{ $user->jabatan->nama_jabatan }}</td>
                 <td>{{ $user->cabang ? $user->cabang->nama_cabang : 'N/A' }}</td>
-                <td>{{ $user->wilayah ? $user->wilayah->nama_wilayah : 'N/A' }}</td>
+                <td>{{ $user->wilayah ? $user->wilayah->nama_kantorkas : 'N/A' }}</td>
                 <td>
                     <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $user->id }}" data-toggle="modal"
                             data-target="#editModal">Edit</button>
@@ -127,10 +127,10 @@
                     </div>
                     <div class="form-group">
                         <label for="editWilayah">Wilayah</label>
-                        <select class="form-control" id="editWilayah" name="id_wilayah" required>
+                        <select class="form-control" id="editWilayah" name="id_kantorkas" required>
                             <option value="" disabled selected>Pilih Wilayah</option>
-                            @foreach($wilayahs as $wilayah)
-                                <option value="{{ $wilayah->id_wilayah }}">{{ $wilayah->nama_wilayah }}</option>
+                            @foreach($kantorkas as $wilayah)
+                                <option value="{{ $wilayah->id_kantorkas }}">{{ $wilayah->nama_kantorkas }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -183,7 +183,7 @@
                 $('#editStatus').val(data.status); // Mengisi dropdown status dengan ID status yang sesuai
                 $('#editJabatan').val(data.jabatan_id); // Mengisi dropdown jabatan dengan ID jabatan yang sesuai
                 $('#editCabang').val(data.id_cabang); // Mengisi dropdown cabang dengan ID cabang yang sesuai
-                $('#editWilayah').val(data.id_wilayah); // Mengisi dropdown wilayah dengan ID wilayah yang sesuai
+                $('#editWilayah').val(data.id_kantorkas); // Mengisi dropdown wilayah dengan ID wilayah yang sesuai
 
                 // Set the form action to the update route with the correct id
                 $('#editForm').attr('action', '/super-admin/user/update/' + id); // Ubah rute ke /super-admin/user/update/{id}

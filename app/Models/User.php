@@ -7,7 +7,7 @@ use App\Models\Nip;
 use App\Models\Key;
 use App\Models\Jabatan;
 use App\Models\Nasabah;
-use App\Models\Wilayah;
+use App\Models\KantorKas;
 use App\Models\PegawaiAdminKas;
 use App\Models\PegawaiSupervisor;
 use Laravel\Sanctum\HasApiTokens;
@@ -59,9 +59,9 @@ class User extends Authenticatable
     }
 
 
-    public function wilayah()
+    public function kantorkas()
     {
-        return $this->belongsTo(Wilayah::class, 'id_wilayah');
+        return $this->belongsTo(KantorKas::class, 'id_kantorkas');
     }
     public function cabang()
     {

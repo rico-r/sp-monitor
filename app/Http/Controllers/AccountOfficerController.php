@@ -7,7 +7,7 @@ use App\Models\Nasabah;
 use App\Models\PegawaiAccountOffice;
 use App\Models\SuratPeringatan;
 use App\Models\Cabang;
-use App\Models\Wilayah;
+use App\Models\KantorKas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -27,7 +27,7 @@ class AccountOfficerController extends Controller
     $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
 
     
-    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+    $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas');
 
     // Log query awal
     Log::info('Query awal: ', ['query' => $query->toSql()]);
@@ -63,8 +63,8 @@ class AccountOfficerController extends Controller
               ->orWhereHas('cabang', function ($q) use ($search) {
                   $q->where('nama_cabang', 'like', "%{$search}%");
               })
-              ->orWhereHas('wilayah', function ($q) use ($search) {
-                  $q->where('nama_wilayah', 'like', "%{$search}%");
+              ->orWhereHas('kantorkas', function ($q) use ($search) {
+                  $q->where('nama_kantorkas', 'like', "%{$search}%");
               });
     }
 
@@ -76,15 +76,15 @@ class AccountOfficerController extends Controller
         });
     }
 
-    // Filter based on wilayah
+    // Filter based on kantorkas
     $wilayahFilter = $request->input('wilayah_filter');
     if ($wilayahFilter) {
-        $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
-            $q->where('id_wilayah', $wilayahFilter);
+        $query->whereHas('kantorkas', function ($q) use ($wilayahFilter) {
+            $q->where('id_kantorkas', $wilayahFilter);
         });
     }
 
-    Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
+    Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
     $nasabahs = $query->get();
     // $nasabahNames = Nasabah::pluck('nama', 'no');
@@ -100,9 +100,9 @@ class AccountOfficerController extends Controller
     ->latest('diserahkan')
     ->get();
     $cabangs = Cabang::all();
-    $wilayahs = Wilayah::all();
+    $kantorkas = KantorKas::all();
 
-    return view('account-officer.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser', 'nasabahNames'));
+    return view('account-officer.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser', 'nasabahNames'));
 }
 public function editNasabah($no)
 {
