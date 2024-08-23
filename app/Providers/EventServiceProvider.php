@@ -24,6 +24,9 @@ class EventServiceProvider extends ServiceProvider
         // UserRegisteredMobile::class => [
         //     AssignRoleToUser::class,
         // ],
+        RegisterKeySubmit::class => [
+            KeyUpdate::class,
+        ],
     ];
 
     /**
