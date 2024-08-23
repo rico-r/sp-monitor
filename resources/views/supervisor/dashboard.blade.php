@@ -42,10 +42,17 @@
 
                 <select name="wilayah_filter" onchange="this.form.submit()"
                     class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                    <option value="">Wilayah</option>
-                    @foreach($wilayahs as $wilayah)
+                    <option value="">Kantor Kas</option>
+                    @foreach($kantorkas as $wilayah)
                     <option value="{{ $wilayah->id_kantorkas }}" {{ request('wilayah_filter')==$wilayah->id_kantorkas ?
                         'selected' : '' }}>{{ $wilayah->nama_kantorkas }}</option>
+                    @endforeach
+                </select>
+                <select name="ao_filter" onchange="this.form.submit()"
+                    class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                    <option value="">Account Officer</option>
+                    @foreach($aocabang as $ao)
+                    <option value="{{ $ao->name }}" {{ request('ao_filter') == $ao->name ? 'selected' : '' }}>{{ $ao->name }}</option>
                     @endforeach
                 </select>
             </form>
@@ -199,9 +206,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="addWilayah">Wilayah</label>
+                        <label for="addWilayah">Kantor Kas</label>
                         <select class="form-control" id="addWilayah" name="id_kantorkas" required>
-                            @foreach($wilayahs as $wilayah)
+                            @foreach($kantorkas as $wilayah)
                             <option value="{{ $wilayah->id_kantorkas }}">{{ $wilayah->nama_kantorkas }}</option>
                             @endforeach
                         </select>
@@ -352,9 +359,9 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editWilayah">Wilayah</label>
+                        <label for="editWilayah">Kantor Kas</label>
                         <select class="form-control" id="editWilayah" name="id_kantorkas" required>
-                            @foreach($wilayahs as $wilayah)
+                            @foreach($kantorkas as $wilayah)
                             <option value="{{ $wilayah->id_kantorkas }}">{{ $wilayah->nama_kantorkas }}</option>
                             @endforeach
                         </select>
@@ -435,7 +442,7 @@
                     <input type="text" class="form-control" id="detailCabang" name="id_cabang" readonly>
                 </div>
                 <div class="form-group">
-                    <label for="detailWilayah">Wilayah</label>
+                    <label for="detailWilayah">Kantor Kas</label>
                     <input type="text" class="form-control" id="detailWilayah" name="id_kantorkas" readonly>
                 </div>
                 <div class="form-group">

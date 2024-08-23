@@ -21,7 +21,7 @@ class SupervisorController extends Controller
     Log::info('Memasuki fungsi dashboard');
     $title = "Dashboard";
     $currentUser = auth()->user();
-    
+    $userCabang =auth()->user()->id_cabang;
     // Retrieve account officers with jabatan_id = 5
     $accountOfficers = User::where('jabatan_id', 5)->get();
     
@@ -29,6 +29,10 @@ class SupervisorController extends Controller
     $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas')
         ->where('id_cabang', $currentUser->id_cabang)  // Filter based on id_cabang of the logged-in user
         ->where('id_kantorkas', $currentUser->id_kantorkas);
+    
+        $aocabang = User::where('id_cabang', $userCabang)
+        ->where('jabatan_id', 5)
+        ->get();
 
     // Filter berdasarkan no
     if ($request->has('no')) {
@@ -69,7 +73,7 @@ class SupervisorController extends Controller
               });
         });
     }
-    
+
     // Filter berdasarkan cabang, jika ada filter tambahan
     $cabangFilter = $request->input('cabang_filter');
     if ($cabangFilter) {
@@ -82,6 +86,14 @@ class SupervisorController extends Controller
         $query->where('id_kantorkas', $wilayahFilter);
     }
     
+    // Filter based on AO
+    $aoFilter = $request->input('ao_filter');
+    if ($aoFilter) {
+        $query->whereHas('accountOfficer', function ($q) use ($aoFilter) {
+            $q->where('name', $aoFilter);
+        });
+    }
+
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
@@ -91,7 +103,7 @@ class SupervisorController extends Controller
     $cabangs = Cabang::all();
     $kantorkas = KantorKas::all();
     
-    return view('supervisor.dashboard', compact('title', 'accountOfficers', 'nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser', 'nasabahNames'));
+    return view('supervisor.dashboard', compact('title', 'accountOfficers','aocabang', 'nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser', 'nasabahNames'));
 }
 
 //     public function dashboard(Request $request)
