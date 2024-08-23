@@ -7,7 +7,7 @@ use App\Models\Nasabah;
 use App\Models\PegawaiAccountOffice;
 use App\Models\SuratPeringatan;
 use App\Models\Cabang;
-use App\Models\Wilayah;
+use App\Models\KantorKas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
@@ -25,7 +25,7 @@ class DireksiController extends Controller
     $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
 
     
-    $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+    $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas');
 
     // Log query awal
     Log::info('Query awal: ', ['query' => $query->toSql()]);
@@ -61,8 +61,8 @@ class DireksiController extends Controller
               ->orWhereHas('cabang', function ($q) use ($search) {
                   $q->where('nama_cabang', 'like', "%{$search}%");
               })
-              ->orWhereHas('wilayah', function ($q) use ($search) {
-                  $q->where('nama_wilayah', 'like', "%{$search}%");
+              ->orWhereHas('kantorkas', function ($q) use ($search) {
+                  $q->where('nama_kantorkas', 'like', "%{$search}%");
               });
     }
 
@@ -74,15 +74,23 @@ class DireksiController extends Controller
         });
     }
 
-    // Filter based on wilayah
+    // Filter based on kantorkas
     $wilayahFilter = $request->input('wilayah_filter');
     if ($wilayahFilter) {
-        $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
-            $q->where('id_wilayah', $wilayahFilter);
+        $query->whereHas('kantorkas', function ($q) use ($wilayahFilter) {
+            $q->where('id_kantorkas', $wilayahFilter);
         });
     }
 
-    Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
+    // Filter based on AO   
+    $aoFilter = $request->input('ao_filter');
+    if ($aoFilter) {
+        $query->whereHas('accountOfficer', function ($q) use ($aoFilter) {
+            $q->where('name', $aoFilter);
+        });
+    }
+
+    Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
@@ -92,10 +100,10 @@ class DireksiController extends Controller
     ->get()
     ->sortByDesc('tingkat');
     $cabangs = Cabang::all();
-    $wilayahs = Wilayah::all();
+    $kantorkas = KantorKas::all();
     $currentUser = auth()->user();
 
-    return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
+    return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser','nasabahNames'));
 }
 
 //     public function dashboard(Request $request)
@@ -108,7 +116,7 @@ class DireksiController extends Controller
 //     $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
 
     
-//     $query = Nasabah::with('accountOfficer','adminKas','cabang','wilayah');
+//     $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas');
 
 //     // Log query awal
 //     Log::info('Query awal: ', ['query' => $query->toSql()]);
@@ -144,8 +152,8 @@ class DireksiController extends Controller
 //               ->orWhereHas('cabang', function ($q) use ($search) {
 //                   $q->where('nama_cabang', 'like', "%{$search}%");
 //               })
-//               ->orWhereHas('wilayah', function ($q) use ($search) {
-//                   $q->where('nama_wilayah', 'like', "%{$search}%");
+//               ->orWhereHas('kantorkas', function ($q) use ($search) {
+//                   $q->where('nama_kantorkas', 'like', "%{$search}%");
 //               });
 //     }
 
@@ -157,15 +165,15 @@ class DireksiController extends Controller
 //         });
 //     }
 
-//     // Filter based on wilayah
+//     // Filter based on kantorkas
 //     $wilayahFilter = $request->input('wilayah_filter');
 //     if ($wilayahFilter) {
-//         $query->whereHas('wilayah', function ($q) use ($wilayahFilter) {
-//             $q->where('id_wilayah', $wilayahFilter);
+//         $query->whereHas('kantorkas', function ($q) use ($wilayahFilter) {
+//             $q->where('id_kantorkas', $wilayahFilter);
 //         });
 //     }
 
-//     Log::info('Query setelah filter cabang dan wilayah: ', ['query' => $query->toSql()]);
+//     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
 //     $nasabahs = $query->get();
 //     $nasabahNames = Nasabah::pluck('nama', 'no');
@@ -175,10 +183,10 @@ class DireksiController extends Controller
 //     ->get()
 //     ->sortByDesc('tingkat');
 //     $cabangs = Cabang::all();
-//     $wilayahs = Wilayah::all();
+//     $kantorkas = KantorKas::all();
 //     $currentUser = auth()->user();
 
-//     return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'wilayahs', 'currentUser','nasabahNames'));
+//     return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser','nasabahNames'));
 // }
 public function editNasabah($no)
 {
@@ -197,7 +205,7 @@ public function update(Request $request, $no)
             'ttd' => 'required|date',
             'kembali' => 'required|date',
             'id_cabang' => 'required|integer',
-            'id_wilayah' => 'required|integer',
+            'id_kantorkas' => 'required|integer',
             'id_account_officer' => 'required|integer'
         ]);
 
@@ -297,7 +305,7 @@ public function addNasabah(Request $request)
         // 'ttd' => 'required|date',
         // 'kembali' => 'required|date',
         'id_cabang' => 'required|exists:cabangs,id_cabang',
-        'id_wilayah' => 'required|exists:wilayahs,id_wilayah',
+        'id_kantorkas' => 'required|exists:kantorkas,id_kantorkas',
         'id_account_officer' => 'required',
     ]);
 
@@ -319,6 +327,32 @@ public function addNasabah(Request $request)
 
         return response()->json(['error' => 'Failed to add data']);
     }
+}
+public function searchNasabah(Request $request)
+{
+    $search = $request->input('search');
+
+    $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas');
+
+    if ($search) {
+        $query->where(function ($q) use ($search) {
+            $q->where('nama', 'like', "%{$search}%")
+                ->orWhereHas('cabang', function ($q) use ($search) {
+                    $q->where('nama_cabang', 'like', "%{$search}%");
+                })
+                ->orWhereHas('kantorkas', function ($q) use ($search) {
+                    $q->where('nama_kantorkas', 'like', "%{$search}%");
+                })
+                ->orWhereHas('accountOfficer', function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%"); 
+                });
+        });
+    }
+
+    $nasabahs = $query->get();
+
+    // Return data nasabah dalam format yang sesuai untuk ditampilkan di frontend
+    return response()->json($nasabahs); 
 }
 
 }
