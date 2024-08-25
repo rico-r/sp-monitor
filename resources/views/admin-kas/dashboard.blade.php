@@ -200,21 +200,15 @@
                     </div> -->
                     <div class="form-group">
                         <label for="addCabang">Cabang</label>
-                        <select class="form-control" id="addCabang" name="id_cabang" required>
-                            @foreach($cabangs as $cabang)
-                            <option value="{{ $cabang->id_cabang }}">{{ $cabang->nama_cabang }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="addWilayah">Wilayah</label>
-                        <select class="form-control" id="addWilayah" name="id_kantorkas" required>
-                            @foreach($kantorkas as $wilayah)
-                            <option value="{{ $wilayah->id_kantorkas }}">{{ $wilayah->nama_kantorkas }}</option>
-                            @endforeach
-                        </select>
+                        <input type="text" class="form-control" id="addCabang" name="id_cabang" 
+                            value="{{ $cabangs->where('id_cabang', auth()->user()->id_cabang)->first()->nama_cabang }}" readonly>
                     </div>
 
+                    <div class="form-group">
+                        <label for="addWilayah">Kantor Kas</label>
+                        <input type="text" class="form-control" id="addWilayah" name="id_kantorkas" 
+                            value="{{ $kantorkas->where('id_kantorkas', auth()->user()->id_kantorkas)->first()->nama_kantorkas }}" readonly>
+                    </div>
                     <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
                         <select class="form-control" id="addAccountOfficer" name="id_account_officer" required>
