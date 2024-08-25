@@ -213,7 +213,10 @@
                         <label for="addAccountOfficer">Account Officer</label>
                         <select class="form-control" id="addAccountOfficer" name="id_account_officer" required>
                             @foreach($accountOfficers as $accountOfficer)
-                            <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                                @if ($accountOfficer->id_cabang == auth()->user()->id_cabang && 
+                                    $accountOfficer->id_kantorkas == auth()->user()->id_kantorkas)
+                                    <option value="{{ $accountOfficer->id }}">{{ $accountOfficer->name }}</option>
+                                @endif
                             @endforeach
                         </select>
                     </div>

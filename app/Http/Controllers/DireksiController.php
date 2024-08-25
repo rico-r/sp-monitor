@@ -11,7 +11,8 @@ use App\Models\KantorKas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
-
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 class DireksiController extends Controller
 {
@@ -104,6 +105,36 @@ class DireksiController extends Controller
     $currentUser = auth()->user();
 
     return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser','nasabahNames'));
+}
+
+public function cetakPdf(Request $request)
+{
+    $query = SuratPeringatan::with('nasabah');
+    $title = 'Surat Peringatan';
+
+    if ($request->has('search')) {
+        $search = $request->input('search');
+        $query->whereHas('nasabah', function ($q) use ($search) {
+            $q->where('nama', 'like', '%' . $search . '%');
+        });
+    }
+
+    // ... (filter lainnya jika diperlukan)
+
+    $suratPeringatans = $query->get();
+
+    // Handle jika tidak ada data yang ditemukan
+    if ($suratPeringatans->isEmpty()) {
+        return redirect()->back()->with('error', 'Tidak ada data surat peringatan yang ditemukan.');
+    }
+
+    $options = new Options();
+    $options->set('defaultFont', 'DejaVu Sans'); 
+
+    $dompdf = new Dompdf($options);
+    $dompdf->loadHtml(view('surat_peringatan_pdf', compact('suratPeringatans','title'))->render());
+    $dompdf->render();
+    return $dompdf->stream('surat_peringatan_hasil_pencarian.pdf');
 }
 
 //     public function dashboard(Request $request)

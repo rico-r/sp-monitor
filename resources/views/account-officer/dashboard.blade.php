@@ -34,7 +34,7 @@
             <select name="wilayah_filter" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                 <option value="">Wilayah</option>
                 @foreach($kantorkas as $wilayah)
-                    <option value="{{ $wilayah->id_wilayah }}" {{ request('wilayah_filter') == $wilayah->id_wilayah ? 'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
+                    <option value="{{ $wilayah->id_kantorkas }}" {{ request('wilayah_filter') == $wilayah->id_kantorkas ? 'selected' : '' }}>{{ $wilayah->nama_wilayah }}</option>
                 @endforeach
             </select>
         </form>
@@ -81,8 +81,8 @@
                 @endif
             </td>
                 <td>
-                    <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $suratPeringatan->no }}" data-toggle="modal" data-target="#editModal">Edit</button>
-                    <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->nama }}" data-toggle="modal" data-target="#detailModal">Detail</button>
+                    <!-- <button class="btn btn-primary btn-sm edit-btn" data-no="{{ $suratPeringatan->no }}" data-toggle="modal" data-target="#editModal">Edit</button> -->
+                    <!-- <button class="btn btn-info btn-sm detail-btn" data-no="{{ $nasabah->nama }}" data-toggle="modal" data-target="#detailModal">Detail</button> -->
                     <button class="btn btn-danger btn-sm delete-btn" data-id_peringatan="{{ $suratPeringatan->id_peringatan }}" data-toggle="modal" data-target="#deleteModal">Delete</button>                </td>
             </tr>
         @endforeach
