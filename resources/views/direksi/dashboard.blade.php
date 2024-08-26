@@ -7,6 +7,7 @@
     </div>
     @endif
 
+    <a href="{{ route('direksi.nasabah.cetak-pdf', ['search' => request('search')]) }}" target="_blank">Cetak PDF</a>
     <!-- <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Nasabah</button> -->
     <div class="flex justify-between mb-4">
         <div>
@@ -42,7 +43,7 @@
 
                 <select name="wilayah_filter" onchange="this.form.submit()"
                     class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                    <option value="">Wilayah</option>
+                    <option value="">Kantor Kas</option>
                     @foreach($kantorkas as $wilayah)
                     <option value="{{ $wilayah->id_kantorkas }}" {{ request('wilayah_filter')==$wilayah->id_kantorkas ?
                         'selected' : '' }}>{{ $wilayah->nama_kantorkas }}</option>
