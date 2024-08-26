@@ -34,23 +34,25 @@
     <table>
         <thead>
             <tr> 
-                <th>No</th>
+                <th>Rekening</th>
                 <th>Nama</th>
-                <th>Tingkat</th>
+                <th>SP</th>
                 <th>Dibuat</th>
                 <th>Diserahkan</th>
                 <th>Kembali</th> 
+                <th>Account Officer</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($suratPeringatans as $suratPeringatan)
                 <tr>
-                    <td>{{ $suratPeringatan->no }}</td>
-                    <td>{{ $suratPeringatan->nasabah->nama }}</td>
-                    <td>{{ $suratPeringatan->tingkat }}</td>
-                    <td>{{ $suratPeringatan->created_at }}</td>
-                    <td>{{ $suratPeringatan->diserahkan }}</td>
-                    <td>{{ $suratPeringatan->kembali }}</td> 
+                <td>{{ $suratPeringatan->no }}</td>
+                <td>{{ $suratPeringatan->nasabah->nama }}</td>
+                <td>{{ $suratPeringatan->tingkat }}</td>
+                <td>{{ \Carbon\Carbon::parse($suratPeringatan->created_at)->format('Y-m-d') }}</td> 
+                <td>{{ \Carbon\Carbon::parse($suratPeringatan->diserahkan)->format('Y-m-d') }}</td> 
+                <td>{{ \Carbon\Carbon::parse($suratPeringatan->kembali)->format('Y-m-d') }}</td> 
+                <td>{{ $suratPeringatan->accountOfficer->name }}</td>
                 </tr>
             @endforeach
         </tbody>

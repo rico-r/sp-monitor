@@ -616,7 +616,7 @@
         });
     });
     function openPdf(url) {
-        window.open(url, '_blank');
+        window.open(url);
     }
 
     // Calculate total for add form

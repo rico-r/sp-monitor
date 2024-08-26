@@ -109,7 +109,8 @@ class DireksiController extends Controller
 
 public function cetakPdf(Request $request)
 {
-    $query = SuratPeringatan::with('nasabah');
+    $accountOfficer = User::where('jabatan_id', 5)->get();
+    $query = SuratPeringatan::with('nasabah', 'accountOfficer');
     $title = 'Laporan Surat Peringatan';
 
     if ($request->has('search')) {
