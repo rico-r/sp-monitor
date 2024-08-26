@@ -116,6 +116,51 @@ class SuperAdminController extends Controller
     return view('super-admin.dashboard', compact('title', 'accountOfficers','statuses', 'jabatans', 'users','allUsers', 'cabangs', 'kantorkas', 'currentUser')); 
 }
 
+public function tampilkanCabang()
+{
+    $title = 'Cabang Admin';
+    $cabangs = Cabang::all(); 
+    $kantorkas = KantorKas::all();
+    return view('super-admin.cabang', compact('cabangs','kantorkas','title'));
+}
+
+public function addCabang(Request $request)
+{
+    Log::info('Add Cabang request received', $request->all());
+
+    $request->validate([
+        'nama_cabang' => 'required|max:255', // Validasi hanya untuk nama_cabang
+    ]);
+
+    try {
+        // Buat array baru hanya dengan data yang diperlukan
+        $cabangData = [
+            'nama_cabang' => $request->input('nama_cabang')
+        ];
+
+        Cabang::create($cabangData); // Insert data ke tabel cabang
+
+        Log::info('Cabang added successfully', $cabangData);
+
+        return redirect()->route('super-admin.cabang')->with('success', 'Cabang berhasil ditambahkan');
+    } catch (\Exception $e) {
+        Log::error('Error adding Cabang: ' . $e->getMessage(), [
+            'request' => $request->all(),
+            'exception' => $e->getTraceAsString()
+        ]);
+
+        return response()->json(['error' => 'Failed to add cabang']); // Pesan error yang lebih spesifik
+    }
+}
+
+public function tampilkanKantorKas()
+{
+    $cabangs = Cabang::all();
+    $title = 'Admin Kantorkas';
+    $kantorkas = KantorKas::all(); 
+    return view('super-admin.kantorkas', compact('kantorkas','title','cabangs'));
+}
+
     public function edit($id)
     {
         Log::info('Memasuki fungsi edit', ['user_id' => $id]);
@@ -136,6 +181,43 @@ class SuperAdminController extends Controller
         // return view('super-admin.dashboard', compact('allUsers','user', 'jabatans', 'cabangs', 'kantorkas', 'statuses'));
         return response()->json($user);
     }
+
+    public function addKantorkas(Request $request)
+{
+    Log::info('Add Kantorkas request received', $request->all());
+
+    $request->validate([
+        'nama_kantorkas' => 'required|max:255', // Validasi hanya untuk nama_cabang
+    ]);
+
+    try {
+        // Buat array baru hanya dengan data yang diperlukan
+        $kantorkasData = [
+            'nama_kantorkas' => $request->input('nama_kantorkas')
+        ];
+
+        KantorKas::create($kantorkasData); // Insert data ke tabel cabang
+
+        Log::info('Kantorkas added successfully', $kantorkasData);
+
+        return redirect()->route('super-admin.kantorkas')->with('success', 'Kantorkas berhasil ditambahkan');
+    } catch (\Exception $e) {
+        Log::error('Error adding Cabang: ' . $e->getMessage(), [
+            'request' => $request->all(),
+            'exception' => $e->getTraceAsString()
+        ]);
+
+        return response()->json(['error' => 'Failed to add kantorkas']); // Pesan error yang lebih spesifik
+    }
+}
+
+public function deleteKantorkas($id_kantorkas)
+{
+    Kantorkas::find($id_kantorkas)->delete();
+    return redirect()->route('super-admin.kantorkas')->with('success', 'Data berhasil di hapus');
+}
+
+
 
     public function update(Request $request, $id)
     {

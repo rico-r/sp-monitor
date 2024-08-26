@@ -21,10 +21,13 @@
                                 <!-- Show Cabang and Wilayah only if jabatan_id is 99 -->
                                 @if(Auth::user()->jabatan_id == 99)
                                     <li>
-                                        <a class="custom-btn" href="#">Cabang</a>
+                                        <a class="custom-btn" href="{{ route('super-admin.cabang') }}">Cabang</a>
                                     </li>
                                     <li>
-                                        <a class="custom-btn" href="#">Wilayah</a>
+                                        <a class="custom-btn" href="{{ route('super-admin.kantorkas') }}">Kantor Kas</a>
+                                    </li>
+                                    <li>
+                                        <a class = "custom btn" href="dashboard">Dashboard</a>
                                     </li>
                                 @endif
                             @endauth
