@@ -24,7 +24,7 @@ class MobileAccountController extends Controller
             case 3:
             case 4:
             case 5:
-                $user->load('cabang', 'wilayah');
+                $user->load('cabang', 'kantorkas');
                 break;
         }
 
@@ -39,15 +39,15 @@ class MobileAccountController extends Controller
 
         if (in_array($jabatan->id_jabatan, [2, 3, 4, 5])) {
             $cabang = $user->cabang;
-            $wilayah = $user->wilayah;
+            $kantorkas = $user->kantorkas;
 
             Log::info($jabatan->nama_jabatan . ': ' . $user);
             Log::info('Cabang: ' . $cabang);
-            Log::info('Wilayah: ' . $wilayah);
+            Log::info('Kantor Kas: ' . $kantorkas);
 
             $userDetails['cabang'] = $cabang ? $cabang->nama_cabang : null;
             if (in_array($jabatan->id_jabatan, [3, 4, 5])) {
-                $userDetails['wilayah'] = $wilayah ? $wilayah->nama_wilayah : null;
+                $userDetails['kantorkas'] = $kantorkas ? $kantorkas->nama_kantorkas : null;
             }
         }
 

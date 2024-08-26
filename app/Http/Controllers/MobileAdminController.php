@@ -5,13 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Cabang;
 use App\Models\Status;
-use App\Models\Direksi;
 use App\Models\Jabatan;
-use App\Models\Wilayah;
+use App\Models\KantorKas;
 use Illuminate\Http\Request;
-use App\Models\PegawaiAdminKas;
-use App\Models\PegawaiSupervisor;
-use App\Models\PegawaiKepalaCabang;
 use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
@@ -22,21 +18,13 @@ class MobileAdminController extends Controller
     {
         $jabatan = Jabatan::all();
         $cabang = Cabang::all();
-        $wilayah = Wilayah::all();
-        $direksi = Direksi::all();
-        $kepalaCabang = PegawaiKepalaCabang::all();
-        $supervisor = PegawaiSupervisor::all();
-        $adminKas = PegawaiAdminKas::all();
+        $kantorkas = Kantorkas::all();
         $status = Status::all(); // Assuming you have a Status model for infostatus
 
         return response()->json([
             'jabatan' => $jabatan,
             'cabang' => $cabang,
-            'wilayah' => $wilayah,
-            'direksi' => $direksi,
-            'kepala_cabang' => $kepalaCabang,
-            'supervisor' => $supervisor,
-            'admin_kas' => $adminKas,
+            'kantorkas' => $kantorkas,
             'status' => $status
         ]);
     }
@@ -52,15 +40,8 @@ class MobileAdminController extends Controller
             'jabatan',
             'infostatus',
             'cabang',
-            'wilayah',
-            // 'direksi:id_direksi,nama',
-            // 'pegawaiKepalaCabang.cabang:id_cabang,nama_cabang',
-            // 'pegawaiSupervisor.cabang:id_cabang,nama_cabang',
-            // 'pegawaiAdminKas.cabang:id_cabang,nama_cabang',
-            // 'pegawaiAccountOfficer.cabang:id_cabang,nama_cabang',
-            // 'pegawaiSupervisor.wilayah:id_wilayah,nama_wilayah',
-            // 'pegawaiAdminKas.wilayah:id_wilayah,nama_wilayah',
-            // 'pegawaiAccountOfficer.wilayah:id_wilayah,nama_wilayah'
+            'kantorkas',
+
         ]);
 
         if ($request->has('search')) {
@@ -76,8 +57,8 @@ class MobileAdminController extends Controller
                     ->orWhereHas('jabatan', function($q) use ($search) {
                         $q->where('nama_jabatan', 'LIKE', '%' . $search . '%');
                     })
-                    ->orWhereHas('wilayah', function($q) use ($search) {
-                        $q->where('nama_wilayah', 'LIKE', '%' . $search . '%');
+                    ->orWhereHas('kantorkas', function($q) use ($search) {
+                        $q->where('nama_kantorkas', 'LIKE', '%' . $search . '%');
                     });
             });
         }
@@ -95,9 +76,9 @@ class MobileAdminController extends Controller
                     // ($user->pegawaiAdminKas ? $user->pegawaiAdminKas->cabang :
                     // ($user->pegawaiAccountOfficer ? $user->pegawaiAccountOfficer->cabang : null)));
 
-            $wilayah = 
+            $kantorkas = 
                  
-                    $user->wilayah ? $user->wilayah : null;
+                    $user->kantorkas ? $user->kantorkas : null;
                     // ($user->pegawaiAdminKas ? $user->pegawaiAdminKas->wilayah :
                     // ($user->pegawaiAccountOfficer ? $user->pegawaiAccountOfficer->wilayah : null));
 
@@ -116,8 +97,8 @@ class MobileAdminController extends Controller
                 'id_jabatan' => $user->jabatan ? $user->jabatan->id_jabatan : null,
                 'cabang' => $cabang ? $cabang->nama_cabang : null,
                 'id_cabang' => $cabang ? $cabang->id_cabang : null,
-                'wilayah' => $wilayah ? $wilayah->nama_wilayah : null,
-                'id_wilayah' => $wilayah ? $wilayah->id_wilayah : null,
+                'kantorkas' => $kantorkas ? $kantorkas->nama_kantorkas : null,
+                'id_kantorkas' => $kantorkas ? $kantorkas->id_kantorkas : null,
                 // 'id_direksi' => $direksi ? $direksi->nama : null,
                 // 'direksi_id' => $direksi ? $direksi->id_direksi : null,
                 // 'id_kepala_cabang' => $kepalaCabang ? $kepalaCabang->nama_kepala_cabang : null,
@@ -147,7 +128,7 @@ class MobileAdminController extends Controller
                 'email' => 'required|string',
                 'jabatan' => 'required|integer',
                 'cabang' => 'nullable|integer',
-                'wilayah' => 'nullable|integer',
+                'kantorkas' => 'nullable|integer',
                 // 'id_direksi' => 'nullable|integer',
                 // 'id_kepala_cabang' => 'nullable|integer',
                 // 'id_supervisor' => 'nullable|integer',
@@ -219,7 +200,7 @@ class MobileAdminController extends Controller
                     $user->jabatan_id = $validated['jabatan'];
 
                     $user->id_cabang = $validated['cabang'];
-                    $user->id_wilayah = $validated['wilayah'];
+                    $user->id_kantorkas = $validated['kantorkas'];
                     $user->status = $validated['status'];
 
                     $user->save();
@@ -238,7 +219,7 @@ class MobileAdminController extends Controller
                     $user->jabatan_id = $validated['jabatan'];
 
                     $user->id_cabang = $validated['cabang'];
-                    $user->id_wilayah = $validated['wilayah'];
+                    $user->id_kantorkas = $validated['kantorkas'];
                     $user->status = $validated['status'];
 
                     $user->save();
@@ -257,7 +238,7 @@ class MobileAdminController extends Controller
                     $user->jabatan_id = $validated['jabatan'];
 
                     $user->id_cabang = $validated['cabang'];
-                    $user->id_wilayah = $validated['wilayah'];
+                    $user->id_kantorkas = $validated['kantorkas'];
                     // $accountOfficer->id_admin_kas = $validated['id_admin_kas'];
                     $user->status = $validated['status'];
                     // $accountOfficer->save();

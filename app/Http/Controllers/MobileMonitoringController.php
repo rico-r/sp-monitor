@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cabang;
 use App\Models\Nasabah;
 use Illuminate\Http\Request;
 use App\Models\PegawaiAdminKas;
@@ -25,102 +26,148 @@ class MobileMonitoringController extends Controller
         $perPage = 15; // Jumlah nasabah per halaman
 
         // Eager load semua relasi yang diperlukan
-        $query = Nasabah::with([
+        // $query = Nasabah::with([
+        //     'cabang:id_cabang,nama_cabang',
+        //     'wilayah:id_wilayah,nama_wilayah',
+        //     'adminkas:id,name',
+        //     'accountofficer:id,name',
+        //     'suratPeringatan' => function ($query) {
+        //         $query->orderBy('tingkat', 'desc'); // Urutkan surat peringatan berdasarkan tingkat dari yang terbesar
+        //     }
+        // ]);
+        $query = Nasabah::select('no', 'nama', 'pokok', 'bunga', 'denda', 'total','keterangan', 'id_cabang', 'id_kantorkas', 'id_admin_kas', 'id_account_officer')
+        ->with([
             'cabang:id_cabang,nama_cabang',
-            'wilayah:id_wilayah,nama_wilayah',
+            'kantorkas:id_kantorkas,nama_kantorkas',
             'adminkas:id,name',
             'accountofficer:id,name',
-
-            // 'adminkas:id_admin_kas,nama_admin_kas',
-            // 'accountofficer:id_account_officer,nama_account_officer',
+            'suratPeringatan:id_peringatan,no,tingkat,dibuat,kembali,diserahkan,bukti_gambar,scan_pdf',
             'suratPeringatan' => function ($query) {
                 $query->orderBy('tingkat', 'desc'); // Urutkan surat peringatan berdasarkan tingkat dari yang terbesar
             }
         ]);
-
-        switch ($jabatan) {
-            case 'Direksi':
-                Log::info('Jabatan: direksi - fetching all nasabahs');
-                break;
-
-            case 'Admin':
-                Log::info('Jabatan: direksi - fetching all nasabahs');
-                break;
-            case 'Kepala Cabang':
-                // $pegawaiKepalaCabang = PegawaiKepalaCabang::where('id_user', $user->id)->first();
-                if ($user) {
-                    $idCabang = $user->id_cabang;
-                    Log::info('Jabatan: kepala_cabang - fetching nasabahs for cabang', ['id_cabang' => $idCabang]);
-                    $query->where('id_cabang', $idCabang);
-                } else {
-                    Log::error('Cabang not found for Kepala Cabang', ['user_id' => $user->id]);
-                    return response()->json(['error' => 'Cabang not found for this Kepala Cabang'], 403);
-                }
-                break;
-
-            case 'Supervisor':
-                // $pegawaiSupervisor = PegawaiSupervisor::where('id_user', $user->id)->first();
-                if ($user) {
-                    $idCabang = $user->id_cabang;
-                    $idWilayah = $user->id_wilayah;
-                    Log::info('Jabatan: supervisor - fetching nasabahs for cabang and wilayah', ['id_cabang' => $idCabang, 'id_wilayah' => $idWilayah]);
-                    $query->where('id_cabang', $idCabang)->where('id_wilayah', $idWilayah);
-                } else {
-                    Log::error('Supervisor not found for Supervisor', ['user_id' => $user->id]);
-                    return response()->json(['error' => 'Supervisor not found for this Supervisor'], 403);
-                }
-                break;
-
-            case 'Admin Kas':
-                // $pegawaiAdminKas = PegawaiAdminKas::where('id_user', $user->id)->first();
-                if ($user) {
-                    $idUser = $user->id;
-                    Log::info('Jabatan: admin_kas - fetching nasabahs for admin_kas', ['id_admin_kas' => $idUser]);
-                    $query->where('id_admin_kas', $idUser);
-                } else {
-                    Log::error('Admin Kas not found for Admin Kas', ['user_id' => $user->id]);
-                    return response()->json(['error' => 'Admin Kas not found for this Admin Kas'], 403);
-                }
-                break;
-
-            case 'Account Officer':
-                // $pegawaiAccountOfficer = PegawaiAccountOffice::where('id_user', $user->id)->first();
-                if ($user) {
-                    $idUser = $user->id;
-                    Log::info('Jabatan: account_officer - fetching nasabahs for account_officer', ['id_account_officer' => $idUser]);
-                    $query->where('id_account_officer', $idUser);
-                } else {
-                    Log::error('Account Officer not found for Account Officer', ['user_id' => $user->id]);
-                    return response()->json(['error' => 'Account Officer not found for this Account Officer'], 403);
-                }
-                break;
-
-            default:
-                Log::warning('Unauthorized access attempt', ['user_id' => $user->id, 'jabatan' => $jabatan]);
-                return response()->json(['error' => 'Unauthorized'], 403);
+        if ($user) {
+            $idCabang = $user->id_cabang;
+            $idkantorkas= $user->id_kantorkas;
+            $idUser = $user->id;
+            $jabatan = $user->jabatan->nama_jabatan;
+        } else {
+            Log::error('User not authenticated');
+            return response()->json(['error' => 'User not authenticated'], 403);
         }
+        
+        switch ($jabatan) {
+            case 'Kepala Cabang':
+                Log::info('Fetching nasabahs for Kepala Cabang');
+                $query->where('id_cabang', $idCabang);
+                break;
+        
+            case 'Supervisor':
+                Log::info('Fetching nasabahs for Supervisor');
+                $query->where('id_cabang', $idCabang)->where('id_kantorkas', $idkantorkas);
+                break;
+        
+            case 'Admin Kas':
+                Log::info('Fetching nasabahs for Admin Kas');
+                $query->where('id_admin_kas', $idUser);
+                break;
+        
+            case 'Account Officer':
+                Log::info('Fetching nasabahs for Account Officer');
+                $query->where('id_account_officer', $idUser);
+                break;
+            
+        
+            // other cases...
+        }
+        
 
-        // if ($request->has('search')) {
-        //     $search = $request->search;
-        //     Log::info('Search parameter provided', ['search' => $search]);
-        //     $query->where(function ($q) use ($search) {
-        //         $q->where('nama', 'LIKE', '%' . $search . '%')
-        //             ->orWhereHas('cabang', function($q) use ($search) {
-        //                 $q->where('nama_cabang', 'LIKE', '%' . $search . '%');
-        //             });
-        //     });
+        // switch ($jabatan) {
+        //     case 'Direksi':
+        //         Log::info('Jabatan: direksi - fetching all nasabahs');
+        //         break;
+
+        //     case 'Admin':
+        //         Log::info('Jabatan: direksi - fetching all nasabahs');
+        //         break;
+        //     case 'Kepala Cabang':
+        //         // $pegawaiKepalaCabang = PegawaiKepalaCabang::where('id_user', $user->id)->first();
+        //         if ($user) {
+        //             $idCabang = $user->id_cabang;
+        //             Log::info('Jabatan: kepala_cabang - fetching nasabahs for cabang', ['id_cabang' => $idCabang]);
+        //             $query->where('id_cabang', $idCabang);
+        //         } else {
+        //             Log::error('Cabang not found for Kepala Cabang', ['user_id' => $user->id]);
+        //             return response()->json(['error' => 'Cabang not found for this Kepala Cabang'], 403);
+        //         }
+        //         break;
+
+        //     case 'Supervisor':
+        //         // $pegawaiSupervisor = PegawaiSupervisor::where('id_user', $user->id)->first();
+        //         if ($user) {
+        //             $idCabang = $user->id_cabang;
+        //             $idWilayah = $user->id_wilayah;
+        //             Log::info('Jabatan: supervisor - fetching nasabahs for cabang and wilayah', ['id_cabang' => $idCabang, 'id_wilayah' => $idWilayah]);
+        //             $query->where('id_cabang', $idCabang)->where('id_wilayah', $idWilayah);
+        //         } else {
+        //             Log::error('Supervisor not found for Supervisor', ['user_id' => $user->id]);
+        //             return response()->json(['error' => 'Supervisor not found for this Supervisor'], 403);
+        //         }
+        //         break;
+
+        //     case 'Admin Kas':
+        //         // $pegawaiAdminKas = PegawaiAdminKas::where('id_user', $user->id)->first();
+        //         if ($user) {
+        //             $idUser = $user->id;
+        //             Log::info('Jabatan: admin_kas - fetching nasabahs for admin_kas', ['id_admin_kas' => $idUser]);
+        //             $query->where('id_admin_kas', $idUser);
+        //         } else {
+        //             Log::error('Admin Kas not found for Admin Kas', ['user_id' => $user->id]);
+        //             return response()->json(['error' => 'Admin Kas not found for this Admin Kas'], 403);
+        //         }
+        //         break;
+
+        //     case 'Account Officer':
+        //         // $pegawaiAccountOfficer = PegawaiAccountOffice::where('id_user', $user->id)->first();
+        //         if ($user) {
+        //             $idUser = $user->id;
+        //             Log::info('Jabatan: account_officer - fetching nasabahs for account_officer', ['id_account_officer' => $idUser]);
+        //             $query->where('id_account_officer', $idUser);
+        //         } else {
+        //             Log::error('Account Officer not found for Account Officer', ['user_id' => $user->id]);
+        //             return response()->json(['error' => 'Account Officer not found for this Account Officer'], 403);
+        //         }
+        //         break;
+
+        //     default:
+        //         Log::warning('Unauthorized access attempt', ['user_id' => $user->id, 'jabatan' => $jabatan]);
+        //         return response()->json(['error' => 'Unauthorized'], 403);
         // }
-        if ($request->has('search')) {
+
+        if ($request->has('search') && $request->filled('search')) {
             $search = $request->search;
             Log::info('Search parameter provided', ['search' => $search]);
+    
             $query->where(function ($q) use ($search) {
                 $q->where('nama', 'LIKE', '%' . $search . '%')
-                    ->orWhereHas('cabang', function($q) use ($search) {
-                        $q->where('nama_cabang', 'LIKE', '%' . $search . '%');
-                    })
                     ->orWhereHas('accountofficer', function($q) use ($search) {
                         $q->where('name', 'LIKE', '%' . $search . '%');
+                    })
+                    ->orWhereHas('kantorkas', function($q) use ($search) {
+                        $q->where('nama_kantorkas', 'LIKE', '%' . $search . '%');
+                    })
+                    ->orWhereHas('cabang', function($q) use ($search) {
+                        $q->where('nama_cabang', 'LIKE', '%' . $search . '%');
                     });
+            });
+        }
+    
+        if ($request->has('cabang') && $request->filled('cabang')) {
+            $cabang = $request->cabang;
+            Log::info('Cabang parameter provided', ['cabang' => $cabang]);
+    
+            $query->whereHas('cabang', function($q) use ($cabang) {
+                $q->where('nama_cabang', 'LIKE', '%' . $cabang . '%');
             });
         }
         
@@ -133,8 +180,9 @@ class MobileMonitoringController extends Controller
                 return [
                     'no' => $suratPeringatan->no,
                     'tingkat' => $suratPeringatan->tingkat,
-                    'tanggal' => $suratPeringatan->tanggal,
-                    'keterangan' => $suratPeringatan->keterangan,
+                    'dibuat' => $suratPeringatan->dibuat,
+                    'kembali' => $suratPeringatan->kembali,
+                    'diserahkan' => $suratPeringatan->diserahkan,
                     'bukti_gambar' => $suratPeringatan->bukti_gambar,
                     'scan_pdf' => $suratPeringatan->scan_pdf,
                     'id_account_officer' => $suratPeringatan->user,
@@ -149,10 +197,8 @@ class MobileMonitoringController extends Controller
                 'denda' => $nasabah->denda,
                 'total' => $nasabah->total,
                 'keterangan' => $nasabah->keterangan,
-                'ttd' => $nasabah->ttd,
-                'kembali' => $nasabah->kembali,
                 'cabang' => $nasabah->cabang->nama_cabang,
-                'wilayah' => $nasabah->wilayah->nama_wilayah,
+                'kantorkas' => $nasabah->kantorkas->nama_kantorkas,
                 'adminKas' => $nasabah->adminkas->name,
                 'accountOfficer' => $nasabah->accountofficer->name,
 
@@ -162,5 +208,10 @@ class MobileMonitoringController extends Controller
 
         Log::info('Customers fetched successfully', ['customers' => $nasabahs->toArray()]);
         return response()->json($nasabahs->toArray());
+    }
+    public function cabang()
+    {
+        $cabang = Cabang::all();
+        return response()->json($cabang);
     }
 }
