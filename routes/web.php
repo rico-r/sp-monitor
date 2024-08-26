@@ -70,9 +70,11 @@ Route::prefix('direksi')
         Route::get('/nasabah/edit/{no}', [DireksiController::class, 'editNasabah'])->name('nasabah.edit');
         Route::get('/admin-kas/search', [DireksiController::class, 'search'])->name('admin-kas.search');
         Route::put('/nasabah/update/{no}', [DireksiController::class, 'update'])->name('nasabah.update');
+        Route::get('/direksi/search-nasabah', 'DireksiController@searchNasabah')->name('direksi.search-nasabah');
         Route::post('nasabah/add', [DireksiController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{no}', [DireksiController::class, 'deleteNasabah'])->name('nasabah.delete');
         Route::post('/nasabah/surat', [DireksiController::class, 'addSurat'])->name('nasabah.surat');
+        Route::get('/nasabah/cetak-pdf', [DireksiController::class, 'cetakPdf'])->name('nasabah.cetak-pdf');
 });
 
 Route::prefix('kepala-cabang')
