@@ -136,7 +136,12 @@ Route::prefix('super-admin')
     ->middleware('jabatan:99')
     ->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
+        Route::get('/cabang', [SuperAdminController::class, 'tampilkanCabang'])->name('cabang');
+        Route::get('/kantorkas', [SuperAdminController::class, 'tampilkanKantorKas'])->name('kantorkas');
+        Route::delete('kantorkas/delete/{id_kantorkas}', [SuperAdminController::class, 'deleteKantorkas'])->name('kantorkas.delete');
         Route::get('/user/edit/{id}', [SuperAdminController::class, 'edit'])->name('user.edit');
+        Route::post('cabang/add', [SuperAdminController::class, 'addCabang'])->name('cabang.add');
+        Route::post('kantorkas/add', [SuperAdminController::class, 'addKantorkas'])->name('kantorkas.add');
         Route::put('/user/update/{id}', [SuperAdminController::class, 'update'])->name('user.update'); 
 });
 

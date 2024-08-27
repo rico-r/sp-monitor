@@ -49,9 +49,9 @@
                 <td>{{ $suratPeringatan->no }}</td>
                 <td>{{ $suratPeringatan->nasabah->nama }}</td>
                 <td>{{ $suratPeringatan->tingkat }}</td>
-                <td>{{ \Carbon\Carbon::parse($suratPeringatan->created_at)->format('Y-m-d') }}</td> 
-                <td>{{ \Carbon\Carbon::parse($suratPeringatan->diserahkan)->format('Y-m-d') }}</td> 
-                <td>{{ \Carbon\Carbon::parse($suratPeringatan->kembali)->format('Y-m-d') }}</td> 
+                <td>{{ \Carbon\Carbon::parse($suratPeringatan->created_at)->format('d-m-Y') }}</td> 
+                <td>{{ \Carbon\Carbon::parse($suratPeringatan->diserahkan)->format('d-m-Y') }}</td> 
+                <td>{{ \Carbon\Carbon::parse($suratPeringatan->kembali)->format('d-m-Y') }}</td> 
                 <td>{{ $suratPeringatan->accountOfficer->name }}</td>
                 </tr>
             @endforeach

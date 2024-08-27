@@ -23,26 +23,31 @@ use App\Http\Controllers\Auth\AuthenticatedSessionController;
 */
 //register
 Route::get('checkconnection', [MobileRegisterController::class, 'checkConnection']);
+Route::get('cabang',[MobileMonitoringController::class, 'cabang']);
+
 Route::post('registermobile', [MobileRegisterController::class, 'register']);
 
 //login
 Route::post('loginmobile',[MobileLoginController::class, 'login']);
 
-Route::middleware(['auth:api', 'auth.with.api.token:Direksi,Kepala Cabang,Supervisor,Admin Kas,Account Officer,Admin'])->group(function () {
-    
+Route::middleware(['auth.with.api.token:Direksi,Kepala Cabang,Supervisor,Admin Kas,Account Officer,Super Admin'])->group(function () {
+    Route::get('usermobile',[MobileAccountController::class, 'getUserDetails']);
+    Route::post('logoutmobile', [MobileAccountController::class, 'logout']);
     //suratperingatan
     Route::get('nasabah', [MobileSuratPeringatanController::class, 'getNasabahSP']);
-    Route::post('surat_peringatan', [MobileSuratPeringatanController::class, 'SuratPeringatan']);
+    // Route::post('surat_peringatan', [MobileSuratPeringatanController::class, 'SuratPeringatan']);
+    Route::post('surat_peringatan/update', [MobileSuratPeringatanController::class, 'updateSuratPeringatan']);
     Route::get('surat-peringatan/gambar/{filename}', [MobileSuratPeringatanController::class, 'serveImage']);
     Route::get('surat-peringatan/pdf/{filename}', [MobileSuratPeringatanController::class ,'servePdf']);
 
     //account
-    Route::get('usermobile',[MobileAccountController::class, 'getUserDetails']);
-    Route::post('logoutmobile', [MobileAccountController::class, 'logout']);
+
 
 
     //monitoring
     Route::get('nasabahs', [MobileMonitoringController::class, 'getNasabah']);
+    Route::get('cabang',[MobileMonitoringController::class, 'cabang']);
+
 
     //admin
     Route::get('alldata', [MobileAdminController::class, 'getAllData']);

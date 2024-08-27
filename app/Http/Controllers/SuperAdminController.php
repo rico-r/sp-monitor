@@ -213,9 +213,10 @@ public function tampilkanKantorKas()
 
 public function deleteKantorkas($id_kantorkas)
 {
-    Kantorkas::find($id_kantorkas)->delete();
-    return redirect()->route('super-admin.kantorkas')->with('success', 'Data berhasil di hapus');
+    KantorKas::find($id_kantorkas)->delete();
+    return redirect()->route('super-admin.dashboard')->with('success', 'Data berhasil di hapus');
 }
+
 
 
 

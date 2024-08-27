@@ -8,49 +8,6 @@
     @endif
 
     <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Kantorkas</button>
-    <!-- <div class="flex justify-between mb-4">
-         <div>
-            <form method="GET" action="{{ route('super-admin.dashboard') }}">
-                <select name="date_filter" onchange="this.form.submit()"
-                        class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                    <option value="">Last 30 days</option>
-                    <option value="last_7_days" {{ request('date_filter')=='last_7_days' ? 'selected' : '' }}>Last 7
-                        days</option>
-                    <option value="last_30_days" {{ request('date_filter')=='last_30_days' ? 'selected' : '' }}>Last 30
-                        days</option>
-                    <option value="last_month" {{ request('date_filter')=='last_month' ? 'selected' : '' }}>Last month
-                    </option>
-                    <option value="last_year" {{ request('date_filter')=='last_year' ? 'selected' : '' }}>Last year
-                    </option>
-                </select>
-            </form>
-        </div> -->
-        <!-- <div>
-            <form method="GET" action="{{ route('super-admin.dashboard') }}">
-                <input type="text" id="search" name="search" value="{{ request('search') }}"
-                       placeholder="Search by name, branch, region"
-                       class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-
-                <select name="cabang_filter" onchange="this.form.submit()"
-                        class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                    <option value="">Cabang</option>
-                    @foreach($cabangs as $cabang)
-                        <option value="{{ $cabang->id_cabang }}" {{ request('cabang_filter')==$cabang->id_cabang ?
-                            'selected' : '' }}>{{ $cabang->nama_cabang }}</option>
-                    @endforeach
-                </select>
-
-                <select name="wilayah_filter" onchange="this.form.submit()"
-                        class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
-                    <option value="">Wilayah</option>
-                    @foreach($kantorkas as $wilayah)
-                        <option value="{{ $wilayah->id_kantorkas }}" {{ request('wilayah_filter')==$wilayah->id_kantorkas ?
-                            'selected' : '' }}>{{ $wilayah->nama_kantorkas }}</option>
-                    @endforeach
-                </select>
-            </form>
-        </div>
-    </div> -->
 
     <table class="table table-striped" id="nasabah-table">
         <thead>
@@ -61,21 +18,18 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($kantorkas as $kantorkas)
+        @foreach($kantorkas as $wilayah)
             <tr>
-                <td>{{ $kantorkas->id_kantorkas }}</td>
-                <td>{{ $kantorkas->nama_kantorkas}}</td>
+                <td>{{ $wilayah->id_kantorkas }}</td>
+                <td>{{ $wilayah->nama_kantorkas}}</td>
                 <td>
-                    <button class="btn btn-danger btn-sm delete-btn" data-no="{{ $kantorkas->id_kantorkas }}" data-toggle="modal"
-                        data-target="#deleteModal">Delete</button>
-                </td>
+                <button class="btn btn-danger btn-sm delete-btn" data-id_kantorkas="{{ $wilayah->id_kantorkas }}" data-toggle="modal" data-target="#deleteModal">Delete</button></td>
             </tr>
         @endforeach
         </tbody>
     </table>
 </div>
 
-<!-- Modal for Add -->
 <div class="modal fade" id="addModal" tabindex="-1" role="dialog" aria-labelledby="addModalLabel" aria-hidden="true">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
@@ -90,7 +44,7 @@
                 <div class="modal-body">
                     <div class="form-group">
                         <label for="addKantorkas">Kantor kas</label>
-                        <input type="text" class="form-control" id="addKantorkas" name="nama_kantorkas"> 
+                        <input type="text" class="form-control" id="addKantorkas" name="nama_kantorkas">
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -152,41 +106,12 @@
             }
         }
     });
-    // Edit button click event
-    $('.edit-btn').on('click', function () {
-        var id = $(this).data('id'); // Menggunakan 'id' sebagai pengenal pengguna
 
-        $.ajax({
-            url: '/super-admin/user/edit/' + id, // Ubah rute ke /super-admin/user/edit/{id}
-            method: 'GET',
-            success: function (data) {
-                // Populate the modal with data
-                $('#editNama').val(data.name);
-                $('#editStatus').val(data.status); // Mengisi dropdown status dengan ID status yang sesuai
-                $('#editJabatan').val(data.jabatan_id); // Mengisi dropdown jabatan dengan ID jabatan yang sesuai
-                $('#editCabang').val(data.id_cabang); // Mengisi dropdown cabang dengan ID cabang yang sesuai
-                $('#editWilayah').val(data.id_kantorkas); // Mengisi dropdown wilayah dengan ID wilayah yang sesuai
-
-                // Set the form action to the update route with the correct id
-                $('#editForm').attr('action', '/super-admin/user/update/' + id); // Ubah rute ke /super-admin/user/update/{id}
-                $('#editForm').find('input[name="_method"]').val('PUT');
-
-                // Menampilkan modal
-                $('#editModal').modal('show');
-            },
-
-                // Delete button click event
-                $('.delete-btn').on('click', function () {
-                    var id_kantorkas = $(this).data('no'); 
-                    $('#deleteForm').attr('action', '/super-admin/kantorkas/delete/' + id_kantorkas);
-                });
-            error: function (xhr, status, error) {
-                console.error('Error #editForm:', error); // Log error ke konsol browser
-                alert('Terjadi kesalahan saat memuat data.');
-            }
-        });
-    });
-   
+    // Delete button click event
+    $('.delete-btn').on('click', function() {
+    var id_kantorkas = $(this).data('id_kantorkas'); 
+    $('#deleteForm').attr('action', '/super-admin/kantorkas/delete/' + id_kantorkas); 
+});
 
 </script>
 
