@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Direksi;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Faker\Factory as Faker;
@@ -14,7 +15,7 @@ class DireksiSeeder extends Seeder
     public function run(): void
     {
     $faker = Faker::create('id_ID');
-        Direks::create([
+        Direksi::create([
             'nama' => $faker->name,
             'alamat' => $faker->address,
             'id_account_officer' => $accountOfficer->id_account_officer,
