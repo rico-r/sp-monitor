@@ -153,6 +153,11 @@ public function addCabang(Request $request)
     }
 }
 
+public function deleteCabang($id_cabang)
+{
+    Cabang::find($id_cabang)->delete();
+    return redirect()->route('super-admin.cabang')->with('success', 'Data berhasil di hapus');
+}
 public function tampilkanKantorKas()
 {
     $cabangs = Cabang::all();
@@ -214,11 +219,8 @@ public function tampilkanKantorKas()
 public function deleteKantorkas($id_kantorkas)
 {
     KantorKas::find($id_kantorkas)->delete();
-    return redirect()->route('super-admin.dashboard')->with('success', 'Data berhasil di hapus');
+    return redirect()->route('super-admin.kantorkas')->with('success', 'Data berhasil di hapus');
 }
-
-
-
 
     public function update(Request $request, $id)
     {

@@ -137,6 +137,7 @@ Route::prefix('super-admin')
     ->group(function () {
         Route::get('/dashboard', [SuperAdminController::class, 'dashboard'])->name('dashboard');
         Route::get('/cabang', [SuperAdminController::class, 'tampilkanCabang'])->name('cabang');
+        Route::delete('cabang/delete/{id_cabang}', [SuperAdminController::class, 'deleteCabang'])->name('cabang.delete');
         Route::get('/kantorkas', [SuperAdminController::class, 'tampilkanKantorKas'])->name('kantorkas');
         Route::delete('kantorkas/delete/{id_kantorkas}', [SuperAdminController::class, 'deleteKantorkas'])->name('kantorkas.delete');
         Route::get('/user/edit/{id}', [SuperAdminController::class, 'edit'])->name('user.edit');

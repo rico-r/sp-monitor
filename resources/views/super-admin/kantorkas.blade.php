@@ -23,7 +23,7 @@
                 <td>{{ $wilayah->id_kantorkas }}</td>
                 <td>{{ $wilayah->nama_kantorkas}}</td>
                 <td>
-                <button class="btn btn-danger btn-sm delete-btn" data-id_kantorkas="{{ $wilayah->id_kantorkas }}" data-toggle="modal" data-target="#deleteModal">Delete</button></td>
+            <button class="btn btn-danger btn-sm delete-btn" data-id_kantorkas="{{ $wilayah->id_kantorkas }}" data-toggle="modal" data-target="#deleteModal">Delete</button></td>
             </tr>
         @endforeach
         </tbody>
@@ -83,30 +83,6 @@
 </div>
 
 <script>
-    document.getElementById('search').addEventListener('keyup', function (event) {
-        const query = event.target.value;
-        const table = document.getElementById('nasabah-table');
-        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
-
-        for (let i = 0; i < rows.length; i++) {
-            const cells = rows[i].getElementsByTagName('td');
-            let match = false;
-
-            for (let j = 0; j < cells.length; j++) {
-                if (cells[j].innerText.toLowerCase().includes(query.toLowerCase())) {
-                    match = true;
-                    break;
-                }
-            }
-
-            if (match) {
-                rows[i].style.display = '';
-            } else {
-                rows[i].style.display = 'none';
-            }
-        }
-    });
-
     // Delete button click event
     $('.delete-btn').on('click', function() {
     var id_kantorkas = $(this).data('id_kantorkas'); 
