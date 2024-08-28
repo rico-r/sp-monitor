@@ -228,11 +228,13 @@ public function deleteKantorkas($id_kantorkas)
 public function tampilkanKey()
 {
     $title = 'Keys Admin';
-    $keys = Key::whereNull('key_status')->get(); 
+    $keys = Key::with('jabatannama')->whereNull('key_status')->get(); 
     $kantorkas = KantorKas::all();
     do {
         $uniqueKey = rand(100000, 999999); 
-    } while (Key::where('key', $uniqueKey)->exists()); 
+    } while (Key::where('key', $uniqueKey)->exists());
+    
+    Log::info($keys); 
 
     return view('super-admin.keys', compact('keys','kantorkas','title','uniqueKey'));
 }
@@ -277,6 +279,7 @@ public function deleteKey($key)
     Key::find($key)->delete();
     return redirect()->route('super-admin.key')->with('success', 'Data berhasil di hapus');
 }
+
 
 public function importKeys(Request $request)
 {

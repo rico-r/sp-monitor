@@ -145,6 +145,7 @@ Route::prefix('super-admin')
         Route::post('cabang/add', [SuperAdminController::class, 'addCabang'])->name('cabang.add');
         Route::post('kantorkas/add', [SuperAdminController::class, 'addKantorkas'])->name('kantorkas.add');
         Route::post('key/add', [SuperAdminController::class, 'addKey'])->name('key.add');
+        Route::delete('key/delete/{key}', [SuperAdminController::class, 'deleteKey'])->name('key.delete');
         Route::put('/user/update/{id}', [SuperAdminController::class, 'update'])->name('user.update'); 
         Route::post('/keys/import', [SuperAdminController::class, 'importKeys'])->name('keys.import');
 });
