@@ -8,8 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 class Key extends Model
 {
     use HasFactory;
+    protected $primaryKey = 'key'; // Atur primary key jika perlu
+
     protected $fillable = [
         'key',
+        'jabatan',
+        'key_status'
        
       
 

@@ -15,7 +15,7 @@
                                     <a class="custom-btn" href="{{ route('logout') }}">Logout</a>
                                 </li>
                                 <li>
-                                    <a class="custom-btn" href="{{ route('password.change.form') }}">Change Password</a>
+                                    <a class="custom-btn" href="{{ route('password.change.form') }}">Ubah Password</a>
                                 </li>
                                 
                                 <!-- Show Cabang and Wilayah only if jabatan_id is 99 -->
@@ -27,7 +27,10 @@
                                         <a class="custom-btn" href="{{ route('super-admin.kantorkas') }}">Kantor Kas</a>
                                     </li>
                                     <li>
-                                        <a class = "custom btn" href="dashboard">Dashboard</a>
+                                        <a class="custom-btn" href="dashboard">Dashboard</a>
+                                    </li>
+                                    <li>
+                                        <a class="custom-btn" href="{{ route('super-admin.key') }}">Keys</a>
                                     </li>
                                 @endif
                             @endauth

@@ -59,6 +59,6 @@ class MobileRegisterController extends Controller
         ]);
     
         // Respon dengan user yang baru dibuat
-        return response()->json(['message' => 'User berhasil terdaftar', 'user' => $user], 201);
+        return response()->json(['message' => 'User berhasil terdaftar', 'user' => $user], 201);
     }
 }

@@ -15,6 +15,7 @@ use App\Models\PegawaiKepalaCabang;
 use App\Events\UserRegisteredMobile;
 use App\Models\PegawaiAccountOffice;
 use Illuminate\Notifications\Notifiable;
+use App\Events\RegisterKeySubmit;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
@@ -101,6 +102,6 @@ class User extends Authenticatable
     ];
 
     protected $dispatchesEvents = [
-        'created' => UserRegisteredMobile::class,
+        'created' => RegisterKeySubmit::class,
     ];
 }

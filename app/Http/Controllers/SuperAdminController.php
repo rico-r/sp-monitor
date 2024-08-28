@@ -8,8 +8,11 @@ use App\Models\Nasabah;
 use App\Models\PegawaiAccountOffice;
 use App\Models\SuratPeringatan;
 use App\Models\Cabang;
+use App\Models\Key;
 use App\Models\Jabatan;
 use App\Models\Status;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\KeysImport;
 use App\Models\KantorKas;
 use App\Models\User;
 
@@ -222,6 +225,70 @@ public function deleteKantorkas($id_kantorkas)
     return redirect()->route('super-admin.kantorkas')->with('success', 'Data berhasil di hapus');
 }
 
+public function tampilkanKey()
+{
+    $title = 'Keys Admin';
+    $keys = Key::whereNull('key_status')->get(); 
+    $kantorkas = KantorKas::all();
+    do {
+        $uniqueKey = rand(100000, 999999); 
+    } while (Key::where('key', $uniqueKey)->exists()); 
+
+    return view('super-admin.keys', compact('keys','kantorkas','title','uniqueKey'));
+}
+
+public function addKey(Request $request)
+{
+    Log::info('Add Key request received', $request->all());
+
+    $request->validate([
+        'key' => 'required|max:255',
+        'jabatan' =>'required|max:255'
+    ]);
+
+    try {
+        // Generate nomor unik (hanya angka acak 6 digit)
+        do {
+            $uniqueKey = rand(100000, 999999); 
+        } while (Key::where('key', $uniqueKey)->exists()); 
+
+        $keyData = [
+            'key' => $uniqueKey,
+            'jabatan' => $request->input('jabatan')
+        ];
+
+        Key::create($keyData); 
+
+        Log::info('Key added successfully', $keyData);
+
+        return redirect()->route('super-admin.key')->with('success', 'Key berhasil ditambahkan');
+    } catch (\Exception $e) {
+        Log::error('Error adding Key: ' . $e->getMessage(), [
+            'request' => $request->all(),
+            'exception' => $e->getTraceAsString()
+        ]);
+
+        return response()->json(['error' => 'Failed to add key']); // Pesan error yang lebih spesifik
+    }
+}
+
+public function deleteKey($key)
+{
+    Key::find($key)->delete();
+    return redirect()->route('super-admin.key')->with('success', 'Data berhasil di hapus');
+}
+
+public function importKeys(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls',
+    ]);
+
+    Excel::import(new KeysImport, $request->file('file'));
+    return redirect()->back()->with('success', 'Data berhasil diimport!');
+}
+
+
     public function update(Request $request, $id)
     {
         Log::info('Memasuki fungsi update', ['user_id' => $id]);
@@ -231,7 +298,7 @@ public function deleteKantorkas($id_kantorkas)
             'name' => 'required',
             'jabatan_id' => 'required',
             'id_cabang' => 'required',
-            'id_wilayah' => 'required',
+            'id_kantorkas' => 'required',
         ]);
         Log::info('Data tervalidasi: ', ['validated_data' => $validatedData]);
 

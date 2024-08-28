@@ -71,7 +71,7 @@
                 <td>{{ $user->infostatus ? $user->infostatus->nama_status : 'N/A' }}</td>
                 <td>{{ $user->jabatan->nama_jabatan }}</td>
                 <td>{{ $user->cabang ? $user->cabang->nama_cabang : 'N/A' }}</td>
-                <td>{{ $user->wilayah ? $user->wilayah->nama_kantorkas : 'N/A' }}</td>
+                <td>{{ $user->kantorkas ? $user->kantorkas->nama_kantorkas : 'N/A' }}</td>
                 <td>
                     <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $user->id }}" data-toggle="modal"
                             data-target="#editModal">Edit</button>
@@ -126,7 +126,7 @@
                         </select>
                     </div>
                     <div class="form-group">
-                        <label for="editWilayah">Wilayah</label>
+                        <label for="editWilayah">Kantor Kas</label>
                         <select class="form-control" id="editWilayah" name="id_kantorkas" required>
                             <option value="" disabled selected>Pilih Wilayah</option>
                             @foreach($kantorkas as $wilayah)

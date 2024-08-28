@@ -200,7 +200,7 @@ class MobileAdminController extends Controller
                     $user->jabatan_id = $validated['jabatan'];
 
                     $user->id_cabang = $validated['cabang'];
-                    $user->id_kantorkas = $validated['kantorkas'];
+                    $user->id_kantorkas = $validated['kantorkas'] ?? null;
                     $user->status = $validated['status'];
 
                     $user->save();
@@ -219,7 +219,7 @@ class MobileAdminController extends Controller
                     $user->jabatan_id = $validated['jabatan'];
 
                     $user->id_cabang = $validated['cabang'];
-                    $user->id_kantorkas = $validated['kantorkas'];
+                    $user->id_kantorkas = $validated['kantorkas'] ?? null;
                     $user->status = $validated['status'];
 
                     $user->save();
@@ -238,7 +238,7 @@ class MobileAdminController extends Controller
                     $user->jabatan_id = $validated['jabatan'];
 
                     $user->id_cabang = $validated['cabang'];
-                    $user->id_kantorkas = $validated['kantorkas'];
+                    $user->id_kantorkas = $validated['kantorkas'] ?? null;
                     // $accountOfficer->id_admin_kas = $validated['id_admin_kas'];
                     $user->status = $validated['status'];
                     // $accountOfficer->save();
