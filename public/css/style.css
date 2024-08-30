@@ -121,4 +121,86 @@ ul {
     .tingkat-3 {
         background-color: red;
     }
+    /* Contoh perbaikan CSS */
+    body {
+        font-family: sans-serif; /* Pilih font yang mudah dibaca */
+    }
 
+    .container {
+        margin-top: 20px; /* Beri jarak antara navbar dan konten */
+    }
+
+    .navbar {
+        padding: 15px; /* Sesuaikan padding navbar */
+    }
+
+    .navbar-brand {
+        font-weight: bold;
+    }
+
+    .nav-link {
+        margin-left: 15px; /* Beri jarak antar item navigasi */
+    }
+
+    .custom-btn {
+        padding: 8px 15px; /* Sesuaikan padding tombol */
+        border-radius: 5px;
+        background-color: #007bff; /* Contoh warna tombol */
+        color: white;
+        text-decoration: none;
+    }
+
+    .custom-btn:hover {
+        background-color: #0056b3; /* Efek hover */
+    }
+
+    .sidebar {
+        background-color: #f8f9fa;
+        padding: 20px;
+        border-right: 1px solid #dee2e6; /* Garis pemisah */
+    }
+
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+    }
+
+    .sidebar li a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: #333;
+    }
+
+    .sidebar li a:hover {
+        background-color: #e9ecef;
+    }
+
+    /* Perbaikan tabel (contoh) */
+    .table {
+        margin-top: 20px; 
+    }
+
+    .table th, .table td {
+        padding: 12px; 
+    }
+
+    .table th {
+        background-color: #f0f0f0; /* Warna latar belakang header */
+    }
+
+    /* Contoh perbaikan tombol dan form */
+    .btn {
+        margin-right: 5px; 
+    }
+
+    .form-control {
+        border: 1px solid #ced4da;
+        padding: 8px 12px;
+        border-radius: 5px;
+    }
+
+    .form-control:focus {
+        border-color: #80bdff; /* Perubahan warna saat fokus */
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }

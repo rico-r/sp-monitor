@@ -47,6 +47,13 @@
                             'selected' : '' }}>{{ $wilayah->nama_kantorkas }}</option>
                     @endforeach
                 </select>
+
+                <select name="per_page" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>Show 10</option>
+                    <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>Show 20</option>
+                    <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>Show 30</option>
+                    <option value="" {{ request('per_page') === null ? 'selected' : '' }}>Show All</option>
+                </select>
             </form>
         </div>
     </div>
@@ -64,22 +71,24 @@
         </tr>
         </thead>
         <tbody>
-        @foreach($allUsers as $user)
-            <tr>
-                <td>{{ $user->name }}</td>
-                <td>{{ $user->email}}</td>
-                <td>{{ $user->infostatus ? $user->infostatus->nama_status : 'N/A' }}</td>
-                <td>{{ $user->jabatan->nama_jabatan }}</td>
-                <td>{{ $user->cabang ? $user->cabang->nama_cabang : 'N/A' }}</td>
-                <td>{{ $user->kantorkas ? $user->kantorkas->nama_kantorkas : 'N/A' }}</td>
-                <td>
-                    <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $user->id }}" data-toggle="modal"
-                            data-target="#editModal">Edit</button>
-                </td>
-            </tr>
-        @endforeach
-        </tbody>
+    @foreach($users as $user) 
+        <tr>
+            <td>{{ $user->name }}</td>
+            <td>{{ $user->email}}</td>
+            <td>{{ $user->infostatus ? $user->infostatus->nama_status : 'N/A' }}</td>
+            <td>{{ $user->jabatan->nama_jabatan }}</td>
+            <td>{{ $user->cabang ? $user->cabang->nama_cabang : 'N/A' }}</td>
+            <td>{{ $user->kantorkas ? $user->kantorkas->nama_kantorkas : 'N/A' }}</td>
+            <td>
+                <button class="btn btn-primary btn-sm edit-btn" data-id="{{ $user->id }}" data-toggle="modal" data-target="#editModal">Edit</button>
+            </td>
+        </tr>
+    @endforeach
+</tbody>
     </table>
+    @if($users instanceof \Illuminate\Pagination\AbstractPaginator)
+    {{ $users->links('pagination::bootstrap-4') }}
+@endif
 </div>
 
 <div class="modal fade" id="editModal" tabindex="-1" role="dialog" aria-labelledby="editModalLabel" aria-hidden="true">

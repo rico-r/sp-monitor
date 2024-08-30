@@ -35,8 +35,7 @@ class SuperAdminController extends Controller
     Log::info('Current User ID: ', ['adminKasId' => $adminKasId]);
 
     // Memulai query dengan relasi yang diperlukan dan filter berdasarkan ID admin kas
-    $query = User::with('jabatan', 'cabang', 'kantorkas','infostatus')
-        ->where('id', $adminKasId); 
+    $query = User::with('jabatan', 'cabang', 'kantorkas','infostatus');
 
     Log::info('Query awal: ', ['query' => $query->toSql()]);
 
@@ -76,7 +75,7 @@ class SuperAdminController extends Controller
                 $q->where('nama_cabang', 'like', "%{$search}%");
             })
             ->orWhereHas('kantorkas', function ($q) use ($search) {
-                $q->where('nama_kantorkas', 'like', "%{$search}%"); // Perbaikan: Gunakan nama_kantorkas
+                $q->where('nama_kantorkas', 'like', "%{$search}%"); 
             });
     }
 
@@ -89,18 +88,24 @@ class SuperAdminController extends Controller
         });
     }
 
-    // Filter berdasarkan kantorkas (perbaikan)
+    // Filter berdasarkan kantorkas 
     $wilayahFilter = $request->input('wilayah_filter');
     if ($wilayahFilter) {
         Log::info('Filter kantorkas diterapkan', ['wilayah_filter' => $wilayahFilter]);
         $query->whereHas('kantorkas', function ($q) use ($wilayahFilter) {
-            $q->where('id_kantorkas', $wilayahFilter); // Perbaikan: Gunakan id_cabang
+            $q->where('id_kantorkas', $wilayahFilter); 
         });
     }
+    
 
     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
-    $users = $query->get(); 
+    // Dapatkan nilai 'per_page' dari request, atau gunakan 20 sebagai default
+    $perPage = $request->input('per_page') ?: null;
+
+    // Paginate the results 
+    $users = $perPage ? $query->paginate($perPage) : $query->get(); 
+
     Log::info('Users retrieved: ', ['count' => $users->count()]);
 
     $cabangs = Cabang::all();
