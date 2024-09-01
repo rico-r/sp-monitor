@@ -85,7 +85,7 @@ class User extends Authenticatable
         'password',
         'jabatan_id',
         'id_cabang',
-        'id_wilayah',
+        'id_kantorkasm',
         'key',
         'status'
     ];

@@ -306,7 +306,7 @@ class AuthController extends Controller
             $message = "Email verified Successfully";
 
             session(['user_name' => $user->name, 'user_id' => $user->id, 'user_email' => $user->email]);
-            return redirect('dashboard')->withSuccess($message);
+            return redirect('register')->withSuccess($message);
         } else {
             $message = 'Token Error: Email can not be verified.';
             return redirect()->route('page.error')->withError($message);

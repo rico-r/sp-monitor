@@ -102,7 +102,7 @@ class SuperAdminController extends Controller
 
     // Dapatkan nilai 'per_page' dari request, atau gunakan 20 sebagai default
     $perPage = $request->input('per_page') ?: null;
-
+    
     // Paginate the results 
     $users = $perPage ? $query->paginate($perPage) : $query->get(); 
 
@@ -174,26 +174,21 @@ public function tampilkanKantorKas()
     return view('super-admin.kantorkas', compact('kantorkas','title','cabangs'));
 }
 
-    public function edit($id)
-    {
-        Log::info('Memasuki fungsi edit', ['user_id' => $id]);
+public function edit($id)
+{
+    Log::info('Memasuki fungsi edit', ['user_id' => $id]);
 
-        $user = User::with('jabatan', 'cabang', 'kantorkas','infostatus')->findOrFail($id);
-        Log::info('User found for editing: ', ['user' => $user]);
-        // $allUsers = User::all();  
+    $user = User::with('jabatan:id_jabatan,nama_jabatan', 'cabang:id_cabang,nama_cabang', 'kantorkas:id_kantorkas,nama_kantorkas','infostatus:id,nama_status')->findOrFail($id);
+    Log::info('User found for editing: ', ['user' => $user]);
 
-        $jabatans = Jabatan::all();
-        Log::info('Jabatans retrieved: ', ['count' => $jabatans->count()]);
-        $cabangs = Cabang::all();
-        Log::info('Cabangs retrieved: ', ['count' => $cabangs->count()]);
-        $kantorkas = KantorKas::all();
-        Log::info('Wilayahs retrieved: ', ['count' => $kantorkas->count()]);
-        $statuses = Status::all(); 
-        Log::info('Statuses retrieved: ', ['count' => $statuses->count()]);
+    $jabatans = Jabatan::all();
+    $cabangs = Cabang::all();
+    $kantorkas = KantorKas::all();
+    $statuses = Status::all();
 
-        // return view('super-admin.dashboard', compact('allUsers','user', 'jabatans', 'cabangs', 'kantorkas', 'statuses'));
-        return response()->json($user);
-    }
+    // return view('super-admin.dashboard', compact('user', 'jabatans', 'cabangs', 'kantorkas', 'statuses')); // Ganti 'super-admin.dashboard' dengan nama view yang sesuai
+    return response()->json($user);
+}
 
     public function addKantorkas(Request $request)
 {

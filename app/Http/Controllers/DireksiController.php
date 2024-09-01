@@ -113,15 +113,34 @@ public function cetakPdf(Request $request)
     $query = SuratPeringatan::with('nasabah', 'accountOfficer');
     $title = 'Laporan Surat Peringatan';
 
+    // Terapkan filter dari request
     if ($request->has('search')) {
         $search = $request->input('search');
         $query->whereHas('nasabah', function ($q) use ($search) {
             $q->where('nama', 'like', '%' . $search . '%');
         });
     }
+    if ($request->has('cabang_filter')) {
+        $cabangFilter = $request->input('cabang_filter');
+        $query->whereHas('nasabah', function ($q) use ($cabangFilter) {
+            $q->where('id_cabang', $cabangFilter); 
+        });
+    }
+    if ($request->has('kantorkas_filter')) {
+        $kantorkasFilter = $request->input('kantorkas_filter');
+        // Sesuaikan dengan relasi atau kolom yang sesuai di model Anda
+        $query->where('id_kantorkas', $kantorkasFilter); 
+    }
+    if ($request->has('ao_filter')) {
+        $aoFilter = $request->input('ao_filter');
+        $query->where('id_account_officer', function ($query) use ($aoFilter) {
+            $query->select('id')
+                  ->from('users')
+                  ->where('name', $aoFilter);
+        });
+    }
 
-    // ... (filter lainnya jika diperlukan)
-
+    dd($query->toSql(), $query->getBindings());
     $suratPeringatans = $query->get();
 
     // Handle jika tidak ada data yang ditemukan

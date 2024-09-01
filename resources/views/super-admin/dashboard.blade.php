@@ -66,7 +66,7 @@
             <th>Status</th>
             <th>Jabatan</th>
             <th>Cabang</th>
-            <th>Wilayah</th>
+            <th>Kantor Kas</th>
             <th>Aksi</th>
         </tr>
         </thead>
@@ -181,32 +181,29 @@
     });
     // Edit button click event
     $('.edit-btn').on('click', function () {
-        var id = $(this).data('id'); // Menggunakan 'id' sebagai pengenal pengguna
+    var id = $(this).data('id');
 
-        $.ajax({
-            url: '/super-admin/user/edit/' + id, // Ubah rute ke /super-admin/user/edit/{id}
-            method: 'GET',
-            success: function (data) {
-                // Populate the modal with data
-                $('#editNama').val(data.name);
-                $('#editStatus').val(data.status); // Mengisi dropdown status dengan ID status yang sesuai
-                $('#editJabatan').val(data.jabatan_id); // Mengisi dropdown jabatan dengan ID jabatan yang sesuai
-                $('#editCabang').val(data.id_cabang); // Mengisi dropdown cabang dengan ID cabang yang sesuai
-                $('#editWilayah').val(data.id_kantorkas); // Mengisi dropdown wilayah dengan ID wilayah yang sesuai
+    $.ajax({
+        url: '/super-admin/user/edit/' + id,
+        method: 'GET',
+        success: function (data) {
+            $('#editNama').val(data.name);
+            $('#editStatus').val(data.infostatus.id); // Sesuaikan dengan struktur data Anda
+            $('#editJabatan').val(data.jabatan.id_jabatan);
+            $('#editCabang').val(data.cabang.id_cabang);
+            $('#editWilayah').val(data.kantorkas.id_kantorkas);
 
-                // Set the form action to the update route with the correct id
-                $('#editForm').attr('action', '/super-admin/user/update/' + id); // Ubah rute ke /super-admin/user/update/{id}
-                $('#editForm').find('input[name="_method"]').val('PUT');
+            $('#editForm').attr('action', '/super-admin/user/update/' + id);
+            $('#editForm').find('input[name="_method"]').val('PUT');
 
-                // Menampilkan modal
-                $('#editModal').modal('show');
-            },
-            error: function (xhr, status, error) {
-                console.error('Error #editForm:', error); // Log error ke konsol browser
-                alert('Terjadi kesalahan saat memuat data.');
-            }
-        });
+            $('#editModal').modal('show');
+        },
+        error: function (xhr, status, error) {
+            console.error('Error #editForm:', error);
+            alert('Terjadi kesalahan saat memuat data.');
+        }
     });
+});
    
 
 </script>

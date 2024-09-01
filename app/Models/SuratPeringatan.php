@@ -14,6 +14,11 @@ class SuratPeringatan extends Model
         'no', 'tingkat', 'dibuat', 'kembali', 'diserahkan', 'keterangan', 'bukti_gambar', 'scan_pdf', 'id_account_officer'
     ];
 
+    public function accountOfficer()
+    {
+        return $this->belongsTo(User::class,'id_account_officer');
+    }
+
     public function nasabah()
     {
         return $this->belongsTo(Nasabah::class, 'no','no');
