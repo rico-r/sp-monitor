@@ -188,15 +188,15 @@
         method: 'GET',
         success: function (data) {
             $('#editNama').val(data.name);
-            $('#editStatus').val(data.infostatus.id); // Sesuaikan dengan struktur data Anda
-            $('#editJabatan').val(data.jabatan.id_jabatan);
-            $('#editCabang').val(data.cabang.id_cabang);
-            $('#editWilayah').val(data.kantorkas.id_kantorkas);
+            if(data.infostatus) $('#editStatus').val(data.infostatus.id); // Sesuaikan dengan struktur data Anda
+            if(data.jabatan) $('#editJabatan').val(data.jabatan.id_jabatan);
+            if(data.cabang) $('#editCabang').val(data.cabang.id_cabang);
+            if(data.kantorkas) $('#editWilayah').val(data.kantorkas.id_kantorkas);
 
             $('#editForm').attr('action', '/super-admin/user/update/' + id);
             $('#editForm').find('input[name="_method"]').val('PUT');
 
-            $('#editModal').modal('show');
+            {{-- $('#editModal').modal('show'); --}}
         },
         error: function (xhr, status, error) {
             console.error('Error #editForm:', error);

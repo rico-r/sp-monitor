@@ -87,12 +87,12 @@ class AccountOfficerController extends Controller
     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
     $nasabahs = $query->get();
-    // $nasabahNames = Nasabah::pluck('nama', 'no');
-    $nasabahNames = SuratPeringatan::where('id_account_officer', $currentUser->id)
-    ->whereNull('bukti_gambar')
-    ->with('nasabah') // Memuat relasi nasabah
-    ->get()
-    ->pluck('nasabah.nama', 'no');
+    $nasabahNames = Nasabah::pluck('nama', 'no');
+    // $nasabahNames = SuratPeringatan::where('id_account_officer', $currentUser->id)
+    // ->whereNull('bukti_gambar')
+    // ->with('nasabah') // Memuat relasi nasabah
+    // ->get()
+    // ->pluck('nasabah.nama', 'no');
 
 
     $suratPeringatans = SuratPeringatan::where('id_account_officer', $currentUser->id)

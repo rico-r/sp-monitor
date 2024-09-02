@@ -7,7 +7,7 @@
     </div>
     @endif
 
-    <a href="{{ route('direksi.nasabah.cetak-pdf', ['search' => request('search')]) }}" target="_blank">Cetak PDF</a>
+    <a href="{{ route('direksi.nasabah.cetak-pdf', ['search' => request('search')]) }}">Cetak PDF</a>
     <!-- <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Nasabah</button> -->
     <div class="flex justify-between mb-4">
         <div>

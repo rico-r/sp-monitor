@@ -200,14 +200,18 @@
                     </div> -->
                     <div class="form-group">
                         <label for="addCabang">Cabang</label>
-                        <input type="text" class="form-control" id="addCabang" name="id_cabang" 
+                        <input type="text" class="form-control" id="addCabang"
                             value="{{ $cabangs->where('id_cabang', auth()->user()->id_cabang)->first()->nama_cabang }}" readonly>
+                        <input type="hidden" class="form-control" id="addCabang" name="id_cabang" 
+                            value="{{ auth()->user()->id_cabang }}" readonly>
                     </div>
 
                     <div class="form-group">
                         <label for="addWilayah">Kantor Kas</label>
-                        <input type="text" class="form-control" id="addWilayah" name="id_kantorkas" 
+                        <input type="text" class="form-control" id="addWilayah"
                             value="{{ $kantorkas->where('id_kantorkas', auth()->user()->id_kantorkas)->first()->nama_kantorkas }}" readonly>
+                        <input type="hidden" class="form-control" id="addWilayah" name="id_kantorkas" 
+                            value="{{ auth()->user()->id_kantorkas }}" readonly>
                     </div>
                     <div class="form-group">
                         <label for="addAccountOfficer">Account Officer</label>
@@ -249,13 +253,6 @@
                 enctype="multipart/form-data">
                 @csrf
                 <div class="modal-body">
-                    <!-- <input type="text" value="{{ $nasabah->no }}">
-                    <select class="form-control" id="addNama" name="nama" required>
-                            <option value="">Pilih Nasabah</option>
-                            @foreach($nasabahNames as $no => $nama)
-                                <option value="{{ $nama }}">{{ $nama }}</option>
-                            @endforeach
-                        </select> -->
                     <div class="form-group">
                         <label for="tambahNo">No</label>
                         <input type="text" class="form-control" id="tambahNo" name="no" readonly>
