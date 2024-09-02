@@ -135,7 +135,14 @@ public function dashboard(Request $request)
     $idCabangUser = $currentUser->id_cabang; // Get the id_cabang of the logged-in user
 
     // Retrieve account officers with jabatan_id = 5
-    $accountOfficers = User::where('jabatan_id', 5)->get();
+    $accountOfficers = User::where('jabatan_id', 5)
+    ->when($currentUser->id_cabang, function ($query) use ($currentUser) {
+        return $query->where('id_cabang', $currentUser->id_cabang);
+    })
+    ->when($currentUser->id_kantorkas, function ($query) use ($currentUser) {
+        return $query->where('id_kantorkas', $currentUser->id_kantorkas);
+    })
+    ->get();
 
     // Initial query for nasabahs, filtered by id_kantorkas and id_cabang of the logged-in user
     $query = Nasabah::with('accountOfficer', 'adminKas', 'cabang', 'kantorkas')
