@@ -93,7 +93,10 @@ class DireksiController extends Controller
 
     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
-    $nasabahs = $query->get();
+    $perPage = $request->input('per_page') ?: null;
+    
+    // Paginate the results 
+    $nasabahs = $perPage ? $query->paginate($perPage) :$query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
@@ -103,6 +106,23 @@ class DireksiController extends Controller
     $cabangs = Cabang::all();
     $kantorkas = KantorKas::all();
     $currentUser = auth()->user();
+    if ($request->has('cetak_pdf')) {
+        // Buat instance Dompdf dengan options (opsional)
+        $options = new Options();
+        $options->set('defaultFont', 'DejaVu Sans'); // Contoh pengaturan font
+
+        $dompdf = new Dompdf($options);
+
+        // Muat view ke Dompdf
+        $dompdf->loadHtml(view('pdf.nasabah', compact('nasabahs'))->render());
+
+        // Render PDF
+        $dompdf->render();
+
+        // Output PDF untuk diunduh
+        return $dompdf->stream('nasabah.pdf');
+    }
+
 
     return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser','nasabahNames'));
 }

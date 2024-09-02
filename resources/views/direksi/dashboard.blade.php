@@ -148,6 +148,9 @@
     </tr>
     @endforeach
     </table>
+    @if($nasabahs instanceof \Illuminate\Pagination\AbstractPaginator)
+    {{ $nasabahs->links('pagination::bootstrap-4') }}
+@endif
 </div>
 
 <!-- Modal for Add -->

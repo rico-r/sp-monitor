@@ -25,12 +25,19 @@ public function dashboard(Request $request)
     $title = "Dashboard";
 
     // Retrieve account officers with jabatan_id = 5
-    $accountOfficers = User::where('jabatan_id', 5)->get();
 
     // Dapatkan ID admin kas yang sedang login
     $currentUser = auth()->user();
     $adminKasId = $currentUser->id;
 
+    $accountOfficers = User::where('jabatan_id', 5)
+    ->when($currentUser->id_cabang, function ($query) use ($currentUser) {
+        return $query->where('id_cabang', $currentUser->id_cabang);
+    })
+    ->when($currentUser->id_kantorkas, function ($query) use ($currentUser) {
+        return $query->where('id_kantorkas', $currentUser->id_kantorkas);
+    })
+    ->get();
     // Memulai query dengan relasi yang diperlukan
     $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas')
                 ->where('id_admin_kas', $adminKasId);  // Filter berdasarkan id_admin_kas
