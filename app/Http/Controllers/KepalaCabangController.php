@@ -11,6 +11,8 @@ use App\Models\KantorKas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class KepalaCabangController extends Controller
@@ -21,7 +23,7 @@ class KepalaCabangController extends Controller
     Log::info('Memasuki fungsi dashboard');
     $title = "Dashboard";
     $currentUser = auth()->user();
-    $userCabang =auth()->user()->id_cabang;
+    $userCabang = auth()->user()->id_cabang;
     
     // Retrieve account officers with jabatan_id = 5
     $accountOfficers = User::where('jabatan_id', 5)->get();
@@ -93,7 +95,8 @@ class KepalaCabangController extends Controller
             $q->where('name', $aoFilter);
         });
     }
-    
+    Log::debug($query->toSql(), $query->getBindings());
+
     $nasabahs = $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
@@ -194,6 +197,55 @@ public function editNasabah($no)
 {
     $nasabah = Nasabah::find($no);
     return response()->json($nasabah);
+}
+
+public function cetakPdf(Request $request)
+{
+    $accountOfficer = User::where('jabatan_id', 5)->get();
+    $query = SuratPeringatan::with('nasabah', 'accountOfficer');
+    $title = 'Laporan Surat Peringatan';
+
+    // Terapkan filter dari request
+    if ($request->has('search')) {
+        $search = $request->input('search');
+        $query->whereHas('nasabah', function ($q) use ($search) {
+            $q->where('nama', 'like', '%' . $search . '%');
+        });
+    }
+    if ($request->has('cabang_filter')) {
+        $cabangFilter = $request->input('cabang_filter');
+        $query->whereHas('nasabah', function ($q) use ($cabangFilter) {
+            $q->where('id_cabang', $cabangFilter); 
+        });
+    }
+    if ($request->has('kantorkas_filter')) {
+        $kantorkasFilter = $request->input('kantorkas_filter');
+        // Sesuaikan dengan relasi atau kolom yang sesuai di model Anda
+        $query->where('id_kantorkas', 'like', '%' . $kantorkasFilter . '%' ); 
+    }
+    if ($request->has('ao_filter')) {
+        $aoFilter = $request->input('ao_filter');
+        $query->where('id_account_officer', function ($query) use ($aoFilter) {
+            $query->select('id')
+                  ->from('users')
+                  ->where('name', $aoFilter);
+        });
+    }
+
+    $suratPeringatans = $query->get();
+
+    // Handle jika tidak ada data yang ditemukan
+    if ($suratPeringatans->isEmpty()) {
+        return redirect()->back()->with('error', 'Tidak ada data surat peringatan yang ditemukan.');
+    }
+
+    $options = new Options();
+    $options->set('defaultFont', 'DejaVu Sans'); 
+
+    $dompdf = new Dompdf($options);
+    $dompdf->loadHtml(view('surat_peringatan_pdf', compact('suratPeringatans','title'))->render());
+    $dompdf->render();
+    return $dompdf->stream('surat_peringatan_hasil_pencarian.pdf');
 }
 
 public function update(Request $request, $no)

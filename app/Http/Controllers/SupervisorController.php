@@ -11,121 +11,48 @@ use App\Models\KantorKas;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class SupervisorController extends Controller
 {
 
-    public function dashboard(Request $request)
-{
-    Log::info('Memasuki fungsi dashboard');
-    $title = "Dashboard";
-    $currentUser = auth()->user();
-    $userCabang =auth()->user()->id_cabang;
-    // Retrieve account officers with jabatan_id = 5
-    $accountOfficers = User::where('jabatan_id', 5)->get();
-    
-    // Query nasabah dengan filter berdasarkan id_cabang dari user yang login
-    $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas')
-        ->where('id_cabang', $currentUser->id_cabang)  // Filter based on id_cabang of the logged-in user
-        ->where('id_kantorkas', $currentUser->id_kantorkas);
-    
-        $aocabang = User::where('id_cabang', $userCabang)
-        ->where('jabatan_id', 5)
-        ->get();
-
-    // Filter berdasarkan no
-    if ($request->has('no')) {
-        $noFilter = $request->input('no');
-        $query->where('no', $noFilter);
-    }
-    
-    // Filter berdasarkan tanggal
-    if ($request->has('date_filter')) {
-        $dateFilter = $request->input('date_filter');
-        Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
-        switch ($dateFilter) {
-            case 'last_7_days':
-                $query->where('created_at', '>=', now()->subDays(7));
-                break;
-            case 'last_30_days':
-                $query->where('created_at', '>=', now()->subDays(30));
-                break;
-            case 'last_month':
-                $query->whereMonth('created_at', '=', now()->subMonth()->month);
-                break;
-            case 'last_year':
-                $query->whereYear('created_at', '=', now()->subYear()->year);
-                break;
-        }
-    }
-    
-    // Filter berdasarkan pencarian
-    $search = $request->input('search');
-    if ($search) {
-        $query->where(function($q) use ($search) {
-            $q->where('nama', 'like', "%{$search}%")
-              ->orWhereHas('cabang', function ($subQ) use ($search) {
-                  $subQ->where('nama_cabang', 'like', "%{$search}%");
-              })
-              ->orWhereHas('kantorkas', function ($subQ) use ($search) {
-                  $subQ->where('nama_wilayah', 'like', "%{$search}%");
-              });
-        });
-    }
-
-    // Filter berdasarkan cabang, jika ada filter tambahan
-    $cabangFilter = $request->input('cabang_filter');
-    if ($cabangFilter) {
-        $query->where('id_cabang', $cabangFilter);
-    }
-    
-    // Filter based on kantorkas
-    $wilayahFilter = $request->input('wilayah_filter');
-    if ($wilayahFilter) {
-        $query->where('id_kantorkas', $wilayahFilter);
-    }
-    
-    // Filter based on AO
-    $aoFilter = $request->input('ao_filter');
-    if ($aoFilter) {
-        $query->whereHas('accountOfficer', function ($q) use ($aoFilter) {
-            $q->where('name', $aoFilter);
-        });
-    }
-
-    $nasabahs = $query->get();
-    $nasabahNames = Nasabah::pluck('nama', 'no');
-    $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
-        ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
-        ->get()
-        ->sortByDesc('tingkat');
-    $cabangs = Cabang::all();
-    $kantorkas = KantorKas::all();
-    
-    return view('supervisor.dashboard', compact('title', 'accountOfficers','aocabang', 'nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser', 'nasabahNames'));
-}
-
 //     public function dashboard(Request $request)
 // {
 //     Log::info('Memasuki fungsi dashboard');
-
 //     $title = "Dashboard";
+//     $currentUser = auth()->user();
+//     $userCabang = $currentUser->id_cabang;
+
+//     // Log current user details
+//     Log::info('Current User:', ['id' => $currentUser->id, 'id_cabang' => $currentUser->id_cabang, 'id_kantorkas' => $currentUser->id_kantorkas]);
 
 //     // Retrieve account officers with jabatan_id = 5
-//     $accountOfficers = User::where('jabatan_id', 5)->get();  // Change pluck to get to retrieve the full user objects
+//     $accountOfficers = User::where('jabatan_id', 5)->get();
+//     Log::info('Account Officers:', ['count' => $accountOfficers->count()]);
 
-    
-//     $query = Nasabah::with('accountOfficer','adminKas','cabang','kantorkas');
+//     // Query nasabah dengan filter berdasarkan id_cabang dari user yang login
+//     $query = Nasabah::with('accountOfficer', 'adminKas', 'cabang', 'kantorkas')
+//         ->where('id_cabang', $currentUser->id_cabang) // Filter based on id_cabang of the logged-in user
+//         ->where('id_kantorkas', $currentUser->id_kantorkas);
 
-//     // Log query awal
-//     Log::info('Query awal: ', ['query' => $query->toSql()]);
+//     $aocabang = User::where('id_cabang', $userCabang)
+//         ->where('jabatan_id', 5)
+//         ->get();
+//     Log::info('AO Cabang:', ['count' => $aocabang->count()]);
+
+//     // Filter berdasarkan no
+//     if ($request->has('no')) {
+//         $noFilter = $request->input('no');
+//         $query->where('no', $noFilter);
+//         Log::info('Filter by No:', ['no' => $noFilter]);
+//     }
 
 //     // Filter berdasarkan tanggal
 //     if ($request->has('date_filter')) {
 //         $dateFilter = $request->input('date_filter');
 //         Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
-
 //         switch ($dateFilter) {
 //             case 'last_7_days':
 //                 $query->where('created_at', '>=', now()->subDays(7));
@@ -142,52 +69,162 @@ class SupervisorController extends Controller
 //         }
 //     }
 
-//     // Log query setelah filter tanggal
-//     Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
-
 //     // Filter berdasarkan pencarian
 //     $search = $request->input('search');
 //     if ($search) {
-//         $query->where('nama', 'like', "%{$search}%")
-//               ->orWhereHas('cabang', function ($q) use ($search) {
-//                   $q->where('nama_cabang', 'like', "%{$search}%");
+//         $query->where(function($q) use ($search) {
+//             $q->where('nama', 'like', "%{$search}%")
+//               ->orWhereHas('cabang', function ($subQ) use ($search) {
+//                   $subQ->where('nama_cabang', 'like', "%{$search}%");
 //               })
-//               ->orWhereHas('kantorkas', function ($q) use ($search) {
-//                   $q->where('nama_wilayah', 'like', "%{$search}%");
+//               ->orWhereHas('kantorkas', function ($subQ) use ($search) {
+//                   $subQ->where('nama_wilayah', 'like', "%{$search}%");
 //               });
+//         });
+//         Log::info('Search Filter:', ['search' => $search]);
 //     }
 
-//     // Filter based on cabang
+//     // Filter berdasarkan cabang, jika ada filter tambahan
 //     $cabangFilter = $request->input('cabang_filter');
 //     if ($cabangFilter) {
-//         $query->whereHas('cabang', function ($q) use ($cabangFilter) {
-//             $q->where('id_cabang', $cabangFilter);
-//         });
+//         $query->where('id_cabang', $cabangFilter);
+//         Log::info('Filter by Cabang:', ['id_cabang' => $cabangFilter]);
 //     }
 
 //     // Filter based on kantorkas
 //     $wilayahFilter = $request->input('wilayah_filter');
 //     if ($wilayahFilter) {
-//         $query->whereHas('kantorkas', function ($q) use ($wilayahFilter) {
-//             $q->where('id_kantorkas', $wilayahFilter);
-//         });
+//         $query->where('id_kantorkas', $wilayahFilter);
+//         Log::info('Filter by Kantor Kas:', ['id_kantorkas' => $wilayahFilter]);
 //     }
 
-//     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
+//     // Filter based on AO
+//     $aoFilter = $request->input('ao_filter');
+//     if ($aoFilter) {
+//         $query->whereHas('accountOfficer', function ($q) use ($aoFilter) {
+//             $q->where('name', $aoFilter);
+//         });
+//         Log::info('Filter by Account Officer:', ['name' => $aoFilter]);
+//     }
 
+//     // Execute the query
 //     $nasabahs = $query->get();
-//     $nasabahNames = Nasabah::pluck('nama', 'no');
+//     Log::info('Nasabah Results:', ['count' => $nasabahs->count()]);
 
+//     $nasabahNames = Nasabah::pluck('nama', 'no');
 //     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
-//     ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
-//     ->get()
-//     ->sortByDesc('tingkat');
+//         ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
+//         ->get()
+//         ->sortByDesc('tingkat');
+//     Log::info('Surat Peringatan Results:', ['count' => $suratPeringatans->count()]);
+
 //     $cabangs = Cabang::all();
 //     $kantorkas = KantorKas::all();
-//     $currentUser = auth()->user();
 
-//     return view('direksi.dashboard', compact('title', 'accountOfficers','nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser','nasabahNames'));
+//     return view('supervisor.dashboard', compact('title', 'accountOfficers', 'aocabang', 'nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser', 'nasabahNames'));
 // }
+
+
+public function dashboard(Request $request)
+{
+    Log::info('Memasuki fungsi dashboard');
+
+    $title = "Dashboard";
+    $currentUser = auth()->user(); // Get the current logged-in user
+    $idKantorKasUser = $currentUser->id_kantorkas; // Get the id_kantorkas of the logged-in user
+    $idCabangUser = $currentUser->id_cabang; // Get the id_cabang of the logged-in user
+
+    // Retrieve account officers with jabatan_id = 5
+    $accountOfficers = User::where('jabatan_id', 5)->get();
+
+    // Initial query for nasabahs, filtered by id_kantorkas and id_cabang of the logged-in user
+    $query = Nasabah::with('accountOfficer', 'adminKas', 'cabang', 'kantorkas')
+        ->where('id_kantorkas', $idKantorKasUser) // Filter by id_kantorkas of the logged-in user
+        ->where('id_cabang', $idCabangUser);
+
+    // Log query awal
+    Log::info('Query awal: ', ['query' => $query->toSql()]);
+
+    // Filter berdasarkan tanggal
+    if ($request->has('date_filter')) {
+        $dateFilter = $request->input('date_filter');
+        Log::info('Filter tanggal diterapkan', ['date_filter' => $dateFilter]);
+
+        switch ($dateFilter) {
+            case 'last_7_days':
+                $query->where('created_at', '>=', now()->subDays(7));
+                break;
+            case 'last_30_days':
+                $query->where('created_at', '>=', now()->subDays(30));
+                break;
+            case 'last_month':
+                $query->whereMonth('created_at', '=', now()->subMonth()->month);
+                break;
+            case 'last_year':
+                $query->whereYear('created_at', '=', now()->subYear()->year);
+                break;
+        }
+    }
+
+    // Log query setelah filter tanggal
+    Log::info('Query setelah filter tanggal: ', ['query' => $query->toSql()]);
+
+    // Filter berdasarkan pencarian
+    $search = $request->input('search');
+    if ($search) {
+        $query->where('nama', 'like', "%{$search}%")
+              ->orWhereHas('cabang', function ($q) use ($search) {
+                  $q->where('nama_cabang', 'like', "%{$search}%");
+              })
+              ->orWhereHas('kantorkas', function ($q) use ($search) {
+                  $q->where('nama_wilayah', 'like', "%{$search}%");
+              });
+    }
+
+    // Filter based on cabang
+    $cabangFilter = $request->input('cabang_filter');
+    if ($cabangFilter) {
+        $query->whereHas('cabang', function ($q) use ($cabangFilter) {
+            $q->where('id_cabang', $cabangFilter);
+        });
+    }
+
+    // Filter based on kantorkas
+    $wilayahFilter = $request->input('wilayah_filter');
+    if ($wilayahFilter) {
+        $query->whereHas('kantorkas', function ($q) use ($wilayahFilter) {
+            $q->where('id_kantorkas', $wilayahFilter);
+        });
+    }
+
+    // Filter based on AO
+    $aoFilter = $request->input('ao_filter');
+    if ($aoFilter) {
+    $query->whereHas('accountOfficer', function ($q) use ($aoFilter, $currentUser) {
+        $q->where('name', $aoFilter)
+          ->where('id_cabang', $idKantorKasUser) // Filter berdasarkan id_cabang pengguna
+          ->where('id_kantorkas', $idCabangUser); // Filter berdasarkan id_kantorkas pengguna
+    });
+        Log::info('Filter by Account Officer:', ['name' => $aoFilter]);
+    }
+
+    Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
+
+    $nasabahs = $query->get();
+    $nasabahNames = Nasabah::pluck('nama', 'no');
+
+    $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
+        ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')
+        ->get()
+        ->sortByDesc('tingkat');
+
+    $cabangs = Cabang::all();
+    $kantorkas = KantorKas::all();
+
+    return view('supervisor.dashboard', compact('title', 'accountOfficers', 'nasabahs', 'suratPeringatans', 'cabangs', 'kantorkas', 'currentUser', 'nasabahNames'));
+}
+
+
 public function editNasabah($no)
 {
     $nasabah = Nasabah::find($no);

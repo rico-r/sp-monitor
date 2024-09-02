@@ -140,7 +140,6 @@ public function cetakPdf(Request $request)
         });
     }
 
-    dd($query->toSql(), $query->getBindings());
     $suratPeringatans = $query->get();
 
     // Handle jika tidak ada data yang ditemukan

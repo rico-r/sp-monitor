@@ -7,8 +7,7 @@
     </div>
     @endif
 
-    <!-- <button class="btn btn-success mb-3" data-toggle="modal" data-target="#addModal">Tambah Nasabah</button> -->
-    <div class="flex justify-between mb-4">
+    <a href="{{ route('supervisor.nasabah.cetak-pdf', ['search' => request('search')]) }}" target="_blank">Cetak PDF</a>
         <div>
             <form method="GET" action="{{ route('supervisor.dashboard') }}">
                 <select name="date_filter" onchange="this.form.submit()"
@@ -51,13 +50,12 @@
                 <select name="ao_filter" onchange="this.form.submit()"
                     class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
                     <option value="">Account Officer</option>
-                    @foreach($aocabang as $ao)
+                    @foreach($accountOfficers as $ao)
                     <option value="{{ $ao->name }}" {{ request('ao_filter') == $ao->name ? 'selected' : '' }}>{{ $ao->name }}</option>
                     @endforeach
                 </select>
             </form>
         </div>
-    </div>
 
     <table class="table table-striped" id="nasabah-table">
         <thead>

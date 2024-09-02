@@ -87,6 +87,7 @@ Route::prefix('kepala-cabang')
         Route::put('/nasabah/update/{no}', [KepalaCabangController::class, 'update'])->name('nasabah.update');
         Route::post('nasabah/add', [KepalaCabangController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{no}', [KepalaCabangController::class, 'deleteNasabah'])->name('nasabah.delete');
+        Route::get('/nasabah/cetak-pdf', [KepalaCabangController::class, 'cetakPdf'])->name('nasabah.cetak-pdf');
         // Route::post('/nasabah/surat', [KepalaCabangController::class, 'addSurat'])->name('nasabah.surat');
 });
 
@@ -101,6 +102,7 @@ Route::prefix('supervisor')
         Route::put('/nasabah/update/{no}', [SupervisorController::class, 'update'])->name('nasabah.update');
         Route::post('nasabah/add', [SupervisorController::class, 'addNasabah'])->name('nasabah.add');
         Route::delete('nasabah/delete/{no}', [SupervisorController::class, 'deleteNasabah'])->name('nasabah.delete');
+        Route::get('/nasabah/cetak-pdf', [SupervisorController::class, 'cetakPdf'])->name('nasabah.cetak-pdf');
 
 
 });
