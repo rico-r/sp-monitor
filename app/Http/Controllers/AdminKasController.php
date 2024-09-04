@@ -97,7 +97,10 @@ public function dashboard(Request $request)
 
     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
-    $nasabahs = $query->get();
+    $perPage = $request->input('per_page') ?: null;
+    
+    // Paginate the results 
+    $nasabahs = $perPage ? $query->paginate($perPage) : $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')

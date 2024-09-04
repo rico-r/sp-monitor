@@ -97,7 +97,10 @@ class KepalaCabangController extends Controller
     }
     Log::debug($query->toSql(), $query->getBindings());
 
-    $nasabahs = $query->get();
+    $perPage = $request->input('per_page') ?: null;
+    
+    // Paginate the results 
+    $nasabahs = $perPage ? $query->paginate($perPage) : $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')
         ->join('nasabahs', 'surat_peringatans.no', '=', 'nasabahs.no')

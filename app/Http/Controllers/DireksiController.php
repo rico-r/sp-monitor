@@ -96,7 +96,7 @@ class DireksiController extends Controller
     $perPage = $request->input('per_page') ?: null;
     
     // Paginate the results 
-    $nasabahs = $perPage ? $query->paginate($perPage) :$query->get();
+    $nasabahs = $perPage ? $query->paginate($perPage) : $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')

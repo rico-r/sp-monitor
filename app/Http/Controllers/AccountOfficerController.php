@@ -86,7 +86,10 @@ class AccountOfficerController extends Controller
 
     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
-    $nasabahs = $query->get();
+    $perPage = $request->input('per_page') ?: null;
+    
+    // Paginate the results 
+    $nasabahs = $perPage ? $query->paginate($perPage) : $query->get();
     // $nasabahNames = Nasabah::pluck('nama', 'no');
     $nasabahNames = SuratPeringatan::where('id_account_officer', $currentUser->id)
     ->whereNull('bukti_gambar')

@@ -209,15 +209,18 @@ public function dashboard(Request $request)
     if ($aoFilter) {
     $query->whereHas('accountOfficer', function ($q) use ($aoFilter, $currentUser) {
         $q->where('name', $aoFilter)
-          ->where('id_cabang', $idKantorKasUser) // Filter berdasarkan id_cabang pengguna
-          ->where('id_kantorkas', $idCabangUser); // Filter berdasarkan id_kantorkas pengguna
+          ->where('id_cabang', $idCabangUser) // Filter berdasarkan id_cabang pengguna
+          ->where('id_kantorkas', $idKantorKasUser); // Filter berdasarkan id_kantorkas pengguna
     });
         Log::info('Filter by Account Officer:', ['name' => $aoFilter]);
     }
 
     Log::info('Query setelah filter cabang dan kantorkas: ', ['query' => $query->toSql()]);
 
-    $nasabahs = $query->get();
+    $perPage = $request->input('per_page') ?: null;
+    
+    // Paginate the results 
+    $nasabahs = $perPage ? $query->paginate($perPage) : $query->get();
     $nasabahNames = Nasabah::pluck('nama', 'no');
 
     $suratPeringatans = SuratPeringatan::select('surat_peringatans.*', 'nasabahs.nama')

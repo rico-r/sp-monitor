@@ -54,6 +54,12 @@
                     <option value="{{ $ao->name }}" {{ request('ao_filter') == $ao->name ? 'selected' : '' }}>{{ $ao->name }}</option>
                     @endforeach
                 </select>
+                <select name="per_page" onchange="this.form.submit()" class="bg-gray-200 dark:bg-gray-700 text-gray-800 dark:text-gray-200 px-4 py-2 rounded">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>Show 10</option>
+                    <option value="20" {{ request('per_page') == 20 ? 'selected' : '' }}>Show 20</option>
+                    <option value="30" {{ request('per_page') == 30 ? 'selected' : '' }}>Show 30</option>
+                    <option value="" {{ request('per_page') === null ? 'selected' : '' }}>Show All</option>
+                </select></thead>
             </form>
         </div>
 
@@ -144,6 +150,9 @@
     </tr>
     @endforeach
     </table>
+    @if($nasabahs instanceof \Illuminate\Pagination\AbstractPaginator)
+    {{ $nasabahs->links('pagination::bootstrap-4') }}
+@endif
 </div>
 
 <!-- Modal for Add -->
